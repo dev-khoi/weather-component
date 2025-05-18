@@ -3,10 +3,9 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS, type Transform } from "@dnd-kit/utilities";
 type DraggableProps = {
     children: ReactNode;
-    moving: Transform | null;
 };
 
-function Draggable({ children, moving }: DraggableProps) {
+function Draggable({ children }: DraggableProps) {
     // everytime it moves, it is set into that location
 
     // transform {x: number, y: number, scaleX: number, scaleY: number}
@@ -19,9 +18,7 @@ function Draggable({ children, moving }: DraggableProps) {
               transform: CSS.Translate.toString(transform)
               
           }
-        : {
-            transform: CSS.Translate.toString(moving)
-        };
+        : undefined;
 
     return (
         <button ref={setNodeRef} style={style} {...listeners} {...attributes}>
