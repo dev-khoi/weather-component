@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import {
     DndContext,
@@ -10,6 +10,7 @@ import Draggable from "./Draggable.tsx";
 import Droppable from "./Droppable.tsx";
 
 import { createSnapModifier } from "@dnd-kit/modifiers";
+import { getWeather } from "./weatherAPI.tsx";
 
 //drop animation
 interface DropAnimation {
@@ -36,8 +37,16 @@ export function App() {
     // Parent type can be string, null or number
     const [parent, setParent] = useState<String | null | Number>(null);
     const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [weather, setWeather] = useState<any | null>(null);
+    // api fetch
+
+    useEffect(() => {
+        getWeather().then((result) => {
+            setWeather(result);
+        });
+    }, [getWeather]);
+
     // dragable content render
-    
     const draggableMarkup = <Draggable>weather component</Draggable>;
 
     // list of droppable
@@ -47,46 +56,33 @@ export function App() {
         { id: 3, name: "third box" },
     ];
     // rendering the droppables
-    const droppableRenderList = droppables.map((item) => {
-        return (
-            <Droppable
-                className="size-30 w-70 bg-blue-300 m-5 text-black"
-                id={item.id}
-                key={item.id}
-            >
-                {item.name}
-                {parent === item.id ? draggableMarkup : null}
-            </Droppable>
-        );
-    });
+    const droppableRenderList = droppables.map((item) => (
+        <Droppable
+            className="size-30 w-70 bg-blue-300 m-5 text-black"
+            id={item.id}
+            key={item.id}
+        >
+            {item.name}
+            {parent === item.id ? draggableMarkup : null}
+        </Droppable>
+    ));
 
     // rendering the app
     return (
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            {/* Render all the draggable part */}
-            {!parent && !isDragging ? draggableMarkup : null}
-
-            {droppableRenderList}
-            {/* Overlaying part */}
-            {createPortal(
-                <DragOverlay
-                    dropAnimation={{
-                        duration: 500,
-                        easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
-                    }}
-                >
-                    {isDragging ? draggableMarkup : null}
-                </DragOverlay>,
-                document.body
+        <div>
+            {weather ? (
+                <p>Render some weather shit</p>
+            ) : (
+                <span>Loading...</span>
             )}
-        </DndContext>
+        </div>
     );
 
     // Handle dragging
     // start -> setting it is dragging
     // end   -> setting dragging to false
     function handleDragStart(event: DragStartEvent) {
-        setParent(null)
+        setParent(null);
         setIsDragging(true);
     }
 

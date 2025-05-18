@@ -16,9 +16,11 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@tailwindcss/vite": "^4.1.7",
     "all": "^0.0.0",
+    "dotenv": "^16.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwindcss": "^4.1.7"
+    "tailwindcss": "^4.1.7",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
