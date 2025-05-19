@@ -22,6 +22,7 @@
                             class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
                             aria-controls="mobile-menu"
                             aria-expanded="false"
+                            id="dashboard-button"
                         >
                             <span class="absolute -inset-0.5"></span>
                             <span class="sr-only">Open main menu</span>
@@ -77,7 +78,7 @@
                                 alt="Your Company"
                             />
                         </div>
-                        <div class="hidden sm:ml-6 sm:block">
+                        <div class="hidden sm:ml-6 sm:block" >
                             <div class="flex space-x-4">
                                 <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                                 <a
@@ -149,7 +150,6 @@
                                     />
                                 </button>
                             </div>
-
                             <!--
             Dropdown menu, show/hide based on menu state.
 
@@ -161,7 +161,8 @@
               To: "transform opacity-0 scale-95"
           -->
                             <div
-                                class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+                                class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+                                id="user-menu"
                                 role="menu"
                                 aria-orientation="vertical"
                                 aria-labelledby="user-menu-button"
@@ -170,7 +171,7 @@
                                 <!-- Active: "bg-gray-100 outline-hidden", Not Active: "" -->
                                 <a
                                     href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-white"
                                     role="menuitem"
                                     tabindex="-1"
                                     id="user-menu-item-0"
@@ -178,7 +179,7 @@
                                 >
                                 <a
                                     href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-white"
                                     role="menuitem"
                                     tabindex="-1"
                                     id="user-menu-item-1"
@@ -186,7 +187,7 @@
                                 >
                                 <a
                                     href="#"
-                                    class="block px-4 py-2 text-sm text-gray-700"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-white"
                                     role="menuitem"
                                     tabindex="-1"
                                     id="user-menu-item-2"
@@ -199,7 +200,7 @@
             </div>
 
             <!-- Mobile menu, show/hide based on menu state. -->
-            <div class="sm:hidden" id="mobile-menu">
+            <div class="hidden sm:hidden" id="mobile-menu">
                 <div class="space-y-1 px-2 pt-2 pb-3">
                     <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                     <a
@@ -228,9 +229,10 @@
         </nav>
 
         <main>
-          <div class="grid-stack"></div>
+                    <div class="grid-stack"></div>
 
-          <div id="root"></div>
+          <div id="root">
+          </div>
         </main>
         <script type="module" src="/src/main.tsx"></script>
     </body>
