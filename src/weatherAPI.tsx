@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 const baseUrl = import.meta.env.VITE_WEATHER_HOST;
 
@@ -20,6 +22,18 @@ const getWeather = async () => {
     }
 };
 
+// custom hook for useWeather
+// returning array of weather element with index
+const useWeather = async () => {
+    const [weatherData, setWeatherData] = useState(null)
+    useEffect(() => {
+        getWeather().then((data) => {
+            setWeatherData(data.current);
+        });
+    }, []);
+    console.log(weatherData)
+    return [weatherData];
+};
 // Return formatted date for api key
 const todayFormattedDate = () => {
     const ms = new Date();
@@ -30,4 +44,4 @@ const todayFormattedDate = () => {
 
     return formattedDate;
 };
-export { getWeather };
+export { getWeather, useWeather };
