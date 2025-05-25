@@ -2,20 +2,23 @@ import {
     useContext,
     useEffect,
     useState,
-    type ReactNode,
     type FunctionComponent,
 } from "react";
 import { userComponentContext, type weatherDataType } from "./gridLayout";
-import GridLayout from "react-grid-layout";
-import { Responsive, WidthProvider } from "react-grid-layout";
-import _ from "lodash";
+import {
+    Responsive,
+    WidthProvider,
+    type Layout,
+    type Layouts,
+} from "react-grid-layout";
+
+import { type ComponentState } from "./gridLayout";
 // props interface
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 // Rendering the grid component inside the grid layout
 const GridComponent: FunctionComponent = () => {
-
     // _______________________________
     // Grid layout configuration
 
@@ -32,7 +35,7 @@ const GridComponent: FunctionComponent = () => {
         setMounted(true);
     }, []);
 
-    // useContext to get the components array 
+    // useContext to get the components array
     const context = useContext(userComponentContext);
     if (!context) return <p>loading...</p>;
 
@@ -40,17 +43,17 @@ const GridComponent: FunctionComponent = () => {
 
     // map it into layout
     const [layouts, setLayouts] = useState<{ [index: string]: any[] }>({
-        lg: component.map((item) => ({
+        lg: component.map((item, index) => ({
             ...item.dataGrid,
             i: item.id.toString(), // react-grid-layout needs "i" as string
             minW: 2,
-  maxW: 5,
-  minH: 2,
-  maxH: 6,
-  static:false,
-            
+            maxW: 5,
+            minH: 2,
+            maxH: 6,
+            static: false,
         })),
     });
+
     // Generating the components:
     const generateDOM = () => {
         return component.map((comp: weatherDataType) => {
@@ -82,18 +85,38 @@ const GridComponent: FunctionComponent = () => {
         const compactType =
             oldCompactType === "horizontal"
                 ? "vertical"
-                    : oldCompactType === "vertical"
-                    ? null
+                : oldCompactType === "vertical"
+                ? null
                 : "horizontal";
         setCompactType(compactType);
     };
 
-    const onLayoutChange = (layout: any, layouts: any) => {
+    const onLayoutChange = (layout: Layout[], layouts: Layouts) => {
         setLayouts({ ...layouts });
-        // Setting the 
+        // Setting the
+        // Update ALL component dataGrids to match the layout
+        const updatedComponents = component.map((comp) => {
+            const layoutItem = layout.find(
+                (item) => item.i === comp.id.toString()
+            );
+            if (!layoutItem) return comp;
+
+            return {
+                ...comp,
+                dataGrid: {
+                    ...comp.dataGrid,
+                    x: layoutItem.x,
+                    y: layoutItem.y,
+                    w: layoutItem.w,
+                    h: layoutItem.h,
+                },
+            };
+        });
+
+        setComponent(updatedComponents);
     };
 
-    const onDrop = (layout: any, layoutItem: any, _ev: any) => {
+    const onDrop = (layout: Layout[], layoutItem: Layout, _ev: Event) => {
         alert(
             `Element parameters:\n${JSON.stringify(
                 layoutItem,
@@ -103,6 +126,35 @@ const GridComponent: FunctionComponent = () => {
         );
     };
 
+    // controlling where the element is dragged
+    const draggingStop = (index: number, grid: ComponentState) => {
+        const newComp = [...component];
+        newComp[index] = {
+            ...newComp[index],
+            dataGrid: {
+                ...newComp[index].dataGrid,
+                x: grid.x,
+                y: grid.y,
+            },
+        };
+
+        setComponent(newComp);
+        console.debug(component[index].dataGrid.x, grid.x);
+    };
+    // controlling how the element is resize
+    const resizingStop = (index: number, grid: ComponentState) => {
+        const newComp = [...component];
+        newComp[index] = {
+            ...newComp[index],
+            dataGrid: {
+                ...newComp[index].dataGrid,
+                w: grid.w,
+                h: grid.h,
+            },
+        };
+        setComponent(newComp);
+        console.debug(component[index].dataGrid.w, grid.w);
+    };
     return (
         <>
             <div className="mb-4">
@@ -129,9 +181,38 @@ const GridComponent: FunctionComponent = () => {
                     onBreakpointChange={onBreakpointChange}
                     onDrop={onDrop}
                     isDroppable
+                    // onDragStop={(
+                    //     layout,
+                    //     oldItem,
+                    //     newItem,
+                    //     placeholder,
+                    //     e,
+                    //     element
+                    // ) => {
+                    //     const index = component.findIndex(
+                    //         (comp) => comp.id.toString() === newItem.i
+                    //     );
+                    //     if (index !== -1) {
+                    //         draggingStop(index, newItem); // Update the context
+                    //     }
+                    // }}
+                    // onResizeStop={(
+                    //     layout,
+                    //     oldItem,
+                    //     newItem,
+                    //     placeholder,
+                    //     event,
+                    //     element
+                    // ) => {
+                    //     const index = component.findIndex(
+                    //         (comp) => comp.id.toString() === newItem.i
+                    //     );
+                    //     if (index !== -1) {
+                    //         resizingStop(index, newItem);
+                    //     }
+                    // }}
                 >
                     {generateDOM()}
-                    
                 </ResponsiveReactGridLayout>
             </div>
         </>
