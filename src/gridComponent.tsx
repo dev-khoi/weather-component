@@ -54,15 +54,26 @@ const GridComponent: FunctionComponent = () => {
         })),
     });
 
+    // removing button
+    const removeComponent = (id: number) => {
+        const updatedComponents = component.filter(comp => id !== comp.id)
+        setComponent(updatedComponents);
+    }
+
     // Generating the components:
     const generateDOM = () => {
+        
         return component.map((comp: weatherDataType) => {
+            const description = "remove button" + comp.componentName;
             return (
                 <div
                     className="grid-layout-item-content"
                     key={comp.id}
                     // data-grid={comp.dataGrid}
                 >
+                    <button onClick={()=>{removeComponent(comp.id)}} className="p-0 w-20 h-5 absolute top-0 right-2 hover:bg-amber-100 z-6 cancelSelector" role="remove component" aria-label={description} >
+                        remove
+                    </button>
                     {comp.componentName}
                     {comp.componentData}
                 </div>
@@ -181,6 +192,7 @@ const GridComponent: FunctionComponent = () => {
                     onBreakpointChange={onBreakpointChange}
                     onDrop={onDrop}
                     isDroppable
+                    draggableCancel=".cancelSelector"
                     // onDragStop={(
                     //     layout,
                     //     oldItem,

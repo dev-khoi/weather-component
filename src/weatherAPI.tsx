@@ -34,14 +34,5 @@ const useWeather = async () => {
     console.log(weatherData)
     return [weatherData];
 };
-// Return formatted date for api key
-const todayFormattedDate = () => {
-    const ms = new Date();
 
-    const formattedDate = `${ms.getFullYear()}-${(ms.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${ms.getDate().toString().padStart(2, "0")}`;
-
-    return formattedDate;
-};
 export { getWeather, useWeather };
