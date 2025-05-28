@@ -1,9 +1,4 @@
-import {
-    useContext,
-    useEffect,
-    useState,
-    type FunctionComponent,
-} from "react";
+import { useContext, useEffect, useState, type FunctionComponent } from "react";
 import { userComponentContext, type weatherDataType } from "./gridLayout";
 import {
     Responsive,
@@ -42,27 +37,26 @@ const GridComponent: FunctionComponent = () => {
     const { component, setComponent } = context;
 
     // map it into layout
-    const [layouts, setLayouts] = useState<{ [index: string]: any[] }>({
-        lg: component.map((item, index) => ({
+    const layouts : Layouts = {
+        lg: component.map((item) => ({
             ...item.dataGrid,
-            i: item.id.toString(), // react-grid-layout needs "i" as string
-            minW: 2,
+            i: item.id.toString(),
+            minW: 1,
             maxW: 5,
-            minH: 2,
+            minH: 1,
             maxH: 6,
             static: false,
         })),
-    });
+    };
 
     // removing button
     const removeComponent = (id: number) => {
-        const updatedComponents = component.filter(comp => id !== comp.id)
+        const updatedComponents = component.filter((comp) => id !== comp.id);
         setComponent(updatedComponents);
-    }
+    };
 
     // Generating the components:
     const generateDOM = () => {
-        
         return component.map((comp: weatherDataType) => {
             const description = "remove button" + comp.componentName;
             return (
@@ -71,11 +65,23 @@ const GridComponent: FunctionComponent = () => {
                     key={comp.id}
                     // data-grid={comp.dataGrid}
                 >
-                    <button onClick={()=>{removeComponent(comp.id)}} className="p-0 w-20 h-5 absolute top-0 right-2 hover:bg-amber-100 z-6 cancelSelector" role="remove component" aria-label={description} >
+                    <button
+                        onClick={() => {
+                            removeComponent(comp.id);
+                        }}
+                        className="p-0 w-20 h-5 absolute top-0 right-2 hover:bg-amber-100 z-6 cancelSelector"
+                        role="remove component"
+                        aria-label={description}
+                    >
                         remove
                     </button>
-                    {comp.componentName}
-                    {comp.componentData}
+                    <div>{comp.componentName ?? "[no name]"}</div>
+                    <div>
+                        {typeof comp.componentData === "string" ||
+                        typeof comp.componentData === "number"
+                            ? comp.componentData
+                            : ""}
+                    </div>
                 </div>
             );
         });
@@ -103,7 +109,7 @@ const GridComponent: FunctionComponent = () => {
     };
 
     const onLayoutChange = (layout: Layout[], layouts: Layouts) => {
-        setLayouts({ ...layouts });
+        console.log(layouts);
         // Setting the
         // Update ALL component dataGrids to match the layout
         const updatedComponents = component.map((comp) => {
@@ -125,6 +131,8 @@ const GridComponent: FunctionComponent = () => {
         });
 
         setComponent(updatedComponents);
+
+        // console.log(component[0].dataGrid)
     };
 
     const onDrop = (layout: Layout[], layoutItem: Layout, _ev: Event) => {
@@ -150,7 +158,7 @@ const GridComponent: FunctionComponent = () => {
         };
 
         setComponent(newComp);
-        console.debug(component[index].dataGrid.x, grid.x);
+        // console.debug(component[index].dataGrid.x, grid.x);
     };
     // controlling how the element is resize
     const resizingStop = (index: number, grid: ComponentState) => {
@@ -164,7 +172,7 @@ const GridComponent: FunctionComponent = () => {
             },
         };
         setComponent(newComp);
-        console.debug(component[index].dataGrid.w, grid.w);
+        // console.debug(component[index].dataGrid.w, grid.w);
     };
     return (
         <>

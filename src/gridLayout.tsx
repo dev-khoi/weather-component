@@ -1,10 +1,10 @@
 import type { ReactNode, Dispatch, SetStateAction } from "react";
-import { useState, createContext, useContext, useEffect } from "react";
+import { useRef, useState, createContext, useEffect } from "react";
 import { type Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { GridComponent } from "./gridComponent";
-
+import { getWeather } from "./weatherAPI";
 // TYPE:
 // prop type
 interface prop {
@@ -22,15 +22,39 @@ type ComponentState = {
 type weatherDataType = {
     id: number;
     componentName: string;
-    componentData: number;
+    componentData: number | string;
     dataGrid: ComponentState;
-}
+};
 
 type UserComponentContextType = {
-    component: weatherDataType[] ;
+    component: weatherDataType[];
     setComponent: Dispatch<SetStateAction<weatherDataType[]>>;
-} ;
+};
 
+// formatting the api
+const formatWeatherData = (weatherData: any) => {
+    const arrayWeather = Object.entries(weatherData);
+    let formattedWeather: weatherDataType[] = [];
+
+    const y = Math.ceil(Math.random() * 4) + 1;
+
+    arrayWeather.forEach((key: any, index: any) => {
+        formattedWeather.push({
+            id: index,
+            componentName: key[0],
+            componentData: key[1],
+            dataGrid: {
+                x: (index * 2) % 12,
+                y: Math.floor(index / 6) * y,
+                w: 2,
+                h: y,
+            },
+        });
+    });
+    return formattedWeather;
+};
+
+// ignore-prettier
 // mock data of the weather app
 // const mockData: weatherDataType[] = [
 //    { id: 1, componentName: "tempera", componentData: 30, dataGrid: {w: 2, h: 3, x: 0, y: 0 } },
@@ -44,24 +68,46 @@ type UserComponentContextType = {
 //   { id: 9, componentName: "sunrise", componentData: 545, dataGrid: { w: 2, h: 3, x: 6, y: 3 } },
 //   { id: 10, componentName: "sunset", componentData: 1930, dataGrid: { w: 2, h: 3, x: 8, y: 3 } },
 // ];
-// localStorage.setItem("componentData", JSON.stringify(mockData));
 
 // create context of what components
-const userComponentContext = createContext<UserComponentContextType | null>(null
+const userComponentContext = createContext<UserComponentContextType | null>(
+    null
 );
 const Layout = (prop: prop) => {
-    const stored = localStorage.getItem("componentData");
-    const parsedComponentData = stored?JSON.parse(stored):null;
-
     // state of component in layout
-    const [component, setComponent] = useState<weatherDataType[]>(parsedComponentData);
+    const [component, setComponent] = useState<weatherDataType[]>([]);
+    const hasRun = useRef(false); // prevents dev-mode double run
 
-    // storing the data
-    useEffect(()=>{
-        localStorage.setItem("componentData", JSON.stringify(component));
+    // Updating component in the initial load
+    // This useEffect will render out the weatherAPI if there
+    // isn't anything stored in localStorage
+    useEffect(() => {
+        const stored = localStorage.getItem("componentData");
 
-    },[component])
- 
+        if (stored && JSON.parse(stored).length > 0) {
+            try {
+                const parsedComponentData = JSON.parse(stored);
+                setComponent(parsedComponentData);
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            getWeather().then((data) => {
+                const formattedData = formatWeatherData(data.current);
+                setComponent(formattedData);
+            });
+        }
+    }, []);
+
+    // Updating the localStorage every time component changes
+    useEffect(() => {
+        if (component && component.length > 0) {
+            console.debug(component[0].dataGrid);
+
+            localStorage.setItem("componentData", JSON.stringify(component));
+        }
+    }, [component]);
+
     return (
         <userComponentContext.Provider value={{ component, setComponent }}>
             {prop.children}
@@ -98,7 +144,6 @@ export const App = () => {
     return (
         <>
             <Layout>
-                
                 {/* <AddGridComponentButton /> */}
                 <GridComponent />
             </Layout>
@@ -107,4 +152,4 @@ export const App = () => {
 };
 
 export { userComponentContext };
-export type {weatherDataType, UserComponentContextType, ComponentState}
+export type { weatherDataType, UserComponentContextType, ComponentState };
