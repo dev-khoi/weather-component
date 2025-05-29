@@ -5,6 +5,7 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { GridComponent } from "./gridComponent";
 import { getWeather } from "./weatherAPI";
+import {SearchBar} from "./searchBar.tsx"
 // TYPE:
 // prop type
 interface prop {
@@ -99,7 +100,7 @@ const Layout = (prop: prop) => {
         }
     }, []);
 
-    // Updating the localStorage every time component changes
+    // Updating the localStorage every time component
     useEffect(() => {
         if (component && component.length > 0) {
             console.debug(component[0].dataGrid);
@@ -144,6 +145,8 @@ export const App = () => {
     return (
         <>
             <Layout>
+                <SearchBar />
+
                 {/* <AddGridComponentButton /> */}
                 <GridComponent />
             </Layout>

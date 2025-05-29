@@ -9,7 +9,6 @@ createRoot(document.getElementById("nav")!).render(<NavBar />);
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <main>
-            <SearchBar />
             <App />
         </main>
     </StrictMode>
