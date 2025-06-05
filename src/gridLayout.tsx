@@ -77,7 +77,6 @@ const userComponentContext = createContext<UserComponentContextType | null>(
 const Layout = (prop: prop) => {
     // state of component in layout
     const [component, setComponent] = useState<weatherDataType[]>([]);
-    const hasRun = useRef(false); // prevents dev-mode double run
 
     // Updating component in the initial load
     // This useEffect will render out the weatherAPI if there
@@ -116,30 +115,7 @@ const Layout = (prop: prop) => {
     );
 };
 
-// add component button (allows you to add new component)
-// const AddGridComponentButton = () => {
-//     const context = useContext(userComponentContext);
-//     if(!context) return (<p>loading...</p>)
 
-//     const { component, setComponent } = context;
-//     // Adding item to the array
-//     const onAddItem = () => {
-//         setComponent([
-//             ...(component??[]),
-//             {
-//                 id: 3,
-//                 componentName: "wea",
-//                 componentData: 3,
-//                 dataGrid:{}
-//             },
-//         ]);
-//     };
-//     return (
-//         <button className="size-30 bg-amber-500" onClick={onAddItem}>
-//             Add Item
-//         </button>
-//     );
-// };
 
 export const App = () => {
     return (
