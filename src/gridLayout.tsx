@@ -1,11 +1,11 @@
 import type { ReactNode, Dispatch, SetStateAction } from "react";
-import { useRef, useState, createContext, useEffect } from "react";
+import { useState, createContext, useEffect } from "react";
 import { type Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { GridComponent } from "./gridComponent";
-import { getWeather } from "./weatherAPI";
-import {SearchBar} from "./searchBar.tsx"
+import { getWeather, getLocation } from "./weatherAPI";
+import { SearchBar } from "./searchBar.tsx";
 // TYPE:
 // prop type
 interface prop {
@@ -32,8 +32,13 @@ type UserComponentContextType = {
     setComponent: Dispatch<SetStateAction<weatherDataType[]>>;
 };
 
+export type latLongType = {
+    lat: Number;
+    long: Number;
+};
 // formatting the api
 const formatWeatherData = (weatherData: any) => {
+    console.log(weatherData)
     const arrayWeather = Object.entries(weatherData);
     let formattedWeather: weatherDataType[] = [];
 
@@ -54,21 +59,6 @@ const formatWeatherData = (weatherData: any) => {
     });
     return formattedWeather;
 };
-
-// ignore-prettier
-// mock data of the weather app
-// const mockData: weatherDataType[] = [
-//    { id: 1, componentName: "tempera", componentData: 30, dataGrid: {w: 2, h: 3, x: 0, y: 0 } },
-//   { id: 2, componentName: "humidity", componentData: 65, dataGrid: { w: 2, h: 3, x: 2, y: 0 } },
-//   { id: 3, componentName: "windSpeed", componentData: 15, dataGrid: { w: 2, h: 3, x: 4, y: 0 } },
-//   { id: 4, componentName: "precipitation", componentData: 20, dataGrid: { w: 2, h: 3, x: 6, y: 0 } },
-//   { id: 5, componentName: "uvIndex", componentData: 7, dataGrid: { w: 2, h: 3, x: 8, y: 0 } },
-//   { id: 6, componentName: "visibility", componentData: 10, dataGrid: { w: 2, h: 3, x: 0, y: 3 } },
-//   { id: 7, componentName: "cloudCover", componentData: 40, dataGrid: { w: 2, h: 3, x: 2, y: 3 } },
-//   { id: 8, componentName: "pressure", componentData: 1015, dataGrid: { w: 2, h: 3, x: 4, y: 3 } },
-//   { id: 9, componentName: "sunrise", componentData: 545, dataGrid: { w: 2, h: 3, x: 6, y: 3 } },
-//   { id: 10, componentName: "sunset", componentData: 1930, dataGrid: { w: 2, h: 3, x: 8, y: 3 } },
-// ];
 
 // create context of what components
 const userComponentContext = createContext<UserComponentContextType | null>(
@@ -92,10 +82,12 @@ const Layout = (prop: prop) => {
                 console.error(e);
             }
         } else {
-            getWeather().then((data) => {
-                const formattedData = formatWeatherData(data.current);
-                setComponent(formattedData);
-            });
+            getLocation().then((location: latLongType) =>
+                getWeather(location).then((data) => {
+                    const formattedData = formatWeatherData(data);
+                    setComponent(formattedData);
+                })
+            );
         }
     }, []);
 
@@ -115,13 +107,11 @@ const Layout = (prop: prop) => {
     );
 };
 
-
-
 export const App = () => {
     return (
         <>
             <Layout>
-                <SearchBar />
+                {/* <SearchBar /> */}
 
                 {/* <AddGridComponentButton /> */}
                 <GridComponent />

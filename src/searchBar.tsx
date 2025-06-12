@@ -7,10 +7,10 @@ import {
     type FunctionComponent,
 } from "react";
 import { userComponentContext, type weatherDataType } from "./gridLayout.tsx";
+import { type ComponentState, type  latLongType } from "./gridLayout";
 
-import { type ComponentState } from "./gridLayout";
-
-import { getWeather } from "./weatherAPI.tsx";
+import { getWeather, getLocation } from "./weatherAPI.tsx";
+import type { GridComponent } from "./gridComponent.tsx";
 
 const formatWeatherData = (weatherData: any) => {
     const arrayWeather = Object.entries(weatherData);
@@ -46,14 +46,16 @@ const SearchBar = () => {
     const [componentList, setComponentList] = useState<weatherDataType[]>([]);
 
     const assignComponentList = async () => {
-        getWeather().then((data) => {
-            const formattedData = formatWeatherData(data.current).filter(
-                (comp) =>
-                    !component.some(
-                        (originalComp) => comp.id === originalComp.id
-                    )
-            );
-            setComponentList(formattedData);
+        getLocation().then((location: latLongType) => {
+            getWeather(location).then((data) => {
+                const formattedData = formatWeatherData(data.current).filter(
+                    (comp) =>
+                        !component.some(
+                            (originalComp) => comp.id === originalComp.id
+                        )
+                );
+                setComponentList(formattedData);
+            });
         });
         // List of weather components contains real data
     };
@@ -66,7 +68,7 @@ const SearchBar = () => {
         const value = e.trim();
 
         const re = new RegExp(e, "ig");
-        if (value === "" || value === null) {
+        if (value === "" || value === null || value === undefined) {
             assignComponentList();
         } else {
             setComponentList(
@@ -89,13 +91,13 @@ const SearchBar = () => {
         const componentAdding: weatherDataType | undefined = componentList.find(
             (comp) => comp.id === id
         );
-    
+
         if (componentAdding) {
-            setComponent([ ...component, componentAdding ]);
-        }else{
-            setComponent(component)
-            console.debug("component not found")
-        }   
+            setComponent([...component, componentAdding]);
+        } else {
+            setComponent(component);
+            console.debug("component not found");
+        }
 
         assignComponentList();
     };
