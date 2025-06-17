@@ -1,5 +1,9 @@
 import { useContext, useRef, useState, useCallback, useEffect } from "react";
-import { userComponentContext, weatherComponentContext, type weatherDataType } from "./gridLayout.tsx";
+import {
+    userComponentContext,
+    weatherComponentContext,
+    type weatherDataType,
+} from "./gridLayout.tsx";
 import { type latLongType } from "./gridLayout";
 
 import { getWeather, getLocation } from "./weatherAPI.tsx";
@@ -47,19 +51,20 @@ const SearchBar = () => {
     // dialog visibility
     const [visible, setVisible] = useState<Boolean>(false);
     const dialogRef = useRef<HTMLDialogElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null)
 
     const assignComponentList = async () => {
         // filtering which hasn't been added to userComponent
         // assigning them into the component list
-                const formattedData = weatherComponent.filter(
-                    (comp) =>
-                        !userComponent.some(
-                            (originalComp) => comp.id === originalComp.id
-                        )
-                );
-                setComponentList(formattedData)
-        };  
-        // List of weather components contains real data
+        const formattedData = weatherComponent.filter(
+            (comp) =>
+                !userComponent.some(
+                    (originalComp) => comp.id === originalComp.id
+                )
+        );
+        setComponentList(formattedData);
+    };
+    // List of weather components contains real data
 
     useEffect(() => {
         assignComponentList();
@@ -69,12 +74,14 @@ const SearchBar = () => {
     useEffect(() => {
         if (visible) {
             dialogRef.current?.showModal();
+            inputRef.current?.focus();
         } else {
             dialogRef.current?.close();
             assignComponentList();
         }
     }, [visible]);
 
+    // *
     // Turning dialog on or off
     const toggleDialog = () => {
         setVisible(!visible);
@@ -162,6 +169,7 @@ const SearchBar = () => {
             {/* dialog to add component */}
             {visible && (
                 <dialog
+                title="Search dialog"
                     ref={dialogRef}
                     onClose={toggleDialog}
                     className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
@@ -185,6 +193,7 @@ const SearchBar = () => {
                         </IconContext>
                     </button>
                     <input
+                        ref={inputRef}
                         placeholder="Find a component"
                         type="text"
                         defaultValue=""

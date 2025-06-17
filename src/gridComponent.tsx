@@ -29,6 +29,7 @@ const GridComponent: FunctionComponent = () => {
     const [toolbox, setToolbox] = useState<{ [index: string]: any[] }>({
         lg: [],
     });
+    const [hasLoadedLayout, setHasLoadedLayout] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -41,8 +42,37 @@ const GridComponent: FunctionComponent = () => {
     const { userComponent: component, setUserComponent: setComponent } =
         context;
 
-    // map it into layout
-    const layouts: Layouts = {
+    // * LAYOUTS
+    const [layouts, setLayouts] = useState<Layouts>();
+
+    // loading layouts before
+    useEffect(() => {
+        const saved = loadLayouts();
+
+        if (saved) {
+            setLayouts(saved);
+            setHasLoadedLayout(true);
+        }
+    }, []);
+
+    // if component is changed, the layout changes with the component
+    useEffect(() => {
+        if (hasLoadedLayout) {
+            setLayouts(toLayouts(component));
+        }
+    }, [component]);
+
+    // before user leave the page, the layout is saved into local storage
+    useEffect(() => {
+        window.addEventListener("beforeunload", () => saveLayouts(layouts));
+        return () =>
+            window.removeEventListener("beforeunload", () =>
+                saveLayouts(layouts)
+            );
+    }, [layouts]);
+
+    // default layout
+    const defaultLayouts = {
         lg: component.map((item) => ({
             ...item.dataGrid,
             i: item.id.toString(),
@@ -53,7 +83,74 @@ const GridComponent: FunctionComponent = () => {
             static: false,
         })),
     };
+    ``;
 
+    const onLayoutChange = (layout: Layout[], layouts: Layouts) => {
+        // Setting the
+        // Update ALL component dataGrids to match the layout
+        const updatedComponents = component.map((comp) => {
+            const layoutItem = layout.find(
+                (item) => item.i === comp.id.toString()
+            );
+            if (!layoutItem) return comp;
+
+            return {
+                ...comp,
+                dataGrid: {
+                    ...comp.dataGrid,
+                    x: layoutItem.x,
+                    y: layoutItem.y,
+                    w: layoutItem.w,
+                    h: layoutItem.h,
+                },
+            };
+        });
+        setComponent(updatedComponents);
+
+        // console.log(component[0].dataGrid)
+    };
+
+    // convert component into layout type
+    function toLayouts(components: weatherDataType[]): Layouts {
+        const baseLayout = components.map((item) => ({
+            ...item.dataGrid,
+            i: item.id.toString(),
+            minW: 2,
+            maxW: 5,
+            minH: 3,
+            maxH: 6,
+            static: false,
+        }));
+
+        return {
+            lg: baseLayout,
+            md: baseLayout,
+            sm: baseLayout,
+            xs: baseLayout,
+            xxs: baseLayout,
+        };
+    }
+
+    // load layouts from storage
+    const loadLayouts = () => {
+        try {
+            const savedLayouts = localStorage.getItem("layouts");
+            return savedLayouts ? JSON.parse(savedLayouts) : defaultLayouts;
+        } catch (err) {
+            console.error("Failed to load layouts from localStorage", err);
+            return defaultLayouts;
+        }
+    };
+    // save layouts to locale storage
+    const saveLayouts = (layouts: Layouts | undefined) => {
+        try {
+            localStorage.setItem("layouts", JSON.stringify(layouts));
+        } catch (err) {
+            console.error("Failed to save layouts to localStorage", err);
+        }
+    };
+
+    // *
     // removing button
     const removeComponent = (id: number) => {
         const updatedComponents = component.filter((comp) => id !== comp.id);
@@ -73,11 +170,7 @@ const GridComponent: FunctionComponent = () => {
                 return <div></div>;
             }
             return compDataArr.map(([key, value], index) => {
-                return (
-                    <div>
-                        <div key={index}>{key}</div>
-                    </div>
-                );
+                return <div key={index}>{key}</div>;
             });
         }
     };
@@ -146,33 +239,6 @@ const GridComponent: FunctionComponent = () => {
         setCompactType(compactType);
     };
 
-    const onLayoutChange = (layout: Layout[], layouts: Layouts) => {
-        console.log(layouts);
-        // Setting the
-        // Update ALL component dataGrids to match the layout
-        const updatedComponents = component.map((comp) => {
-            const layoutItem = layout.find(
-                (item) => item.i === comp.id.toString()
-            );
-            if (!layoutItem) return comp;
-
-            return {
-                ...comp,
-                dataGrid: {
-                    ...comp.dataGrid,
-                    x: layoutItem.x,
-                    y: layoutItem.y,
-                    w: layoutItem.w,
-                    h: layoutItem.h,
-                },
-            };
-        });
-
-        setComponent(updatedComponents);
-
-        // console.log(component[0].dataGrid)
-    };
-
     const onDrop = (layout: Layout[], layoutItem: Layout, _ev: Event) => {
         alert(
             `Element parameters:\n${JSON.stringify(
@@ -213,7 +279,6 @@ const GridComponent: FunctionComponent = () => {
         // console.debug(component[index].dataGrid.w, grid.w);
     };
 
-    
     return (
         <>
             <div className="grid-layout">

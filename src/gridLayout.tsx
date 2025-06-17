@@ -1,5 +1,5 @@
 import type { ReactNode, Dispatch, SetStateAction, JSX } from "react";
-import { useState, createContext, useEffect } from "react";
+import { useState, createContext, useEffect, useRef } from "react";
 import { type Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -21,6 +21,8 @@ type ComponentState = {
     h: number;
     minW?: number;
     minH?: number;
+    maxW?: number;
+    maxH?: number;
     static?: boolean;
 };
 // Mock data type
@@ -52,6 +54,7 @@ const formatWeatherData = (weatherData: any) => {
     const y = Math.ceil(Math.random() * 4) + 1;
 
     arrayWeather.forEach((key: any, index: any) => {
+        
         formattedWeather.push({
             id: index,
             componentName: key[0],
@@ -60,9 +63,11 @@ const formatWeatherData = (weatherData: any) => {
                 x: (index * 2) % 12,
                 y: Math.floor(index / 6) * y,
                 w: 2,
-                h: y,
+                h: 3,
                 minW: 2,
                 minH: 3,
+                maxW: 5,
+                maxH: 6,
             },
         });
     });
@@ -75,13 +80,14 @@ const userComponentContext = createContext<UserComponentContextType | null>(
 );
 const weatherComponentContext =
     createContext<WeatherComponentContextType | null>(null);
+
 const Layout = (prop: prop) => {
     // state of component in layout
     const [userComponent, setUserComponent] = useState<weatherDataType[]>([]);
     const [weatherComponent, setWeatherComponent] = useState<weatherDataType[]>(
         []
     );
-    const [loc, setLocation] = useState<string>("");
+    const loc = useRef<string>("");
     useEffect(() => {
         const stored = localStorage.getItem("weatherComponentData");
 
@@ -89,6 +95,7 @@ const Layout = (prop: prop) => {
             try {
                 const parsedComponentData = JSON.parse(stored);
                 setWeatherComponent(parsedComponentData);
+                loc.current = parsedComponentData[1];
             } catch (e) {
                 console.error(e);
             }
@@ -97,6 +104,7 @@ const Layout = (prop: prop) => {
                 getWeather(location).then((data) => {
                     const formattedData = formatWeatherData(data);
                     setWeatherComponent(formattedData);
+                    loc.current = formattedData[1];
                 })
             );
         }
@@ -130,7 +138,7 @@ const Layout = (prop: prop) => {
                 getWeather(location).then((data) => {
                     const [formattedData, cityName] = formatWeatherData(data);
                     setUserComponent(formattedData);
-                    setLocation(cityName);
+                    loc.current = cityName;
                 })
             );
         }
@@ -160,7 +168,7 @@ const Layout = (prop: prop) => {
                 }}
             >
                 <IconContext.Provider value={{ size: "2rem" }}>
-                    <FunctionBar city={loc} />
+                    <FunctionBar city={loc.current} />
 
                     {prop.children}
                 </IconContext.Provider>
