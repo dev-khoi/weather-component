@@ -1,16 +1,10 @@
-import {
-    useContext,
-    useRef,
-    useState,
-    useMemo,
-    useEffect,
-    type FunctionComponent,
-} from "react";
-import { userComponentContext, type weatherDataType } from "./gridLayout.tsx";
-import { type ComponentState, type  latLongType } from "./gridLayout";
+import { useContext, useRef, useState, useCallback, useEffect } from "react";
+import { userComponentContext, weatherComponentContext, type weatherDataType } from "./gridLayout.tsx";
+import { type latLongType } from "./gridLayout";
 
 import { getWeather, getLocation } from "./weatherAPI.tsx";
-import type { GridComponent } from "./gridComponent.tsx";
+import { CiCircleRemove } from "react-icons/ci";
+import { IconContext } from "react-icons";
 
 const formatWeatherData = (weatherData: any) => {
     const arrayWeather = Object.entries(weatherData);
@@ -35,35 +29,81 @@ const formatWeatherData = (weatherData: any) => {
 };
 
 const SearchBar = () => {
-    const context = useContext(userComponentContext);
-    if (!context) return <p>loading...</p>;
+    // getting user components
+    const userContext = useContext(userComponentContext);
+    if (!userContext) return <p>loading...</p>;
 
-    const { component, setComponent } = context;
+    const { userComponent, setUserComponent } = userContext;
 
-    // Genereate the name of component
+    // getting the api components
+    const weatherContext = useContext(weatherComponentContext);
+    if (!weatherContext) return <p>loading...</p>;
+
+    const { weatherComponent, setWeatherComponent } = weatherContext;
 
     // list of components that haven't been added
     const [componentList, setComponentList] = useState<weatherDataType[]>([]);
 
+    // dialog visibility
+    const [visible, setVisible] = useState<Boolean>(false);
+    const dialogRef = useRef<HTMLDialogElement>(null);
+
     const assignComponentList = async () => {
-        getLocation().then((location: latLongType) => {
-            getWeather(location).then((data) => {
-                const formattedData = formatWeatherData(data.current).filter(
+        // filtering which hasn't been added to userComponent
+        // assigning them into the component list
+                const formattedData = weatherComponent.filter(
                     (comp) =>
-                        !component.some(
+                        !userComponent.some(
                             (originalComp) => comp.id === originalComp.id
                         )
                 );
-                setComponentList(formattedData);
-            });
-        });
+                setComponentList(formattedData)
+        };  
         // List of weather components contains real data
-    };
 
     useEffect(() => {
         assignComponentList();
-    }, [component]);
+    }, []);
 
+    // dialog toggle
+    useEffect(() => {
+        if (visible) {
+            dialogRef.current?.showModal();
+        } else {
+            dialogRef.current?.close();
+            assignComponentList();
+        }
+    }, [visible]);
+
+    // Turning dialog on or off
+    const toggleDialog = () => {
+        setVisible(!visible);
+    };
+    // shortcut to open dialog
+    const handleKeyPress = useCallback(
+        (event: KeyboardEvent) => {
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "k"
+            ) {
+                event.preventDefault(); // prevent default browser behavior like focus search bar
+                toggleDialog();
+            }
+        },
+        [toggleDialog]
+    );
+
+    useEffect(() => {
+        // attach the event listener
+        document.addEventListener("keydown", handleKeyPress);
+
+        // remove the event listener
+        return () => {
+            document.removeEventListener("keydown", handleKeyPress);
+        };
+    }, [handleKeyPress]);
+
+    // searching and adding componenent
     const searching = (e: string) => {
         const value = e.trim();
 
@@ -93,33 +133,81 @@ const SearchBar = () => {
         );
 
         if (componentAdding) {
-            setComponent([...component, componentAdding]);
+            setComponentList([...componentList, componentAdding]);
         } else {
-            setComponent(component);
+            setComponentList(componentList);
             console.debug("component not found");
         }
 
         assignComponentList();
     };
+
     return (
         <>
-            <input
-                placeholder="enter a word"
-                type="text"
-                defaultValue={""}
-                onChange={(e) => searching(e.target.value)}
-            ></input>
-            <ul>
-                {componentList.map((comp) => {
-                    return (
-                        <li key={comp.id}>
-                            <button onClick={() => addComponent(comp.id)}>
-                                {comp.componentName}
-                            </button>
-                        </li>
-                    );
-                })}
-            </ul>
+            <button
+                className="inline-flex items-center align-middle gap-2 border-2 rounded-lg py-1 px-3"
+                onClick={toggleDialog}
+            >
+                Add component
+                <div className="hidden gap-1 sm:flex">
+                    <kbd className="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">
+                        Ctrl
+                    </kbd>
+                    <kbd className="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3 aspect-square">
+                        K
+                    </kbd>
+                </div>
+            </button>
+
+            {/* dialog to add component */}
+            {visible && (
+                <dialog
+                    ref={dialogRef}
+                    onClose={toggleDialog}
+                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+               w-96 max-h-[80vh] overflow-y-auto p-6 
+               rounded-xl shadow-xl border border-gray-300 
+               bg-white dark:bg-gray-800 dark:text-white z-50
+               backdrop:backdrop-blur-[2px]
+"
+                >
+                    <h2 className="text-xl font-semibold mb-4">
+                        Add Component
+                    </h2>
+                    <button
+                        onClick={toggleDialog}
+                        className="absolute right-2 top-2 "
+                    >
+                        <IconContext
+                            value={{ className: "text-red-400", size: "33px" }}
+                        >
+                            <CiCircleRemove />
+                        </IconContext>
+                    </button>
+                    <input
+                        placeholder="Find a component"
+                        type="text"
+                        defaultValue=""
+                        onChange={(e) => searching(e.target.value)}
+                        className="w-full px-3 py-2 mb-4 border rounded-md 
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 
+                   dark:bg-gray-700"
+                    />
+                    <ul className="space-y-2">
+                        {componentList.map((comp) => (
+                            <li key={comp.id}>
+                                <button
+                                    onClick={() => addComponent(comp.id)}
+                                    className="w-full text-left px-3 py-2 bg-gray-100 rounded-md 
+                               hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                                >
+                                    {comp.componentName}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </dialog>
+            )}
         </>
     );
 };

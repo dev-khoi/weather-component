@@ -1,11 +1,13 @@
-import type { ReactNode, Dispatch, SetStateAction } from "react";
+import type { ReactNode, Dispatch, SetStateAction, JSX } from "react";
 import { useState, createContext, useEffect } from "react";
 import { type Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { GridComponent } from "./gridComponent";
 import { getWeather, getLocation } from "./weatherAPI";
-import { SearchBar } from "./searchBar.tsx";
+import { IconContext } from "react-icons";
+import { FunctionBar } from "./functionBar.tsx";
+
 // TYPE:
 // prop type
 interface prop {
@@ -17,29 +19,34 @@ type ComponentState = {
     y: number;
     w: number;
     h: number;
+    minW?: number;
+    minH?: number;
     static?: boolean;
 };
 // Mock data type
 type weatherDataType = {
     id: number;
     componentName: string;
-    componentData: number | string;
+    componentData: number | string | Record<string, any>;
     dataGrid: ComponentState;
 };
 
 type UserComponentContextType = {
-    component: weatherDataType[];
-    setComponent: Dispatch<SetStateAction<weatherDataType[]>>;
+    userComponent: weatherDataType[];
+    setUserComponent: Dispatch<SetStateAction<weatherDataType[]>>;
 };
 
+type WeatherComponentContextType = {
+    weatherComponent: weatherDataType[];
+    setWeatherComponent: Dispatch<SetStateAction<weatherDataType[]>>;
+};
 export type latLongType = {
     lat: Number;
     long: Number;
 };
 // formatting the api
 const formatWeatherData = (weatherData: any) => {
-    console.log(weatherData)
-    const arrayWeather = Object.entries(weatherData);
+    const arrayWeather = Object.entries({ ...weatherData.main });
     let formattedWeather: weatherDataType[] = [];
 
     const y = Math.ceil(Math.random() * 4) + 1;
@@ -54,30 +61,34 @@ const formatWeatherData = (weatherData: any) => {
                 y: Math.floor(index / 6) * y,
                 w: 2,
                 h: y,
+                minW: 2,
+                minH: 3,
             },
         });
     });
-    return formattedWeather;
+    return [formattedWeather, weatherData.name];
 };
 
 // create context of what components
 const userComponentContext = createContext<UserComponentContextType | null>(
     null
 );
+const weatherComponentContext =
+    createContext<WeatherComponentContextType | null>(null);
 const Layout = (prop: prop) => {
     // state of component in layout
-    const [component, setComponent] = useState<weatherDataType[]>([]);
-
-    // Updating component in the initial load
-    // This useEffect will render out the weatherAPI if there
-    // isn't anything stored in localStorage
+    const [userComponent, setUserComponent] = useState<weatherDataType[]>([]);
+    const [weatherComponent, setWeatherComponent] = useState<weatherDataType[]>(
+        []
+    );
+    const [loc, setLocation] = useState<string>("");
     useEffect(() => {
-        const stored = localStorage.getItem("componentData");
+        const stored = localStorage.getItem("weatherComponentData");
 
         if (stored && JSON.parse(stored).length > 0) {
             try {
                 const parsedComponentData = JSON.parse(stored);
-                setComponent(parsedComponentData);
+                setWeatherComponent(parsedComponentData);
             } catch (e) {
                 console.error(e);
             }
@@ -85,7 +96,41 @@ const Layout = (prop: prop) => {
             getLocation().then((location: latLongType) =>
                 getWeather(location).then((data) => {
                     const formattedData = formatWeatherData(data);
-                    setComponent(formattedData);
+                    setWeatherComponent(formattedData);
+                })
+            );
+        }
+    }, []);
+    // Updating the localStorage every time component
+    useEffect(() => {
+        if (weatherComponent && weatherComponent.length > 0) {
+            localStorage.setItem(
+                "weatherComponentData",
+                JSON.stringify(weatherComponent)
+            );
+        }
+        console.log("weather component", weatherComponent);
+    }, [weatherComponent]);
+
+    // Updating component in the initial load
+    // This useEffect will render out the weatherAPI if there
+    // isn't anything stored in localStorage
+    useEffect(() => {
+        const stored = localStorage.getItem("userComponentData");
+
+        if (stored && JSON.parse(stored).length > 0) {
+            try {
+                const parsedComponentData = JSON.parse(stored);
+                setUserComponent(parsedComponentData);
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            getLocation().then((location: latLongType) =>
+                getWeather(location).then((data) => {
+                    const [formattedData, cityName] = formatWeatherData(data);
+                    setUserComponent(formattedData);
+                    setLocation(cityName);
                 })
             );
         }
@@ -93,17 +138,34 @@ const Layout = (prop: prop) => {
 
     // Updating the localStorage every time component
     useEffect(() => {
-        if (component && component.length > 0) {
-            console.debug(component[0].dataGrid);
-
-            localStorage.setItem("componentData", JSON.stringify(component));
+        if (userComponent && userComponent.length > 0) {
+            localStorage.setItem(
+                "userComponentData",
+                JSON.stringify(userComponent)
+            );
         }
-    }, [component]);
+    }, [userComponent]);
 
     return (
-        <userComponentContext.Provider value={{ component, setComponent }}>
-            {prop.children}
-        </userComponentContext.Provider>
+        <weatherComponentContext.Provider
+            value={{
+                weatherComponent: weatherComponent,
+                setWeatherComponent: setWeatherComponent,
+            }}
+        >
+            <userComponentContext.Provider
+                value={{
+                    userComponent: userComponent,
+                    setUserComponent: setUserComponent,
+                }}
+            >
+                <IconContext.Provider value={{ size: "2rem" }}>
+                    <FunctionBar city={loc} />
+
+                    {prop.children}
+                </IconContext.Provider>
+            </userComponentContext.Provider>
+        </weatherComponentContext.Provider>
     );
 };
 
@@ -111,14 +173,16 @@ export const App = () => {
     return (
         <>
             <Layout>
-                {/* <SearchBar /> */}
-
                 {/* <AddGridComponentButton /> */}
                 <GridComponent />
             </Layout>
         </>
     );
 };
-
-export { userComponentContext };
-export type { weatherDataType, UserComponentContextType, ComponentState };
+export { userComponentContext, weatherComponentContext };
+export type {
+    weatherDataType,
+    UserComponentContextType,
+    WeatherComponentContextType,
+    ComponentState,
+};

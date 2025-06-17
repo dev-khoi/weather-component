@@ -8,6 +8,10 @@ import {
 } from "react-grid-layout";
 
 import { type ComponentState } from "./gridLayout";
+import { weatherIcon } from "./weatherAPI.tsx";
+import { Disclosure } from "@headlessui/react";
+
+import { SearchBar } from "./searchBar.tsx";
 // props interface
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -34,16 +38,17 @@ const GridComponent: FunctionComponent = () => {
     const context = useContext(userComponentContext);
     if (!context) return <p>loading...</p>;
 
-    const { component, setComponent } = context;
+    const { userComponent: component, setUserComponent: setComponent } =
+        context;
 
     // map it into layout
-    const layouts : Layouts = {
+    const layouts: Layouts = {
         lg: component.map((item) => ({
             ...item.dataGrid,
             i: item.id.toString(),
-            minW: 1,
+            minW: 2,
             maxW: 5,
-            minH: 1,
+            minH: 3,
             maxH: 6,
             static: false,
         })),
@@ -53,6 +58,28 @@ const GridComponent: FunctionComponent = () => {
     const removeComponent = (id: number) => {
         const updatedComponents = component.filter((comp) => id !== comp.id);
         setComponent(updatedComponents);
+    };
+
+    // generate data
+    const GenerateData = (props: { comp: weatherDataType }) => {
+        const data = props.comp.componentData;
+        if (typeof data === "string" || typeof data === "number") {
+            return <>{data}</>;
+        }
+        if (typeof data === "object" && data !== null && !Array.isArray(data)) {
+            const compDataArr = Object.entries(data);
+
+            if (!compDataArr || !compDataArr.length) {
+                return <div></div>;
+            }
+            return compDataArr.map(([key, value], index) => {
+                return (
+                    <div>
+                        <div key={index}>{key}</div>
+                    </div>
+                );
+            });
+        }
     };
 
     // Generating the components:
@@ -65,6 +92,7 @@ const GridComponent: FunctionComponent = () => {
                     key={comp.id}
                     // data-grid={comp.dataGrid}
                 >
+                    {/* remove button */}
                     <button
                         onClick={() => {
                             removeComponent(comp.id);
@@ -72,15 +100,25 @@ const GridComponent: FunctionComponent = () => {
                         className="p-0 w-20 h-5 absolute top-0 right-2 hover:bg-amber-100 z-6 cancelSelector"
                         role="remove component"
                         aria-label={description}
-                    >
-                        remove
-                    </button>
-                    <div>{comp.componentName ?? "[no name]"}</div>
-                    <div>
-                        {typeof comp.componentData === "string" ||
-                        typeof comp.componentData === "number"
-                            ? comp.componentData
-                            : ""}
+                    ></button>
+
+                    {/* ICON / DATA / name */}
+                    <div className="flex flex-col items-center justify-center text-white h-full">
+                        <div className="flex items-start justify-center mb-2 ml-1">
+                            <div className="text-5xl mr-3">
+                                {weatherIcon[comp.componentName]}
+                            </div>
+                            <div className="text-sm tracking-wide">
+                                {comp.componentName ?? "[no name]"}
+                            </div>
+                        </div>
+
+                        {/* Data */}
+                        <div>
+                            <div className="text-4xl font-semibold text-amber-200">
+                                <GenerateData comp={comp} />
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
@@ -174,9 +212,11 @@ const GridComponent: FunctionComponent = () => {
         setComponent(newComp);
         // console.debug(component[index].dataGrid.w, grid.w);
     };
+
+    
     return (
         <>
-            <div className="mb-4">
+            <div className="grid-layout">
                 <ResponsiveReactGridLayout
                     rowHeight={30}
                     cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
@@ -189,7 +229,7 @@ const GridComponent: FunctionComponent = () => {
                     }}
                     containerPadding={[0, 0]}
                     //--
-                    style={{ background: "#f0f0f0" }}
+
                     layouts={layouts}
                     measureBeforeMount={false}
                     useCSSTransforms={mounted}

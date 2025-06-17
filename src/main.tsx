@@ -5,7 +5,7 @@ import { NavBar } from "./navbar.tsx";
 import { SearchBar } from "./searchBar.tsx";
 // navBar function
 // navBar();
-createRoot(document.getElementById("nav")!).render(<NavBar />);
+// createRoot(document.getElementById("nav")!).render(<NavBar />);
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <main>

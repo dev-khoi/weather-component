@@ -1,27 +1,32 @@
-import { useEffect, useState } from "react";
+import {
+  WiThermometer,
+  WiHumidity,
+  WiBarometer,
+  WiStrongWind,
+} from "react-icons/wi";
+import {
+  FaTemperatureHigh,
+  FaTemperatureLow
+} from "react-icons/fa";
+import { TbTemperature } from "react-icons/tb";
 
+import {type JSX} from "react"
 const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 const baseUrl = import.meta.env.VITE_WEATHER_HOST;
 
-// fetch('https://ip-api.com/json/')
-//       .then(response => response.json())
-//       .then(data => {
-//         const output = `
-//           IP Address: ${data.query}
-//           City: ${data.city}
-//           Region: ${data.regionName}
-//           Country: ${data.country}
-//           Latitude: ${data.lat}
-//           Longitude: ${data.lon}
-//           Timezone: ${data.timezone}
-//         `;
-//         document.getElementById('output').textContent = output;
-//       })
-//       .catch(error => {
-//         console.error('Error:', error);
-//         document.getElementById('output').textContent = 'Could not fetch location';
-//       });
+// icons
+const weatherIcon: Record<string, JSX.Element> = {
+  temp: <TbTemperature />,
+  feels_like: <WiThermometer />,
+  temp_min: <FaTemperatureLow />,
+  temp_max: <FaTemperatureHigh />,
+  pressure: <WiBarometer />,
+  humidity: <WiHumidity />,
+  sea_level: <WiStrongWind />,
+  grnd_level: <WiStrongWind />,
+};
 
+// Web api for getting the lat and long of the user
 const getLocation = async () => {
     return new Promise<{ lat: Number; long: Number }>((resolve, reject) => {
         // success getting data
@@ -43,11 +48,11 @@ const getLocation = async () => {
     });
 };
 
-const getWeather = async (location: {lat:Number; long:Number}) => {
-
+const getWeather = async (location: { lat: Number; long: Number }) => {
     const url = `${baseUrl}?${new URLSearchParams({
         lat: String(location.lat),
         lon: String(location.long),
+        units: "metric",
         appid: apiKey,
     })}`;
     try {
@@ -55,6 +60,7 @@ const getWeather = async (location: {lat:Number; long:Number}) => {
         if (response.ok) {
             const responseData = await response.json();
             // console.debug(responseData);
+
             console.debug(responseData);
 
             return responseData;
@@ -65,4 +71,5 @@ const getWeather = async (location: {lat:Number; long:Number}) => {
     }
 };
 
-export { getWeather, getLocation };
+
+export { getWeather, getLocation, weatherIcon };
