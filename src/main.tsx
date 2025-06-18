@@ -1,15 +1,26 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { App } from "./gridLayout.tsx";
-import { NavBar } from "./navbar.tsx";
-import { SearchBar } from "./searchBar.tsx";
-// navBar function
-// navBar();
-// createRoot(document.getElementById("nav")!).render(<NavBar />);
-createRoot(document.getElementById("root")!).render(
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
+
+// Create a new router instance
+const router = createRouter({ routeTree });
+
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+    interface Register {
+        router: typeof router;
+    }
+}
+
+// Render the app
+const rootElement = document.getElementById("root")!;
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
     <StrictMode>
-        <main>
-            <App />
-        </main>
-    </StrictMode>
+        <RouterProvider router={router} />
+    </StrictMode>,
 );
