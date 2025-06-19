@@ -4,33 +4,11 @@ import {
     weatherComponentContext,
     type weatherDataType,
 } from "./gridLayout.tsx";
-import { type latLongType } from "./gridLayout.tsx";
 
-import { getWeather, getLocation } from "./weatherAPI.tsx";
 import { CiCircleRemove } from "react-icons/ci";
 import { IconContext } from "react-icons";
 
-const formatWeatherData = (weatherData: any) => {
-    const arrayWeather = Object.entries(weatherData);
-    let formattedWeather: weatherDataType[] = [];
 
-    const y = Math.ceil(Math.random() * 4) + 1;
-
-    arrayWeather.forEach((key: any, index: any) => {
-        formattedWeather.push({
-            id: index,
-            componentName: key[0],
-            componentData: key[1],
-            dataGrid: {
-                x: (index * 2) % 12,
-                y: Math.floor(index / 6) * y,
-                w: 2,
-                h: y,
-            },
-        });
-    });
-    return formattedWeather;
-};
 
 const SearchBar = () => {
     // getting user components
@@ -43,7 +21,9 @@ const SearchBar = () => {
     const weatherContext = useContext(weatherComponentContext);
     if (!weatherContext) return <p>loading...</p>;
 
-    const { weatherComponent, setWeatherComponent } = weatherContext;
+    //     const { weatherComponent, setWeatherComponent } = weatherContext;
+
+    const { weatherComponent } = weatherContext;
     // list of components that haven't been added
     const [componentList, setComponentList] = useState<weatherDataType[]>([]);
 
