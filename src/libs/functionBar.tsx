@@ -2,7 +2,7 @@ import { Disclosure } from "@headlessui/react";
 import { SearchBar } from "./searchBar.tsx";
 
 // import all the needed things
-const FunctionBar = ({ city }: { city: string }) => {
+const FunctionBar = ({ city }: { city: string | undefined }) => {
     return (
         <>
             <Disclosure as="nav" className="bg-gray-800">
@@ -11,6 +11,7 @@ const FunctionBar = ({ city }: { city: string }) => {
                         <SearchBar />
             
                             <div className="text-white-300 text-xl font-bold opacity-90 ">
+                                {city ?? ""}
                             </div>
 
                         <div className="text-white-300 text-xl font-bold ">weatherComponent</div>

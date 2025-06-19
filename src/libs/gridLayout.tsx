@@ -1,5 +1,5 @@
-import type { ReactNode, Dispatch, SetStateAction, JSX } from "react";
-import { useState, createContext, useEffect, useRef } from "react";
+import type { ReactNode, Dispatch, SetStateAction } from "react";
+import { useState, createContext, useEffect } from "react";
 import { type Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -61,8 +61,13 @@ const Layout = (prop: prop) => {
     const [weatherComponent, setWeatherComponent] = useState<weatherDataType[]>(
         [],
     );
-    const loc = useRef<string>("");
+    const [loc, setLoc] = useState<string>(() => {
+        return localStorage.getItem("weather_location") || "";
+    });
 
+    useEffect(() => {
+        localStorage.setItem("weather_location", loc);
+    }, [loc]);
     const formatWeatherData = (weatherData: any) => {
         const arrayWeather = Object.entries({ ...weatherData.main });
         let formattedWeather: weatherDataType[] = [];
@@ -91,17 +96,17 @@ const Layout = (prop: prop) => {
                 },
             });
         });
-        loc.current = weatherData.name;
+        console.log(weatherData.name);
+        setLoc(weatherData.name);
+
         return [formattedWeather];
     };
     useEffect(() => {
         const stored = localStorage.getItem("weatherComponentData");
-
         if (stored && JSON.parse(stored).length > 0) {
             try {
                 const parsedComponentData = JSON.parse(stored);
                 setWeatherComponent(parsedComponentData);
-                loc.current = parsedComponentData[1];
             } catch (e) {
                 console.error(e);
             }
@@ -140,7 +145,7 @@ const Layout = (prop: prop) => {
         } else {
             getLocation().then((location: latLongType) =>
                 getWeather(location).then((data) => {
-                    const [formattedData, cityName] = formatWeatherData(data);
+                    const [formattedData] = formatWeatherData(data);
                     setUserComponent(formattedData);
                 }),
             );
@@ -171,7 +176,7 @@ const Layout = (prop: prop) => {
                 }}
             >
                 <IconContext.Provider value={{ size: "2rem" }}>
-                    <FunctionBar city={loc.current} />
+                    <FunctionBar city={loc} />
 
                     {prop.children}
                 </IconContext.Provider>

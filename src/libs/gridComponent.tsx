@@ -19,14 +19,13 @@ const GridComponent: FunctionComponent = () => {
     // Grid layout configuration
 
     const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
-    const [compactType, setCompactType] = useState<
+    const [compactType] = useState<
         "vertical" | "horizontal" | null | undefined
     >("vertical");
     const [mounted, setMounted] = useState(false);
     const [toolbox, setToolbox] = useState<{ [index: string]: any[] }>({
         lg: [],
     });
-    const [hasLoadedLayout, setHasLoadedLayout] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -65,7 +64,6 @@ const GridComponent: FunctionComponent = () => {
 
         if (saved) {
             setLayouts(saved);
-            setHasLoadedLayout(true);
         } else {
             return setLayouts(defaultLayouts);
         }
@@ -120,25 +118,25 @@ const GridComponent: FunctionComponent = () => {
     };
 
     // convert component into layout type
-    function toLayouts(components: weatherDataType[]): Layouts {
-        const baseLayout = components.map((item) => ({
-            ...item.dataGrid,
-            i: item.id.toString(),
-            minW: 2,
-            maxW: 5,
-            minH: 3,
-            maxH: 6,
-            static: false,
-        }));
+    // function toLayouts(components: weatherDataType[]): Layouts {
+    //     const baseLayout = components.map((item) => ({
+    //         ...item.dataGrid,
+    //         i: item.id.toString(),
+    //         minW: 2,
+    //         maxW: 5,
+    //         minH: 3,
+    //         maxH: 6,
+    //         static: false,
+    //     }));
 
-        return {
-            lg: baseLayout,
-            md: baseLayout,
-            sm: baseLayout,
-            xs: baseLayout,
-            xxs: baseLayout,
-        };
-    }
+    //     return {
+    //         lg: baseLayout,
+    //         md: baseLayout,
+    //         sm: baseLayout,
+    //         xs: baseLayout,
+    //         xxs: baseLayout,
+    //     };
+    // }
 
     // load layouts from storage
     const loadLayouts = () => {
@@ -178,7 +176,7 @@ const GridComponent: FunctionComponent = () => {
             if (!compDataArr || !compDataArr.length) {
                 return <div></div>;
             }
-            return compDataArr.map(([key, value], index) => {
+            return compDataArr.map(([key], index) => {
                 return <div key={index}>{key}</div>;
             });
         }
@@ -251,15 +249,15 @@ const GridComponent: FunctionComponent = () => {
         });
     };
 
-    const onDrop = (layout: Layout[], layoutItem: Layout, _ev: Event) => {
-        alert(
-            `Element parameters:\n${JSON.stringify(
-                layoutItem,
-                ["x", "y", "w", "h"],
-                2,
-            )}`,
-        );
-    };
+    // const onDrop = (layoutItem: Layout, _ev: Event) => {
+    //     alert(
+    //         `Element parameters:\n${JSON.stringify(
+    //             layoutItem,
+    //             ["x", "y", "w", "h"],
+    //             2,
+    //         )}`,
+    //     );
+    // };
 
     return (
         <>
@@ -285,11 +283,11 @@ const GridComponent: FunctionComponent = () => {
                     preventCollision={!compactType}
                     onLayoutChange={onLayoutChange}
                     onBreakpointChange={onBreakpointChange}
-                    onDrop={onDrop}
+                    // onDrop={onDrop}
                     isDroppable
                     draggableCancel=".cancelSelector"
                 >
-                    {generateDOM()}
+                    {generateDOM() ?? <div>loading</div>}
                 </ResponsiveReactGridLayout>
             </div>
         </>
