@@ -262,33 +262,41 @@ const GridComponent: FunctionComponent = () => {
     return (
         <>
             <div className="grid-layout">
-                <ResponsiveReactGridLayout
-                    key={currentBreakpoint}
-                    rowHeight={30}
-                    cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                    breakpoints={{
-                        lg: 1200,
-                        md: 996,
-                        sm: 768,
-                        xs: 480,
-                        xxs: 0,
-                    }}
-                    containerPadding={[0, 0]}
-                    //--
+                {component.length === 0 ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-700"></div>
+                    </div>
+                ) : (
+                    <div className="grid-layout">
+                        <ResponsiveReactGridLayout
+                            key={currentBreakpoint}
+                            rowHeight={30}
+                            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                            breakpoints={{
+                                lg: 1200,
+                                md: 996,
+                                sm: 768,
+                                xs: 480,
+                                xxs: 0,
+                            }}
+                            containerPadding={[0, 0]}
+                            //--
 
-                    layouts={layouts}
-                    measureBeforeMount={false}
-                    useCSSTransforms={mounted}
-                    compactType={compactType}
-                    preventCollision={!compactType}
-                    onLayoutChange={onLayoutChange}
-                    onBreakpointChange={onBreakpointChange}
-                    // onDrop={onDrop}
-                    isDroppable
-                    draggableCancel=".cancelSelector"
-                >
-                    {generateDOM() ?? <div>loading</div>}
-                </ResponsiveReactGridLayout>
+                            layouts={layouts}
+                            measureBeforeMount={false}
+                            useCSSTransforms={mounted}
+                            compactType={compactType}
+                            preventCollision={!compactType}
+                            onLayoutChange={onLayoutChange}
+                            onBreakpointChange={onBreakpointChange}
+                            // onDrop={onDrop}
+                            isDroppable
+                            draggableCancel=".cancelSelector"
+                        >
+                            {generateDOM() ?? <div>loading</div>}
+                        </ResponsiveReactGridLayout>
+                    </div>
+                )}
             </div>
         </>
     );
