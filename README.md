@@ -1,8 +1,8 @@
 # Weather Component
 
 **Say goodbye to generic forecasts — design your own weather view.**
-preview: [weather component](weathercomp.netlify.com)
 ---
+preview: [weather component]([weathercomp.netlify.com](https://weathercomp.netlify.app/))
 
 ## Overview
 
