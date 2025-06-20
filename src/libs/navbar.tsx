@@ -30,7 +30,7 @@ function classNames(...classes:string[]) {
             <div className="flex shrink-0 items-center">
              <img
                     alt="weather component website logo"
-                    src="./../../public/logo.svg"
+                    src="/logo.svg"
                     className="size-8 rounded-full"
                   />
             </div>
@@ -70,7 +70,7 @@ function classNames(...classes:string[]) {
                   <span className="sr-only">Open user menu</span>
                   <img
                     alt=""
-                    src="./../../public/user.svg"
+                    src="/user.svg"
                     className="size-8 rounded-full"
                   />
                 </MenuButton>

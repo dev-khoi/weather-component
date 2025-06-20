@@ -8,7 +8,7 @@ const Footer = () => {
                             <div className="flex-row items-center">
                                 <img
                                     alt="weather component website logo"
-                                    src="./../../public/largeLogo.svg"
+                                    src="/largeLogo.svg"
                                     className="size-40 rounded-full"
                                 />
                             </div>
