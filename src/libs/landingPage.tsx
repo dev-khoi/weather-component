@@ -60,7 +60,7 @@ export const LandingPage = () => {
                                     poster="./../../thumbnail.png"
                                 >
                                     <source
-                                        src="/demoVid.mp4"
+                                        src="/./public/demoVid.mp4"
                                         type="video/mp4"
                                     />
                                     Your browser does not support the video tag.
