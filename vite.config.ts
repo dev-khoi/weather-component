@@ -11,6 +11,4 @@ export default defineConfig({
             autoCodeSplitting: true,
         }),
         react(),
-    ],
-    base: "/",
-});
+    ]});
