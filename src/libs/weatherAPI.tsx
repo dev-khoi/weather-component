@@ -61,8 +61,6 @@ const getWeather = async (location: { lat: Number; long: Number }) => {
             const responseData = await response.json();
             // console.debug(responseData);
 
-            console.debug(responseData);
-
             return responseData;
         }
         console.error(response);

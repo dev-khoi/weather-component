@@ -35,6 +35,7 @@ const SearchBar = () => {
     const assignComponentList = async () => {
         // filtering which hasn't been added to userComponent
         // assigning them into the component list
+        console.log(weatherComponent)
         const formattedData = weatherComponent.filter(
             (comp) =>
                 !userComponent.some((originalComp) => {
@@ -48,7 +49,7 @@ const SearchBar = () => {
     // dialog toggle
     useEffect(() => {
         assignComponentList();
-
+        console.log(componentList)
         if (visible) {
             dialogRef.current?.showModal();
             inputRef.current?.focus();

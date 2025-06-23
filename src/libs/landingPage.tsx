@@ -6,12 +6,12 @@ export const LandingPage = () => {
             <NavBar />
 
             <main className="h-fit border-2">
-                <section className="pl-4">
+                <section className="pl-4" id="weather">
                     <div className="relative w-100vw flex justify-center">
                         <div className="lg:flex-col items-center">
                             <div>
-                                <h1>Weather Component</h1>
-                                <p className="text-amber-100 text-xl font-medium">
+                                <h1 >Weather Component</h1>
+                                <p className="text-amber-100 md:text-xl sm:text-xs font-medium">
                                     Say goodbye to generic forecasts — design
                                     your own weather view.
                                 </p>
@@ -42,7 +42,7 @@ export const LandingPage = () => {
                     </div>
 
                     {/* demovideo */}
-                    <section className="mt-16 px-4 pb-4 w-full">
+                    <section className="mt-16 px-4 pb-4 w-full" id="demo">
                         <div className="max-w-5xl mx-auto text-center">
                             <h2 className="text-4xl font-bold text-gray-800 mb-4">
                                 Live Demo

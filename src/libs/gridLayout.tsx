@@ -7,6 +7,7 @@ import { GridComponent } from "./gridComponent.tsx";
 import { getWeather, getLocation } from "./weatherAPI.tsx";
 import { IconContext } from "react-icons";
 import { FunctionBar } from "./functionBar.tsx";
+const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
 // TYPE:
 // prop type
@@ -55,20 +56,63 @@ const userComponentContext = createContext<UserComponentContextType | null>(
 const weatherComponentContext =
     createContext<WeatherComponentContextType | null>(null);
 
+// converting epoch time to time
+const timeConvert = (dt: number) => {
+    const time = new Date(0);
+
+    time.setUTCSeconds(dt);
+
+    return time;
+};
 const Layout = (prop: prop) => {
+    const storedVersion = localStorage.getItem("app_version");
+
+    // Reseting localStorage if it's not new version
+    useEffect(() => {
+        if (storedVersion != APP_VERSION.toString()) {
+            localStorage.clear();
+            localStorage.setItem("app_version", APP_VERSION);
+        }
+    }, []);
+
     // state of component in layout
     const [userComponent, setUserComponent] = useState<weatherDataType[]>([]);
     const [weatherComponent, setWeatherComponent] = useState<weatherDataType[]>(
         [],
     );
-    const [loc, setLoc] = useState<string>(() => {
-        return localStorage.getItem("weather_location") || "";
+
+    // location and time of the weather
+    const [headInfo, setHeadInfo] = useState<{
+        location: string;
+        time: string;
+    }>(() => {
+        const stored = localStorage.getItem("weather_info");
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                return {
+                    location: parsed.location ?? "loading",
+                    time: parsed.time
+                        ? new Date(parsed.time).toLocaleString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                          })
+                        : "loading",
+                };
+            } catch {
+                // fallback if JSON is invalid
+                return { location: "loading", time: "loading" };
+            }
+        }
+        return { location: "loading", time: "loading" };
     });
 
     useEffect(() => {
-        localStorage.setItem("weather_location", loc);
-    }, [loc]);
-    const formatWeatherData = (weatherData: any) => {
+        localStorage.setItem("weather_info", JSON.stringify(headInfo));
+    }, [headInfo]);
+
+    const formatNewWeatherData = (weatherData: any) => {
         const arrayWeather = Object.entries({ ...weatherData.main });
         let formattedWeather: weatherDataType[] = [];
 
@@ -97,29 +141,49 @@ const Layout = (prop: prop) => {
             });
         });
         console.log(weatherData.name);
-        setLoc(weatherData.name);
+        // setting head info
+
+        setHeadInfo({
+            location: weatherData.name,
+            time: timeConvert(weatherData.dt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+            }),
+        });
 
         return [formattedWeather];
     };
-    useEffect(() => {
-        const stored = localStorage.getItem("weatherComponentData");
-        if (stored && JSON.parse(stored).length > 0) {
-            try {
-                const parsedComponentData = JSON.parse(stored);
-                setWeatherComponent(parsedComponentData);
-            } catch (e) {
-                console.error(e);
-            }
-        } else {
-            getLocation().then((location: latLongType) =>
-                getWeather(location).then((data) => {
-                    const [formattedData] = formatWeatherData(data);
-                    setWeatherComponent(formattedData);
-                }),
-            );
-        }
-    }, []);
-    // Updating the localStorage every time component
+    const formatWeatherData = (weatherData: any) => {
+        const arrayWeather = Object.entries({ ...weatherData.main });
+        let formattedWeather: {
+            id: number;
+            componentName: string;
+            componentData: number | string | Record<string, any>;
+        }[] = [];
+
+        arrayWeather.forEach((key: any, index: any) => {
+            formattedWeather.push({
+                id: index,
+                componentName: key[0],
+                componentData: key[1],
+            });
+        });
+
+        // setting head info
+        setHeadInfo({
+            location: weatherData.name,
+            time: timeConvert(weatherData.dt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+            }),
+        });
+
+        return arrayWeather;
+    };
+
+    // setting weather component list
     useEffect(() => {
         if (weatherComponent && weatherComponent.length > 0) {
             localStorage.setItem(
@@ -129,23 +193,72 @@ const Layout = (prop: prop) => {
         }
     }, [weatherComponent]);
 
+    useEffect(() => {
+        const weatherComp = localStorage.getItem("weatherComponentData");
+        if (weatherComp && JSON.parse(weatherComp).length > 0) {
+            setWeatherComponent(JSON.parse(weatherComp));
+        } else {
+            getLocation().then((location: latLongType) =>
+                getWeather(location).then((data) => {
+                    const [formattedData] = formatNewWeatherData(data);
+                    setUserComponent(formattedData);
+                    setWeatherComponent(formattedData);
+                }),
+            );
+        }
+    }, []);
     // Updating component in the initial load
-    // This useEffect will render out the weatherAPI if there
-    // isn't anything stored in localStorage
+    // if there is data in localStorage, it will renew the data
+    // if there isn't, it will create default data
     useEffect(() => {
         const stored = localStorage.getItem("userComponentData");
 
+        const cacheTime = localStorage.getItem("weather_data_time");
+
+        const now = Date.now();
+        // time for page to pull new from api
+        const THRESHOLD = 60 * 60 * 1000; // 1 hour
+
         if (stored && JSON.parse(stored).length > 0) {
             try {
-                const parsedComponentData = JSON.parse(stored);
-                setUserComponent(parsedComponentData);
+                // if it is still in the time frame
+                // the data stays the same
+                if (cacheTime && now - Number(cacheTime) < THRESHOLD) {
+                    setUserComponent(JSON.parse(stored));
+                }
+                // if it has been 50 minutes
+                else {
+                    const parsedComponentData = JSON.parse(stored);
+                    getLocation().then((location: latLongType) =>
+                        getWeather(location).then((data) => {
+                            console.log("fresh");
+                            const weatherData = formatWeatherData(data);
+                            // updating user weather data
+                            // returning weather list
+                            const newData = parsedComponentData.map(
+                                (e: weatherDataType) => {
+                                    const weatherEntry = weatherData[e.id];
+                                    const componentData = weatherEntry
+                                        ? weatherEntry[1]
+                                        : undefined;
+
+                                    return {
+                                        ...e,
+                                        componentData,
+                                    };
+                                },
+                            );
+                            setUserComponent(newData);
+                        }),
+                    );
+                }
             } catch (e) {
                 console.error(e);
             }
         } else {
             getLocation().then((location: latLongType) =>
                 getWeather(location).then((data) => {
-                    const [formattedData] = formatWeatherData(data);
+                    const [formattedData] = formatNewWeatherData(data);
                     setUserComponent(formattedData);
                 }),
             );
@@ -176,7 +289,10 @@ const Layout = (prop: prop) => {
                 }}
             >
                 <IconContext.Provider value={{ size: "2rem" }}>
-                    <FunctionBar city={loc} />
+                    <FunctionBar
+                        location={headInfo.location}
+                        time={headInfo.time}
+                    />
 
                     {prop.children}
                 </IconContext.Provider>

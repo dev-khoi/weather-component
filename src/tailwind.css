@@ -86,7 +86,7 @@ a:hover {
 
 h1 {
     font-family: var(--font-sans);
-    font-size: 4.5em; /* 60px */
+    font-size: 3rem; /* 60px */
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: -0.02em;
