@@ -6,7 +6,7 @@ import "react-resizable/css/styles.css";
 import { GridComponent } from "./gridComponent.tsx";
 import { getWeather, getLocation } from "./weatherAPI.tsx";
 import { IconContext } from "react-icons";
-import { FunctionBar } from "./functionBar.tsx";
+import { FunctionBar } from "../components/functionBar.tsx";
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
 // TYPE:
@@ -69,7 +69,7 @@ const Layout = (prop: prop) => {
 
     // Reseting localStorage if it's not new version
     useEffect(() => {
-        if (storedVersion != APP_VERSION.toString()) {
+        if (storedVersion !== APP_VERSION.toString()) {
             localStorage.clear();
             localStorage.setItem("app_version", APP_VERSION);
         }
