@@ -1,4 +1,4 @@
-import { NavBar } from "../components/navbar";
+import { NavBar } from "../libs/navbar";
 import { Footer } from "./footer";
 export const LandingPage = () => {
     return (
@@ -10,7 +10,7 @@ export const LandingPage = () => {
                     <div className="relative w-100vw flex justify-center">
                         <div className="lg:flex-col items-center">
                             <div>
-                                <h1 className="text-[#fcffff]">Weather Component</h1>
+                                <h1 >Weather Component</h1>
                                 <p className="text-amber-100 md:text-xl sm:text-xs font-medium">
                                     Say goodbye to generic forecasts — design
                                     your own weather view.
