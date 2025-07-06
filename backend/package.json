@@ -1,0 +1,40 @@
+{
+  "name": "weathercomp-backend",
+  "version": "1.0.0",
+  "description": "backend for weather component",
+  "license": "ISC",
+  "author": "dev-khoi",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "express-dev": "nodemon --exec tsx src/index.ts",
+    "auth-dev": "nodemon --exec tsx src/authServer.ts",
+    "prisma-dev": "nodemon --exec tsx db/database.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.10.1",
+    "connect-pg-simple": "^10.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.10",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.10",
+    "@typescript-eslint/parser": "^8.35.1",
+    "prisma": "^6.11.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
