@@ -1,0 +1,3 @@
+new user -> default  component 
+
+user edit or remove component -> change layout

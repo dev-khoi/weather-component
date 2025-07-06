@@ -1,0 +1,73 @@
+
+
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "email": "example@gmail.com",
+    "password": "example"
+}
+
+###
+POST http://localhost:4000/token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImV4YW1wbGVAZ21haWwuY29tIiwiaWF0IjoxNzUxNTIyMjEyfQ.f0MX8AqwgJJEHR9BnPHpVNvquxpUazo9F5H_hb9Evbw"
+}
+
+###
+DELETE http://localhost:4000/logout
+Content-Type: application/json
+
+{
+"refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imtob2luZ3V5ZW5AZ21haWwuY29tIiwiaWF0IjoxNzUxNTIyMTAwfQ.W5zq98xW4Q7xtQJHC_EPjnhBa8cYG1hZPh4S4d5D7ks"
+}
+###
+DELETE http://localhost:4000/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFraG9pYUBtZ2lhbC5jb20iLCJpYXQiOjE3NTEzMDczNzN9.lBSTWaXS2y-HnpuPhcFT4VHBm9QiyO4bllachqucxfM"
+}
+
+
+###
+GET http://localhost:3000/weather
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFraG9pYUBtZ2lhbC5jb20iLCJpYXQiOjE3NTEzMDY4NzksImV4cCI6MTc1MTMwNjg4OH0.L1YTIACUOPHuKnmO80EJW8GgJgFQBLrjwdKEww6X6cA
+
+
+
+###
+# weather data
+GET http://localhost:3000/weather?lat=43.711640&lon=-79.399724
+
+
+###
+POST http://localhost:4000/register
+Content-Type: application/json
+
+{
+    "username": "khoi",
+    "email": "khoinguyen@gmail.com",
+    "password": "khoihay"
+}
+
+###
+
+POST http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "username": "khoi",
+    "email": "khoinguyen@gmail.com",
+    "password": "khoihay"
+}
+
+###
+POST http://localhost:4000/verifyAccessToken
+Content-Type: application/json
+Cookie: accessToken=
+
+{
+}

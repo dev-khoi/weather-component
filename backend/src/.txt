@@ -1,0 +1,87 @@
+   ┌────────────┐
+   │   Client   │
+   └─────┬──────┘
+         │
+         │ 1. Login (POST /login)
+         │   — sends email & password
+         ▼
+   ┌──────────────┐
+   │   Backend    │
+   └──────────────┘
+         │
+         │ ✔ Authenticates credentials
+         │ ✔ Generates:
+         │    - Access Token (15 min)
+         │    - Refresh Token (7 days)
+         │ ✔ Stores refreshToken in array/db
+         ▼
+   ┌────────────┐
+   │   Client   │
+   └────┬───────┘
+        │
+        │ 2. Stores:
+        │    🍪 accessToken (httpOnly cookie)
+        │    🍪 refreshToken (httpOnly cookie)
+        │
+        ▼
+
+===== Normal API Usage =====
+   ┌────────────┐
+   │   Client   │
+   └────┬───────┘
+        │
+        │ 3. Makes request to protected route
+        │    (GET /profile)
+        ▼
+   ┌──────────────┐
+   │   Backend    │
+   └────┬─────────┘
+        │
+        │ ✔ Reads accessToken from cookie
+        │ ✔ Verifies it:
+        │    - If valid → allow access
+        │    - If expired → return 401
+        ▼
+
+===== Access Token Expired =====
+   ┌────────────┐
+   │   Client   │
+   └────┬───────┘
+        │
+        │ 4. Gets 401 → calls:
+        │    (POST /token)
+        ▼
+   ┌──────────────┐
+   │   Backend    │
+   └────┬─────────┘
+        │
+        │ ✔ Reads refreshToken from cookie
+        │ ✔ Verifies it:
+        │    - If valid → issue new accessToken
+        │    - If invalid/expired → 403 (force re-login)
+        ▼
+   ┌────────────┐
+   │   Client   │
+   └────┬───────┘
+        │
+        │ 5. Stores new accessToken cookie
+        │ 6. Retries original request
+
+===== Logout Flow =====
+   ┌────────────┐
+   │   Client   │
+   └────┬───────┘
+        │
+        │ 7. Logout (DELETE /logout)
+        ▼
+   ┌──────────────┐
+   │   Backend    │
+   └────┬─────────┘
+        │
+        │ ✔ Removes refreshToken from array/db
+        │ ✔ Clears both cookies
+        ▼
+   ┌────────────┐
+   │   Client   │
+   └────────────┘
+        ✔ User fully logged out
