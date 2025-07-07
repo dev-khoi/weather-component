@@ -1,4 +1,10 @@
-import { useContext, useEffect, useState, type FunctionComponent } from "react";
+import {
+    useContext,
+    useRef,
+    useEffect,
+    useState,
+    type FunctionComponent,
+} from "react";
 import { userComponentContext, type weatherDataType } from "./gridLayout";
 import {
     Responsive,
@@ -10,191 +16,43 @@ import {
 import { weatherIcon } from "./weatherAPI.tsx";
 import { LoadingAnimation } from "@/components/loading.tsx";
 
+// * MOCK DATA
+const mockComponent: any[] = [
+    {
+        id: 1,
+        dataGrid: { x: 0, y: 0, w: 3, h: 4 },
+    },
+    {
+        id: 2,
+        dataGrid: { x: 3, y: 0, w: 3, h: 4 },
+    },
+    {
+        id: 3,
+
+        dataGrid: { x: 6, y: 0, w: 3, h: 4 },
+    },
+    {
+        id: 4,
+        dataGrid: { x: 9, y: 0, w: 3, h: 4 },
+    },
+    {
+        id: 5,
+        dataGrid: { x: 9, y: 0, w: 3, h: 4 },
+    },
+    {
+        id: 6,
+        dataGrid: { x: 9, y: 0, w: 3, h: 4 },
+    },
+];
 // props interface
-
-const ResponsiveReactGridLayout = WidthProvider(Responsive);
-
-// Rendering the grid component inside the grid layout
-const GridComponent: FunctionComponent = () => {
-    // _______________________________
-    // Grid layout configuration
-
-    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
-    const [compactType] = useState<
-        "vertical" | "horizontal" | null | undefined
-    >("vertical");
-    const [mounted, setMounted] = useState(false);
-    const [toolbox, setToolbox] = useState<{ [index: string]: any[] }>({
-        lg: [],
-    });
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // useContext to get the components array
-    const context = useContext(userComponentContext);
-    if (!context) return <LoadingAnimation />;
-
-    const { userComponent: component, setUserComponent: setComponent } =
-        context;
-
-    // * LAYOUTS
-    const [layouts, setLayouts] = useState<Layouts>();
-    const createBaseLayout = () =>
-        component.map((item) => ({
-            ...item.dataGrid,
-            i: item.id.toString(),
-            minW: 2,
-            maxW: 5,
-            minH: 3,
-            maxH: 6,
-            static: false,
-        }));
-
-    const defaultLayouts: Layouts = {
-        lg: createBaseLayout(),
-        md: createBaseLayout(),
-        sm: createBaseLayout(),
-        xs: createBaseLayout(),
-        xxs: createBaseLayout(),
-    };
-    // loading layouts before
-    useEffect(() => {
-        const saved = loadLayouts();
-
-        if (saved) {
-            setLayouts(saved);
-        } else {
-            return setLayouts(defaultLayouts);
-        }
-    }, []);
-
-    // if component is changed, the layout changes with the component
-    // useEffect(() => {
-    //     if (hasLoadedLayout) {
-    //         setLayouts(toLayouts(component));
-    //     }
-    // }, [component]);
-
-    // before user leave the page, the layout is saved into local storage
-    useEffect(() => {
-        window.addEventListener("beforeunload", () => saveLayouts(layouts));
-        return () =>
-            window.removeEventListener("beforeunload", () =>
-                saveLayouts(layouts),
-            );
-    }, [layouts]);
-
-    // default layout
-
-    const onLayoutChange = (layout: Layout[], allLayouts: Layouts) => {
-        // Setting the
-        // Update ALL component dataGrids to match the layout
-        const updatedComponents = component.map((comp) => {
-            const layoutItem = layout.find(
-                (item) => item.i === comp.id.toString(),
-            );
-            if (!layoutItem) return comp;
-
-            return {
-                ...comp,
-                dataGrid: {
-                    ...comp.dataGrid,
-                    x: layoutItem.x,
-                    y: layoutItem.y,
-                    w: layoutItem.w,
-                    h: layoutItem.h,
-                },
-            };
-        });
-        setComponent(updatedComponents);
-        // Update full layouts state with all breakpoints
-        setLayouts(allLayouts);
-
-        // Save updated layouts to localStorage
-        saveLayouts(allLayouts);
-        // saveLayouts();
-        // console.log(component[0].dataGrid)
-    };
-
-    // convert component into layout type
-    // function toLayouts(components: weatherDataType[]): Layouts {
-    //     const baseLayout = components.map((item) => ({
-    //         ...item.dataGrid,
-    //         i: item.id.toString(),
-    //         minW: 2,
-    //         maxW: 5,
-    //         minH: 3,
-    //         maxH: 6,
-    //         static: false,
-    //     }));
-
-    //     return {
-    //         lg: baseLayout,
-    //         md: baseLayout,
-    //         sm: baseLayout,
-    //         xs: baseLayout,
-    //         xxs: baseLayout,
-    //     };
-    // }
-
-    // load layouts from storage
-    const loadLayouts = () => {
-        try {
-            const savedLayouts = localStorage.getItem("layouts");
-            return savedLayouts ? JSON.parse(savedLayouts) : defaultLayouts;
-        } catch (err) {
-            console.error("Failed to load layouts from localStorage", err);
-            return defaultLayouts;
-        }
-    };
-    // save layouts to locale storage
-    const saveLayouts = (layouts: Layouts | undefined) => {
-        try {
-            localStorage.setItem("layouts", JSON.stringify(layouts));
-        } catch (err) {
-            console.error("Failed to save layouts to localStorage", err);
-        }
-    };
-
-    // *
-    // removing button
-    const removeComponent = (id: number) => {
-        const updatedComponents = component.filter((comp) => id !== comp.id);
-        setComponent(updatedComponents);
-    };
-
-    // generate data
-    const GenerateData = (props: { comp: weatherDataType }) => {
-        const data = props.comp.componentData;
-        if (typeof data === "string" || typeof data === "number") {
-            return <>{data}</>;
-        }
-        if (typeof data === "object" && data !== null && !Array.isArray(data)) {
-            const compDataArr = Object.entries(data);
-
-            if (!compDataArr || !compDataArr.length) {
-                return <div></div>;
-            }
-            return compDataArr.map(([key], index) => {
-                return <div key={index}>{key}</div>;
-            });
-        }
-    };
-
-    // Generating the components:
-    const generateDOM = () => {
-        return component.map((comp: weatherDataType) => {
-            const description = "remove button" + comp.componentName;
-            return (
-                <div
-                    className="grid-layout-item-content"
-                    key={comp.id}
-                    data-grid={comp.dataGrid}
-                >
-                    {/* remove button */}
-                    <button
+// *
+// // removing button
+// const removeComponent = (id: number) => {
+//     const updatedComponents = component.filter((comp) => id !== comp.id);
+//     setComponent(updatedComponents);
+// };
+{
+    /* <button
                         onClick={() => removeComponent(comp.id)}
                         type="button"
                         className="cancelSelector absolute top-1 right-2 w-6 h-6 flex items-center justify-center rounded-full text-gray-600 hover:text-amber-600 focus:text-amber-600 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -216,85 +74,175 @@ const GridComponent: FunctionComponent = () => {
                                 d="M6 18L18 6M6 6l12 12"
                             />
                         </svg>
-                    </button>
+                    </button> */
+}
+
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
+
+// Rendering the grid component inside the grid layout
+const GridComponent: FunctionComponent = () => {
+    // _______________________________
+    // Grid layout configuration
+
+    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
+    const ignoreLayoutChange = useRef(false);
+
+    const [compactType] = useState<
+        "vertical" | "horizontal" | null | undefined
+    >("vertical");
+    const [mounted, setMounted] = useState(false);
+
+    const userComponentContextValue = useContext(userComponentContext);
+    const userComponent = userComponentContextValue?.userComponent;
+    if (!userComponent) {
+        return;
+    }
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // * LAYOUTS
+    const createBaseLayout = () =>
+        mockComponent.map((item) => ({
+            ...item.dataGrid,
+            i: item.id.toString(),
+            minW: 2,
+            maxW: 5,
+            minH: 3,
+            maxH: 6,
+            static: false,
+        }));
+
+    const defaultLayouts: Layouts = {
+        lg: createBaseLayout(),
+        md: createBaseLayout(),
+        sm: createBaseLayout(),
+        xs: createBaseLayout(),
+        xxs: createBaseLayout(),
+    };
+    const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
+    const lastSavedLayout = useRef<Layout[]>([]);
+
+    // callback when layouts change
+    // lastSavedLayout ref is used for saving the last layout before changing,
+    // in this case it is used for saving the layout before a breakpoint change
+    // ignoreLayoutChange ref is used for ignoring the layoutChanges
+    // when a breakpoint is made
+    const onLayoutChange = (layout: Layout[], allLayouts: Layouts) => {
+        lastSavedLayout.current = layout;
+
+        if (!ignoreLayoutChange.current) {
+            setLayouts(allLayouts);
+        }
+    };
+
+    // callback when breakpoint change
+    // onbreakpoint -> rerender -> onlayoutchange
+    // during rerender, ignoreLayoutChange will be
+    // set to default value (false)
+    // Save current layout before switch
+    // using lastSavedLayout ref
+    // Update currentBreakpoint after saving
+    const onBreakpointChange = (newBreakpoint: string) => {
+        ignoreLayoutChange.current = true;
+
+        setLayouts((prevLayouts) => ({
+            ...prevLayouts,
+            [currentBreakpoint]: lastSavedLayout.current,
+        }));
+        setCurrentBreakpoint(newBreakpoint);
+    };
+    //
+    // generate data
+    const GenerateData = (props: { comp: weatherDataType }) => {
+        const data = props.comp.componentData;
+        if (typeof data === "string" || typeof data === "number") {
+            return <>{data}</>;
+        }
+        if (typeof data === "object" && data !== null && !Array.isArray(data)) {
+            const compDataArr = Object.entries(data);
+
+            if (!compDataArr || !compDataArr.length) {
+                return <div></div>;
+            }
+            return compDataArr.map(([key], index) => {
+                return <div key={index}>{key}</div>;
+            });
+        }
+    };
+
+    // Generating the components:
+    const generateDOM = () => {
+        return layouts[currentBreakpoint].map((dataGrid) => {
+            const comp = userComponent.find(
+                (comp) => comp.id.toString() === dataGrid.i,
+            );
+
+            return (
+                <div
+                    className="grid-layout-item-content"
+                    key={dataGrid.i}
+                    data-grid={dataGrid}
+                >
+                    {/* remove button */}
 
                     {/* ICON / DATA / name */}
                     <div className="flex flex-col items-center justify-center text-white h-full">
                         <div className="flex items-start justify-center mb-2 ml-1">
-                            <div className="text-5xl mr-3">
-                                {weatherIcon[comp.componentName]}
-                            </div>
+                            <div className="text-5xl mr-3"></div>
+                            {/* {comp && comp.componentName} */}
                             <div className="text-sm tracking-wide">
-                                {comp.componentName ?? "[no name]"}
+                                {/* {comp &&
+                                (typeof comp.componentData === "string" ||
+                                    typeof comp.componentData === "number")
+                                    ? comp.componentData
+                                    : null} */}
                             </div>
                         </div>
 
                         {/* Data */}
                         <div>
-                            <div className="text-4xl font-semibold text-amber-200">
-                                <GenerateData comp={comp} />
-                            </div>
+                            {/* <div className="text-4xl font-semibold text-amber-200">
+                                {comp && <GenerateData comp={comp} />}
+                            </div> */}
                         </div>
                     </div>
                 </div>
             );
         });
     };
-
-    const onBreakpointChange = (breakpoint: any) => {
-        setCurrentBreakpoint(breakpoint);
-        setToolbox({
-            ...toolbox,
-            [breakpoint]:
-                toolbox[breakpoint] || toolbox[currentBreakpoint] || [],
-        });
-    };
-
-    // const onDrop = (layoutItem: Layout, _ev: Event) => {
-    //     alert(
-    //         `Element parameters:\n${JSON.stringify(
-    //             layoutItem,
-    //             ["x", "y", "w", "h"],
-    //             2,
-    //         )}`,
-    //     );
-    // };
-  
-  
+    
     return (
         <>
             <div className="grid-layout">
-                {component.length === 0 ? (
+                {userComponent.length === 0 ? (
                     <LoadingAnimation />
                 ) : (
-                    <div className="grid-layout">
-                        <ResponsiveReactGridLayout
-                            rowHeight={30}
-                            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                            breakpoints={{
-                                lg: 1200,
-                                md: 996,
-                                sm: 768,
-                                xs: 480,
-                                xxs: 0,
-                            }}
-                            containerPadding={[0, 0]}
-                            //--
-                            isBounded={true}
-                            layouts={layouts}
-                            measureBeforeMount={false}
-                            useCSSTransforms={mounted}
-                            compactType={compactType}
-                            preventCollision={!compactType}
-                            onLayoutChange={onLayoutChange}
-                            onBreakpointChange={onBreakpointChange}
-                            // onDrop={onDrop}
-                            isDroppable
-                            draggableCancel=".cancelSelector"
-                        >
-                            {generateDOM() ?? <LoadingAnimation />}
-                        </ResponsiveReactGridLayout>
-                    </div>
+                    <ResponsiveReactGridLayout
+                        rowHeight={30}
+                        cols={{ lg: 11, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                        breakpoints={{
+                            lg: 1150,
+                            md: 996,
+                            sm: 768,
+                            xs: 480,
+                            xxs: 0,
+                        }}
+                        containerPadding={[0, 0]}
+                        //--
+                        isBounded={false}
+                        layouts={layouts}
+                        measureBeforeMount={false}
+                        useCSSTransforms={mounted}
+                        compactType={compactType}
+                        preventCollision={!compactType}
+                        onLayoutChange={onLayoutChange}
+                        onBreakpointChange={onBreakpointChange}
+                        isDroppable
+                        draggableCancel=".cancelSelector"
+                    >
+                        {generateDOM() ?? <LoadingAnimation />}
+                    </ResponsiveReactGridLayout>
                 )}
             </div>
         </>

@@ -64,7 +64,7 @@ app.post("/verifyingToken", async (req, res) => {
   // extracting the token
   const refreshToken = req.cookies.refreshToken;
   const accessToken = req.cookies.accessToken;
-  if (accessToken == null || refreshToken == null) {
+  if (accessToken == null && refreshToken == null) {
     res.sendStatus(401);
     return;
   }
@@ -77,7 +77,7 @@ app.post("/verifyingToken", async (req, res) => {
       // failed to veify access token
       // -> verifying refresh token
       if (err) {
-        jwt.verify(
+        return jwt.verify(
           refreshToken,
           process.env.REFRESH_SECRET_TOKEN,
           (err, userId) => {
@@ -121,6 +121,7 @@ app.post("/login", async (req, res) => {
 
     if (!user) {
       res.status(401).json({ error: "Invalid email or password" });
+      return;
     }
 
     const { userId, hash, salt } = user;
@@ -134,6 +135,7 @@ app.post("/login", async (req, res) => {
           token: refreshToken,
           userId: userId,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
+
         },
       });
 
@@ -151,7 +153,7 @@ app.post("/login", async (req, res) => {
           sameSite: "strict",
           maxAge: 15 * 24 * 60 * 60 * 1000, // 7 days
         })
-        .redirect("http://localhost:5173");
+        .redirect("http://localhost:5173/weather");
     } else {
       res.status(401).json({ error: "Invalid email or password" });
     }

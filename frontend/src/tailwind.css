@@ -100,6 +100,7 @@ body,
 
 .grid-layout {
     margin: 5px 10px;
+    user-select: text;
 }
 /* default */
 button:focus,
