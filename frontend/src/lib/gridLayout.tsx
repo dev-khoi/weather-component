@@ -6,7 +6,10 @@ import { GridComponent } from "./gridComponent.tsx";
 import { getWeather, getLocation } from "./weatherAPI.tsx";
 import { IconContext } from "react-icons";
 import { FunctionBar } from "../components/functionBar.tsx";
-import type {prop, ComponentState, weatherDataType, UserComponentContextType, WeatherComponentContextType, latLongType} from "./types.tsx"
+<<<<<<< Updated upstream:src/libs/gridLayout.tsx
+=======
+import type {prop, ComponentState, weatherDataType, UserComponentContextType, latLongType} from "./types.tsx"
+>>>>>>> Stashed changes:frontend/src/lib/gridLayout.tsx
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
 
@@ -15,8 +18,6 @@ const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 const userComponentContext = createContext<UserComponentContextType | null>(
     null,
 );
-const weatherComponentContext =
-    createContext<WeatherComponentContextType | null>(null);
 
 // converting epoch time to time
 const timeConvert = (dt: number, format: Intl.DateTimeFormatOptions): string => {
@@ -25,6 +26,7 @@ const timeConvert = (dt: number, format: Intl.DateTimeFormatOptions): string => 
     return time.toLocaleString("en-US", format);
 };
 const Layout = (prop: prop) => {
+    // *checking app version
     const storedVersion = localStorage.getItem("app_version");
 
     // Reseting localStorage if it's not new version
@@ -37,9 +39,6 @@ const Layout = (prop: prop) => {
 
     // state of component in layout
     const [userComponent, setUserComponent] = useState<weatherDataType[]>([]);
-    const [weatherComponent, setWeatherComponent] = useState<weatherDataType[]>(
-        [],
-    );
 
     // location and time of the weather
     const [headInfo, setHeadInfo] = useState<{
@@ -215,6 +214,7 @@ const Layout = (prop: prop) => {
         return formattedWeather;
     };
 
+<<<<<<< Updated upstream:src/libs/gridLayout.tsx
     // setting weather component list
     useEffect(() => {
         if (weatherComponent && weatherComponent.length > 0) {
@@ -239,6 +239,8 @@ const Layout = (prop: prop) => {
             );
         }
     }, []);
+=======
+>>>>>>> Stashed changes:frontend/src/lib/gridLayout.tsx
     // Updating component in the initial load
     // if there is data in localStorage, it will renew the data
     // if there isn't, it will create default data
@@ -307,12 +309,6 @@ const Layout = (prop: prop) => {
     }, [userComponent]);
 
     return (
-        <weatherComponentContext.Provider
-            value={{
-                weatherComponent: weatherComponent,
-                setWeatherComponent: setWeatherComponent,
-            }}
-        >
             <userComponentContext.Provider
                 value={{
                     userComponent: userComponent,
@@ -328,7 +324,6 @@ const Layout = (prop: prop) => {
                     {prop.children}
                 </IconContext.Provider>
             </userComponentContext.Provider>
-        </weatherComponentContext.Provider>
     );
 };
 
@@ -342,10 +337,9 @@ export const App = () => {
         </>
     );
 };
-export { userComponentContext, weatherComponentContext };
+export { userComponentContext };
 export type {
     weatherDataType,
     UserComponentContextType,
-    WeatherComponentContextType,
     ComponentState,
 };

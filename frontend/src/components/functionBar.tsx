@@ -1,5 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import { SearchBar } from "../lib/searchBar.tsx";
+// import { SearchBar } from "../lib/searchBar.tsx";
 
 // import all the needed things
 const FunctionBar = ({
@@ -34,7 +34,7 @@ const FunctionBar = ({
                         </div>
 
                         {/* search bar to add component */}
-                        <SearchBar />
+                        {/* <SearchBar /> */}
                     </div>
                 </div>
             </Disclosure>
