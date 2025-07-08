@@ -8,6 +8,7 @@ import {
 } from "./auth/authentication.js";
 import jwt from "jsonwebtoken";
 // SECRET KEY
+import { createDefaultWeatherLayout } from "./db/defaultLayout.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -41,18 +42,23 @@ app.post("/register", registerValidator, async (req, res) => {
   const hash = saltHash.hash;
 
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
-         ...(username && { username }),
+        ...(username && { username }),
         salt,
         hash,
       },
     });
+
+    console.log(Object.keys(prisma));
+    await prisma.weatherLayout.create({
+      data: { userId: user.userId, ...createDefaultWeatherLayout },
+    });
   } catch (e) {
     console.error(e);
   }
-  res.redirect("http://localhost:5173/signin");
+  res.redirect("http://localhost:5173/login");
 });
 
 // creating new token for user by verifying the refresh token
@@ -73,14 +79,14 @@ app.post("/verifyingToken", async (req, res) => {
   jwt.verify(
     accessToken,
     process.env.ACCESS_SECRET_TOKEN,
-    async (err, user) => {
+    async (err, decoded) => {
       // failed to veify access token
       // -> verifying refresh token
       if (err) {
         return jwt.verify(
           refreshToken,
           process.env.REFRESH_SECRET_TOKEN,
-          (err, userId) => {
+          (err, decoded) => {
             // failed to verify refresh token
             if (err) {
               return res
@@ -89,7 +95,7 @@ app.post("/verifyingToken", async (req, res) => {
             }
             // refreshToken successfully verified
             // generate new accessToken);
-            const accessToken = generateAccessToken(userId);
+            const accessToken = generateAccessToken(decoded.userId);
             return res
               .cookie("accessToken", accessToken, {
                 httpOnly: true,
@@ -117,6 +123,11 @@ app.post("/login", async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
+      select: {
+        userId: true,
+        hash: true,
+        salt: true
+      }
     });
 
     if (!user) {
@@ -171,7 +182,7 @@ app.delete("/logout", async (req, res) => {
         token: refreshToken,
       },
     });
-    console.log("success");
+    console.log("logout success");
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     res.status(204).json({ message: "logout successfully" });

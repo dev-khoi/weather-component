@@ -9,18 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WeatherRouteImport } from './routes/weather'
 import { Route as LoggedRouteImport } from './routes/_logged'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoggedRegisterRouteImport } from './routes/_logged/register'
 import { Route as LoggedLoginRouteImport } from './routes/_logged/login'
+import { Route as AuthWeatherRouteImport } from './routes/_auth/weather'
 
-const WeatherRoute = WeatherRouteImport.update({
-  id: '/weather',
-  path: '/weather',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoggedRoute = LoggedRouteImport.update({
   id: '/_logged',
   getParentRoute: () => rootRouteImport,
@@ -44,25 +39,30 @@ const LoggedLoginRoute = LoggedLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => LoggedRoute,
 } as any)
+const AuthWeatherRoute = AuthWeatherRouteImport.update({
+  id: '/weather',
+  path: '/weather',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/weather': typeof WeatherRoute
+  '/weather': typeof AuthWeatherRoute
   '/login': typeof LoggedLoginRoute
   '/register': typeof LoggedRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/weather': typeof WeatherRoute
+  '/weather': typeof AuthWeatherRoute
   '/login': typeof LoggedLoginRoute
   '/register': typeof LoggedRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_auth': typeof AuthRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/_logged': typeof LoggedRouteWithChildren
-  '/weather': typeof WeatherRoute
+  '/_auth/weather': typeof AuthWeatherRoute
   '/_logged/login': typeof LoggedLoginRoute
   '/_logged/register': typeof LoggedRegisterRoute
 }
@@ -76,27 +76,19 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_logged'
-    | '/weather'
+    | '/_auth/weather'
     | '/_logged/login'
     | '/_logged/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   LoggedRoute: typeof LoggedRouteWithChildren
-  WeatherRoute: typeof WeatherRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/weather': {
-      id: '/weather'
-      path: '/weather'
-      fullPath: '/weather'
-      preLoaderRoute: typeof WeatherRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_logged': {
       id: '/_logged'
       path: ''
@@ -132,8 +124,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoggedLoginRouteImport
       parentRoute: typeof LoggedRoute
     }
+    '/_auth/weather': {
+      id: '/_auth/weather'
+      path: '/weather'
+      fullPath: '/weather'
+      preLoaderRoute: typeof AuthWeatherRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
+
+interface AuthRouteChildren {
+  AuthWeatherRoute: typeof AuthWeatherRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthWeatherRoute: AuthWeatherRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface LoggedRouteChildren {
   LoggedLoginRoute: typeof LoggedLoginRoute
@@ -150,9 +159,8 @@ const LoggedRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   LoggedRoute: LoggedRouteWithChildren,
-  WeatherRoute: WeatherRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

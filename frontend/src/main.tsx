@@ -30,7 +30,6 @@ function InnerApp() {
 
 function App() {
     const auth = useAuth();
-    console.log(auth)
     if(auth.isLoading){
       return(
         <LoadingAnimation />

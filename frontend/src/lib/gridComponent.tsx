@@ -15,34 +15,9 @@ import {
 
 import { weatherIcon } from "./weatherAPI.tsx";
 import { LoadingAnimation } from "@/components/loading.tsx";
+import axios from "axios";
 // * MOCK DATA
-const mockComponent: any[] = [
-    {
-        id: 1,
-        dataGrid: { x: 0, y: 0, w: 3, h: 4 },
-    },
-    {
-        id: 2,
-        dataGrid: { x: 3, y: 0, w: 3, h: 4 },
-    },
-    {
-        id: 3,
 
-        dataGrid: { x: 6, y: 0, w: 3, h: 4 },
-    },
-    {
-        id: 4,
-        dataGrid: { x: 9, y: 0, w: 3, h: 4 },
-    },
-    {
-        id: 5,
-        dataGrid: { x: 9, y: 0, w: 3, h: 4 },
-    },
-    {
-        id: 6,
-        dataGrid: { x: 9, y: 0, w: 3, h: 4 },
-    },
-];
 // props interface
 // *
 // // removing button
@@ -100,27 +75,17 @@ const GridComponent: FunctionComponent = () => {
         setMounted(true);
     }, []);
 
-    // * LAYOUTS
-    const createBaseLayout = () =>
-        mockComponent.map((item) => ({
-            ...item.dataGrid,
-            i: item.id.toString(),
-            minW: 2,
-            maxW: 5,
-            minH: 3,
-            maxH: 6,
-            static: false,
-        }));
-
-    const defaultLayouts: Layouts = {
-        lg: createBaseLayout(),
-        md: createBaseLayout(),
-        sm: createBaseLayout(),
-        xs: createBaseLayout(),
-        xxs: createBaseLayout(),
-    };
-    const [layouts, setLayouts] = useState<Layouts>(defaultLayouts);
+    const [layouts, setLayouts] = useState<Layouts | undefined>();
     const lastSavedLayout = useRef<Layout[]>([]);
+
+
+    useEffect(() => {
+        axios
+            .get("http://localhost:3000/layout", {
+                withCredentials: true,
+            })
+            .then((e) => setLayouts(e.data.dataGrid));
+    },[]);
 
     // callback when layouts change
     // lastSavedLayout ref is used for saving the last layout before changing,
@@ -172,11 +137,14 @@ const GridComponent: FunctionComponent = () => {
 
     // Generating the components:
     const generateDOM = () => {
+        if(!layouts){
+            return;
+        }
         return layouts[currentBreakpoint].map((layout) => {
             const comp = userComponent.find(
                 (comp) => comp.id.toString() === layout.i,
             );
-            if(!comp){
+            if (!comp) {
                 return;
             }
             return (
@@ -208,7 +176,7 @@ const GridComponent: FunctionComponent = () => {
             );
         });
     };
-    
+
     return (
         <>
             <div className="grid-layout">

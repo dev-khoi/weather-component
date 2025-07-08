@@ -15,15 +15,26 @@ datasource db {
 }
 
 model User {
-  userId   BigInt @id @default(autoincrement())
-  username String @default("user") @db.VarChar(14)
-  email    String @unique @db.VarChar(254)
-  hash     String @unique @db.VarChar(64)
-  salt     String @unique @db.VarChar(64)
-  role     String @default("user") 
+  userId         Int              @id @default(autoincrement())
+  username       String           @default("user") @db.VarChar(14)
+  email          String           @unique @db.VarChar(254)
+  hash           String           @unique @db.VarChar(64)
+  salt           String           @unique @db.VarChar(64)
+  role           String           @default("user")
   // a user can have many weather components
-  weatherComponents WeatherLayouts[]
-  RefreshToken      RefreshToken[]
+  WeatherLayouts WeatherLayout[]
+  RefreshToken   RefreshToken[]
+}
+
+// user 1-many weatherLayout
+model WeatherLayout {
+  weatherCompId Int
+  userId        Int
+  dataGrid      Json
+
+  user User @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+
+  @@id([weatherCompId, userId])
 }
 
 // refresh token database
@@ -31,19 +42,8 @@ model User {
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
-  userId    BigInt
-  user      User     @relation(fields: [userId], references: [userId])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
-}
-
-// user 1-many weatherLayout
-model WeatherLayouts {
-  weatherCompId Int
-  userId        BigInt
-  dataGrid      Json
-
-  user User @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
-
-  @@id([weatherCompId, userId])
 }

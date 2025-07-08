@@ -63,7 +63,17 @@ Content-Type: application/json
     "email": "khoinguyen@gmail.com",
     "password": "khoihay"
 }
+###
 
+POST http://localhost:4000/register
+Content-Type: application/json
+
+{
+    "username": "example",
+    "email": "example1djs5@gmail.com",
+    "password": "example",
+    "password-confirm": "example"
+}
 ###
 POST http://localhost:4000/verifyAccessToken
 Content-Type: application/json
