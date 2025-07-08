@@ -6,25 +6,21 @@ import { GridComponent } from "./gridComponent.tsx";
 import { getWeather, getLocation } from "./weatherAPI.tsx";
 import { IconContext } from "react-icons";
 import { FunctionBar } from "../components/functionBar.tsx";
-<<<<<<< Updated upstream:src/libs/gridLayout.tsx
-=======
-import type {prop, ComponentState, weatherDataType, UserComponentContextType, latLongType} from "./types.tsx"
->>>>>>> Stashed changes:frontend/src/lib/gridLayout.tsx
+import type {
+    prop,
+    ComponentState,
+    weatherDataType,
+    UserComponentContextType,
+    latLongType,
+} from "./types.tsx";
+import { timeConvert } from "./utils.ts";
 const APP_VERSION = import.meta.env.VITE_APP_VERSION;
-
-
 
 // create context of what components
 const userComponentContext = createContext<UserComponentContextType | null>(
     null,
 );
 
-// converting epoch time to time
-const timeConvert = (dt: number, format: Intl.DateTimeFormatOptions): string => {
-    const time = new Date(0);
-    time.setUTCSeconds(dt);
-    return time.toLocaleString("en-US", format);
-};
 const Layout = (prop: prop) => {
     // *checking app version
     const storedVersion = localStorage.getItem("app_version");
@@ -101,72 +97,57 @@ const Layout = (prop: prop) => {
         sunset: "",
     };
 
-    const formatNewWeatherData = (
-        weatherData: any,
-    ): weatherDataType[] => {
+    // format function for new api data
+    const formatNewWeatherData = (weatherData: any): weatherDataType[] => {
         // prettier-ignore
-        const { main, wind, clouds, sys, visibility, rain, snow, weather, name, dt } = weatherData;
+        // Flatten weatherData into a plain object called "data", excluding "sys" and unrelated fields
+        const {  weather, main, visibility, wind, rain, snow, clouds, dt, name } = weatherData;
 
-        const info: Record<string, number | string | undefined> = {
-            // Main Weather Info
+        // Only include relevant weather-related fields
+        const formatWeatherData: Record<string, any> = {
+            // Weather (flatten first entry)
             weather_main: weather?.[0]?.main,
             weather_description: weather?.[0]?.description,
-            weather_icon: weather?.[0]?.icon,
+            // weather_icon: weather?.[0]?.icon,
 
-            // Temperature Info
+            // Main weather info
             temp: main?.temp,
             feels_like: main?.feels_like,
             temp_min: main?.temp_min,
             temp_max: main?.temp_max,
-
-            // Atmospheric Info
             pressure: main?.pressure,
             humidity: main?.humidity,
             sea_level: main?.sea_level,
             grnd_level: main?.grnd_level,
 
-            // Wind & Clouds
+            // Wind
             wind_speed: wind?.speed,
             wind_deg: wind?.deg,
-            wind_gust: wind?.gust,
+            wind_gust: wind?.gust ?? "0",
+
+            // Clouds
             cloudiness: clouds?.all,
+
+            // Rain/Snow
+            rain_1h: rain?.["1h"] ?? "0",
+            snow_1h: snow?.["1h"] ?? "0",
+
+            // Visibility
             visibility: visibility,
-
-            // Rain/Snow (optional)
-            rain_1h: rain?.["1h"] || 0,
-            snow_1h: snow?.["1h"] || 0,
-
-            // Sunrise/Sunset
-            sunrise: timeConvert(sys?.sunrise, { hour: "2-digit", minute: "2-digit" }),
-            sunset: timeConvert(sys?.sunset, { hour: "2-digit", minute: "2-digit" }),
         };
 
-        const arrayWeather = Object.entries(info);
+        const arrayWeather = Object.entries(formatWeatherData);
         const formattedWeather: weatherDataType[] = [];
-
-        const colWidth = 2; // each tile spans 2 columns
-        const gridCols = 12; // total columns in layout
-        const itemsPerRow = gridCols / colWidth;
-        const tileHeight = 3; // consistent height per tile
 
         arrayWeather.forEach(([key, value], index) => {
             const unit = weatherUnits[key] ?? "";
             formattedWeather.push({
                 id: index,
                 componentName: key,
-                componentData: value !== undefined && value !== null
-                    ? `${value} ${unit}`.trim()
-                    : value ?? "",
-                dataGrid: {
-                    x: (index % itemsPerRow) * colWidth,
-                    y: Math.floor(index / itemsPerRow) * tileHeight,
-                    w: 2,
-                    h: 3,
-                    minW: 2,
-                    minH: 3,
-                    maxW: 5,
-                    maxH: 6,
-                },
+                componentData:
+                    value !== undefined && value !== null
+                        ? `${value} ${unit}`.trim()
+                        : (value ?? ""),
             });
         });
 
@@ -182,6 +163,7 @@ const Layout = (prop: prop) => {
         return formattedWeather;
     };
 
+    // update function for existed data
     const formatWeatherData = (weatherData: any) => {
         const arrayWeather = Object.entries({ ...weatherData.main });
         let formattedWeather: {
@@ -190,14 +172,15 @@ const Layout = (prop: prop) => {
             componentData: number | string | Record<string, any>;
         }[] = [];
 
-        arrayWeather.forEach((key: any, index: any) => {
-            const unit = weatherUnits[key[0]] ?? "";
+        arrayWeather.forEach(([key, value], index) => {
+            const unit = weatherUnits[key] ?? "";
             formattedWeather.push({
                 id: index,
-                componentName: key[0],
-                componentData: key[1] !== undefined && key[1] !== null && unit
-                    ? `${key[1]} ${unit}`.trim()
-                    : key[1],
+                componentName: key,
+                componentData:
+                    value !== undefined && value !== null
+                        ? `${value} ${unit}`.trim()
+                        : (value ?? ""),
             });
         });
 
@@ -214,33 +197,6 @@ const Layout = (prop: prop) => {
         return formattedWeather;
     };
 
-<<<<<<< Updated upstream:src/libs/gridLayout.tsx
-    // setting weather component list
-    useEffect(() => {
-        if (weatherComponent && weatherComponent.length > 0) {
-            localStorage.setItem(
-                "weatherComponentData",
-                JSON.stringify(weatherComponent),
-            );
-        }
-    }, [weatherComponent]);
-
-    useEffect(() => {
-        const weatherComp = localStorage.getItem("weatherComponentData");
-        if (weatherComp && JSON.parse(weatherComp).length > 0) {
-            setWeatherComponent(JSON.parse(weatherComp));
-        } else {
-            getLocation().then((location: latLongType) =>
-                getWeather(location).then((data) => {
-                    const formattedData = formatNewWeatherData(data);
-                    setUserComponent(formattedData);
-                    setWeatherComponent(formattedData);
-                }),
-            );
-        }
-    }, []);
-=======
->>>>>>> Stashed changes:frontend/src/lib/gridLayout.tsx
     // Updating component in the initial load
     // if there is data in localStorage, it will renew the data
     // if there isn't, it will create default data
@@ -260,7 +216,8 @@ const Layout = (prop: prop) => {
                 if (cacheTime && now - Number(cacheTime) < THRESHOLD) {
                     setUserComponent(JSON.parse(stored));
                 }
-                // if it has been 50 minutes
+
+                // if it has been 60 minutes
                 else {
                     const parsedComponentData = JSON.parse(stored);
                     getLocation().then((location: latLongType) =>
@@ -309,21 +266,21 @@ const Layout = (prop: prop) => {
     }, [userComponent]);
 
     return (
-            <userComponentContext.Provider
-                value={{
-                    userComponent: userComponent,
-                    setUserComponent: setUserComponent,
-                }}
-            >
-                <IconContext.Provider value={{ size: "2rem" }}>
-                    <FunctionBar
-                        location={headInfo.location}
-                        time={headInfo.time}
-                    />
+        <userComponentContext.Provider
+            value={{
+                userComponent: userComponent,
+                setUserComponent: setUserComponent,
+            }}
+        >
+            <IconContext.Provider value={{ size: "2rem" }}>
+                <FunctionBar
+                    location={headInfo.location}
+                    time={headInfo.time}
+                />
 
-                    {prop.children}
-                </IconContext.Provider>
-            </userComponentContext.Provider>
+                {prop.children}
+            </IconContext.Provider>
+        </userComponentContext.Provider>
     );
 };
 
@@ -338,8 +295,4 @@ export const App = () => {
     );
 };
 export { userComponentContext };
-export type {
-    weatherDataType,
-    UserComponentContextType,
-    ComponentState,
-};
+export type { weatherDataType, UserComponentContextType, ComponentState };

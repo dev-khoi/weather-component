@@ -15,7 +15,6 @@ import {
 
 import { weatherIcon } from "./weatherAPI.tsx";
 import { LoadingAnimation } from "@/components/loading.tsx";
-
 // * MOCK DATA
 const mockComponent: any[] = [
     {
@@ -173,16 +172,18 @@ const GridComponent: FunctionComponent = () => {
 
     // Generating the components:
     const generateDOM = () => {
-        return layouts[currentBreakpoint].map((dataGrid) => {
+        return layouts[currentBreakpoint].map((layout) => {
             const comp = userComponent.find(
-                (comp) => comp.id.toString() === dataGrid.i,
+                (comp) => comp.id.toString() === layout.i,
             );
-
+            if(!comp){
+                return;
+            }
             return (
                 <div
                     className="grid-layout-item-content"
-                    key={dataGrid.i}
-                    data-grid={dataGrid}
+                    key={layout.i}
+                    data-grid={layout}
                 >
                     {/* remove button */}
 
@@ -190,21 +191,17 @@ const GridComponent: FunctionComponent = () => {
                     <div className="flex flex-col items-center justify-center text-white h-full">
                         <div className="flex items-start justify-center mb-2 ml-1">
                             <div className="text-5xl mr-3"></div>
-                            {/* {comp && comp.componentName} */}
+                            {weatherIcon[comp.componentName]}
                             <div className="text-sm tracking-wide">
-                                {/* {comp &&
-                                (typeof comp.componentData === "string" ||
-                                    typeof comp.componentData === "number")
-                                    ? comp.componentData
-                                    : null} */}
+                                {comp.componentName}
                             </div>
                         </div>
 
                         {/* Data */}
                         <div>
-                            {/* <div className="text-4xl font-semibold text-amber-200">
+                            <div className="text-4xl font-semibold text-amber-200">
                                 {comp && <GenerateData comp={comp} />}
-                            </div> */}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -220,7 +217,7 @@ const GridComponent: FunctionComponent = () => {
                 ) : (
                     <ResponsiveReactGridLayout
                         rowHeight={30}
-                        cols={{ lg: 11, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                         breakpoints={{
                             lg: 1150,
                             md: 996,

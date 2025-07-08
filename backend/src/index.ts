@@ -1,14 +1,14 @@
 import express from "express";
 
-import { authenticateToken } from "../auth/authentication.js";
+import { authenticateToken } from "./auth/authentication.js";
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 const corsOption = {
-    origin: ["http://localhost:5173"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: ["http://localhost:5173"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
 };
 
 // !not ideal, store in a db
@@ -27,10 +27,9 @@ app.use(express.urlencoded({ extended: true }));
 // authenticate the user to access weather
 
 app.get("/", authenticateToken, (req, res) => {
-    res.json({ email: req.body.email });
+  res.json({ email: req.body.email });
 });
 
-
 app.listen(3000, () => {
-    console.log("server on port 3000 started");
+  console.log("server on port 3000 started");
 });

@@ -1,11 +1,11 @@
 import express from "express";
-import { genPassword, verifyPassword } from "../lib/passwordUtils.js";
+import { genPassword, verifyPassword } from "./lib/passwordUtils.js";
 import { registerValidator } from "../../../learningAuth/backend/validator/validation.js";
 // import { pool } from "./db/pool.js";
 import {
   generateAccessToken,
   generateRefreshToken,
-} from "../auth/authentication.js";
+} from "./auth/authentication.js";
 import jwt from "jsonwebtoken";
 // SECRET KEY
 import dotenv from "dotenv";
@@ -19,7 +19,7 @@ const corsOption = {
 };
 import cookieParser from "cookie-parser";
 // database
-import { PrismaClient } from "../generated/prisma/index.js";
+import { PrismaClient } from "./generated/prisma/index.js";
 const prisma = new PrismaClient();
 // refreshToken search
 
@@ -44,7 +44,7 @@ app.post("/register", registerValidator, async (req, res) => {
     await prisma.user.create({
       data: {
         email,
-        username,
+         ...(username && { username }),
         salt,
         hash,
       },
@@ -135,7 +135,6 @@ app.post("/login", async (req, res) => {
           token: refreshToken,
           userId: userId,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
-
         },
       });
 

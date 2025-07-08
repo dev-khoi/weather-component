@@ -22,7 +22,7 @@ model User {
   salt     String @unique @db.VarChar(64)
   role     String @default("user") 
   // a user can have many weather components
-  weatherComponents WeatherLayout[]
+  weatherComponents WeatherLayouts[]
   RefreshToken      RefreshToken[]
 }
 
@@ -38,7 +38,7 @@ model RefreshToken {
 }
 
 // user 1-many weatherLayout
-model WeatherLayout {
+model WeatherLayouts {
   weatherCompId Int
   userId        BigInt
   dataGrid      Json

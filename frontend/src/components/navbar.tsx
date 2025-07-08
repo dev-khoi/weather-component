@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/auth";
+import { useAuth } from "@/auth/auth.tsx";
 import axios from "axios";
 import {
     Disclosure,

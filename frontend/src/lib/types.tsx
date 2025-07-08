@@ -21,7 +21,6 @@ type weatherDataType = {
     id: number;
     componentName: string;
     componentData: number | string | Record<string, any>;
-    dataGrid: ComponentState;
 };
 
 type UserComponentContextType = {
