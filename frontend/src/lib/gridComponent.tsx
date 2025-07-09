@@ -57,35 +57,81 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 const GridComponent: FunctionComponent = () => {
     // _______________________________
     // Grid layout configuration
+    const userComponentContextValue = useContext(userComponentContext);
+    const userComponent = userComponentContextValue?.userComponent;
 
-    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("lg");
+    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("");
+
+    const getBreakpointFromWidth = (width: number): string => {
+        if (width >= 1150) return "lg";
+        if (width >= 996) return "md";
+        if (width >= 768) return "sm";
+        if (width >= 480) return "xs";
+        return "xxs";
+    };
+
+    useEffect(() => {
+        setCurrentBreakpoint(getBreakpointFromWidth(window.innerWidth));
+    }, []);
     const ignoreLayoutChange = useRef(false);
-
+    const saveLayoutDb = useRef(false);
     const [compactType] = useState<
         "vertical" | "horizontal" | null | undefined
     >("vertical");
     const [mounted, setMounted] = useState(false);
 
-    const userComponentContextValue = useContext(userComponentContext);
-    const userComponent = userComponentContextValue?.userComponent;
-    if (!userComponent) {
-        return;
-    }
     useEffect(() => {
         setMounted(true);
     }, []);
 
     const [layouts, setLayouts] = useState<Layouts | undefined>();
     const lastSavedLayout = useRef<Layout[]>([]);
-
-
+    const isFirstRender = useRef(true);
     useEffect(() => {
         axios
             .get("http://localhost:3000/layout", {
                 withCredentials: true,
             })
-            .then((e) => setLayouts(e.data.dataGrid));
-    },[]);
+            .then((e) => {
+                setLayouts(e.data.dataGrid);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (!layouts || layouts[currentBreakpoint].length === 0 ) return;
+
+        // Don't run on first render
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        // Compare current layout with last saved
+        const oldLayout = JSON.stringify(lastSavedLayout.current);
+        const newLayout = JSON.stringify(layouts);
+
+        if (oldLayout !== newLayout && !saveLayoutDb.current) {
+            console.log("save to db");
+            try {
+                axios.put(
+                    "http://localhost:3000/savingLayout",
+                    { layouts },
+                    { withCredentials: true },
+                );
+            } catch (e) {
+                console.error(e);
+            }
+            saveLayoutDb.current = true;
+        }
+    }, [layouts]);
+
+    if (
+        !userComponent ||
+        userComponent.length === 0 ||
+        currentBreakpoint === ""
+    ) {
+        return <LoadingAnimation />;
+    }
 
     // callback when layouts change
     // lastSavedLayout ref is used for saving the last layout before changing,
@@ -93,11 +139,15 @@ const GridComponent: FunctionComponent = () => {
     // ignoreLayoutChange ref is used for ignoring the layoutChanges
     // when a breakpoint is made
     const onLayoutChange = (layout: Layout[], allLayouts: Layouts) => {
+        console.log("layout");
         lastSavedLayout.current = layout;
 
         if (!ignoreLayoutChange.current) {
             setLayouts(allLayouts);
+            saveLayoutDb.current = false;
+            console.log("layout set");
         }
+        ignoreLayoutChange.current = false;
     };
 
     // callback when breakpoint change
@@ -108,12 +158,19 @@ const GridComponent: FunctionComponent = () => {
     // using lastSavedLayout ref
     // Update currentBreakpoint after saving
     const onBreakpointChange = (newBreakpoint: string) => {
-        ignoreLayoutChange.current = true;
+        console.log(window.innerWidth)
+        console.log("breakpoint");
 
-        setLayouts((prevLayouts) => ({
-            ...prevLayouts,
-            [currentBreakpoint]: lastSavedLayout.current,
-        }));
+        if (lastSavedLayout.current) {
+            ignoreLayoutChange.current = true;
+
+            setLayouts((prevLayouts) => {
+                return {
+                    ...prevLayouts,
+                    [currentBreakpoint]: lastSavedLayout.current,
+                };
+            });
+        }
         setCurrentBreakpoint(newBreakpoint);
     };
     //
@@ -137,7 +194,7 @@ const GridComponent: FunctionComponent = () => {
 
     // Generating the components:
     const generateDOM = () => {
-        if(!layouts){
+        if (!layouts || !layouts[currentBreakpoint]) {
             return;
         }
         return layouts[currentBreakpoint].map((layout) => {
@@ -180,9 +237,7 @@ const GridComponent: FunctionComponent = () => {
     return (
         <>
             <div className="grid-layout">
-                {userComponent.length === 0 ? (
-                    <LoadingAnimation />
-                ) : (
+                {
                     <ResponsiveReactGridLayout
                         rowHeight={30}
                         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
@@ -208,7 +263,7 @@ const GridComponent: FunctionComponent = () => {
                     >
                         {generateDOM() ?? <LoadingAnimation />}
                     </ResponsiveReactGridLayout>
-                )}
+                }
             </div>
         </>
     );

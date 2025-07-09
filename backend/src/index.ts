@@ -1,6 +1,7 @@
 import express from "express";
 
 import { authenticateToken } from "./auth/authentication.js";
+import { layoutValidator } from "./validator/validation.js";
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
@@ -42,12 +43,12 @@ app.get("/layout", async (req, res) => {
   // send to verifyingToken
   if (accessToken == null) {
     res.sendStatus(401);
+    console.log("tampered cookie")
     return;
   }
 
   // hand
   const tryFetchLayout = async (userId) => {
-    console.log(userId)
     const layout = await prisma.weatherLayout.findUnique({
       where: {
         weatherCompId_userId: {
@@ -59,7 +60,6 @@ app.get("/layout", async (req, res) => {
         dataGrid: true,
       },
     });
-
     return layout;
   };
 
@@ -68,12 +68,47 @@ app.get("/layout", async (req, res) => {
   jwt.verify(accessToken,process.env.ACCESS_SECRET_TOKEN,async (err, decoded) => {
       if(!err){
         const userId = BigInt(decoded.userId)
-        console.log(userId)
         const dataGrid = await tryFetchLayout(userId);
-         return res
+        res
             .status(200)
             .json(dataGrid);
+            console.log("working")
+         return ;
       }
+       res.status(401).json({ message: "unauthorized" });
+
+    }
+  );
+  return;
+});
+
+app.put("/savingLayout", layoutValidator, (req, res) => {
+  const accessToken = req.cookies.accessToken;
+  // if invalid accessToken
+  // send to verifyingToken
+  if (accessToken == null) {
+    res.sendStatus(401);
+    return;
+  }
+  // prettier-ignore
+  jwt.verify(accessToken, process.env.ACCESS_SECRET_TOKEN, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: "unauthorized" });
+      }
+      const layouts = req.body.layouts;
+
+      await prisma.weatherLayout.update({
+        where: {
+          weatherCompId_userId:{weatherCompId:0, 
+            userId: decoded.userId}
+        } ,
+        data: {
+          dataGrid: layouts
+        }
+  
+      });
+      console.log("save successfully")
+      res.send(202)
     }
   );
 });

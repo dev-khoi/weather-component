@@ -34,7 +34,6 @@ const Layout = (prop: prop) => {
 
     // state of component in layout
     const [userComponent, setUserComponent] = useState<weatherDataType[]>([]);
-
     // location and time of the weather
     const [headInfo, setHeadInfo] = useState<{
         location: string;
@@ -102,12 +101,13 @@ const Layout = (prop: prop) => {
         }
     }, []);
 
-
     // format function for new api data
     const formatNewWeatherData = (weatherData: any): weatherDataType[] => {
         // prettier-ignore
         // Flatten weatherData into a plain object called "data", excluding "sys" and unrelated fields
-        const {  weather, main, visibility, wind, rain, snow, clouds, dt, name } = weatherData;
+        const {  weather, main, visibility, wind, rain, snow, clouds, dt, name, sys } = weatherData;
+        const { sunrise, sunset } = sys ?? {};
+
         // Only include relevant weather-related fields
         const formatWeatherData: Record<string, any> = {
             // Weather (flatten first entry)
@@ -139,6 +139,12 @@ const Layout = (prop: prop) => {
 
             // Visibility
             visibility: visibility,
+
+            sunrise: timeConvert(sunrise, {
+                hour: "2-digit",
+                minute: "2-digit",
+            }),
+            sunset: timeConvert(sunset, { hour: "2-digit", minute: "2-digit" }),
         };
 
         const arrayWeather = Object.entries(formatWeatherData);
