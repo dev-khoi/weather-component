@@ -8,7 +8,7 @@ import {
 } from "./auth/authentication.js";
 import jwt from "jsonwebtoken";
 // SECRET KEY
-import { createDefaultWeatherLayout } from "./db/defaultLayout.js";
+import { createBaseLayout } from "./db/defaultLayout.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -20,7 +20,7 @@ const corsOption = {
 };
 import cookieParser from "cookie-parser";
 // database
-import { PrismaClient } from "./generated/prisma/index.js";
+import { PrismaClient } from "./../generated/prisma/index.js";
 const prisma = new PrismaClient();
 // refreshToken search
 
@@ -51,10 +51,31 @@ app.post("/register", registerValidator, async (req, res) => {
       },
     });
 
-    console.log(Object.keys(prisma));
-    await prisma.weatherLayout.create({
-      data: { userId: user.userId, ...createDefaultWeatherLayout },
-    });
+    if (user) {
+      const layoutSizes = ["lg", "md", "sm", "xs", "xxs"];
+
+      const weatherLay = await prisma.weatherLayout.createMany({
+        data: layoutSizes.map((size) => ({
+          userId: user.userId,
+          layoutSize: size,
+        })),
+        skipDuplicates: true,
+      });
+
+      for (const size of layoutSizes) {
+        const baseLayouts = createBaseLayout();
+
+        await prisma.weatherComponent.createMany({
+          data: baseLayouts.map((e) => ({
+            userId: user.userId,
+            dataGrid: e,
+            layoutSize: size,
+            weatherId: String(e.i),
+          })),
+          skipDuplicates: true,
+        });
+      }
+    }
   } catch (e) {
     console.error(e);
   }
@@ -126,8 +147,8 @@ app.post("/login", async (req, res) => {
       select: {
         userId: true,
         hash: true,
-        salt: true
-      }
+        salt: true,
+      },
     });
 
     if (!user) {

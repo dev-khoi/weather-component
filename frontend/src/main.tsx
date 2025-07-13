@@ -32,7 +32,7 @@ function App() {
     const auth = useAuth();
     if(auth.isLoading){
       return(
-        <LoadingAnimation />
+        <div>verifying</div>
       )
     }
     return (
@@ -49,7 +49,7 @@ root.render(
       <AuthProvider>
         <App />
 
-
+        
       </AuthProvider>
     </StrictMode>,
 );

@@ -14,7 +14,7 @@ const corsOption = {
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import { generateAccessToken } from "./auth/authentication.js";
-import { PrismaClient } from "./generated/prisma/index.js";
+import { PrismaClient } from "./../generated/prisma/index.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -43,31 +43,41 @@ app.get("/layout", async (req, res) => {
   // send to verifyingToken
   if (accessToken == null) {
     res.sendStatus(401);
-    console.log("tampered cookie")
+    console.log("tampered cookie");
     return;
   }
 
   // hand
   const tryFetchLayout = async (userId) => {
-    const layout = await prisma.weatherLayout.findUnique({
+    const layoutSizes = await prisma.weatherLayout.findMany({
       where: {
-        weatherCompId_userId: {
-          weatherCompId: 0,
-          userId: userId,
-        },
+        userId: userId,
       },
       select: {
-        dataGrid: true,
+        layoutSize: true,
+        WeatherComponents: {
+          select: {
+            dataGrid: true,
+          },
+        },
       },
     });
-    return layout;
+    const layouts = layoutSizes.map((layout) => {
+      const key = layout.layoutSize;
+      const values = layout.WeatherComponents.map((v) => v.dataGrid);
+      return { [key]: values };
+    });
+
+    return layouts.reduce((acc, cur) => {
+      return { ...acc, ...cur };
+    }, {});
   };
 
   // verifying access token
   // prettier-ignore
   jwt.verify(accessToken,process.env.ACCESS_SECRET_TOKEN,async (err, decoded) => {
       if(!err){
-        const userId = BigInt(decoded.userId)
+        const userId = Number(decoded.userId)
         const dataGrid = await tryFetchLayout(userId);
         res
             .status(200)
@@ -95,19 +105,30 @@ app.put("/savingLayout", layoutValidator, (req, res) => {
       if (err) {
         return res.status(401).json({ message: "unauthorized" });
       }
-      const layouts = req.body.layouts;
+      // ["lg": {}]
+      const layouts : {string : Layout[]} = req.body.layouts;
 
-      await prisma.weatherLayout.update({
+     const layoutsArr = Object.entries(layouts);
+  console.log(layoutsArr)
+  for (const [layoutSize, layoutComps] of layoutsArr) {
+    for (const comp of layoutComps) {
+      const update = await prisma.weatherComponent.updateMany({
         where: {
-          weatherCompId_userId:{weatherCompId:0, 
-            userId: decoded.userId}
-        } ,
+          layoutSize: layoutSize,
+          userId: Number(decoded.userId),
+          weatherId: comp.i, 
+        },
         data: {
-          dataGrid: layouts
-        }
-  
+          dataGrid: { ...comp },
+        },
       });
-      console.log("save successfully")
+        console.log(update)
+
+    }
+  }
+
+      
+    
       res.send(202)
     }
   );

@@ -1,4 +1,4 @@
-import  type {  ReactNode, Dispatch, SetStateAction} from "react";
+import type { ReactNode, Dispatch, SetStateAction } from "react";
 // TYPE:
 // prop type
 interface prop {
@@ -20,7 +20,7 @@ type ComponentState = {
 type weatherDataType = {
     id: number;
     componentName: string;
-    componentData: number | string | Record<string, any>;
+    componentData: number | string;
 };
 
 type UserComponentContextType = {
@@ -38,4 +38,11 @@ type latLongType = {
 };
 // formatting the api
 
-export type {prop, ComponentState, weatherDataType, UserComponentContextType, WeatherComponentContextType, latLongType}
+export type {
+    prop,
+    ComponentState,
+    weatherDataType,
+    UserComponentContextType,
+    WeatherComponentContextType,
+    latLongType,
+};

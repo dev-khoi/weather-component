@@ -27,28 +27,28 @@ import axios from "axios";
 // };
 {
     /* <button
-                        onClick={() => removeComponent(comp.id)}
-                        type="button"
-                        className="cancelSelector absolute top-1 right-2 w-6 h-6 flex items-center justify-center rounded-full text-gray-600 hover:text-amber-600 focus:text-amber-600 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                        aria-label={description || "Remove component"}
-                        title="Remove component"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            aria-hidden="true"
+                            onClick={() => removeComponent(comp.id)}
+                            type="button"
+                            className="cancelSelector absolute top-1 right-2 w-6 h-6 flex items-center justify-center rounded-full text-gray-600 hover:text-amber-600 focus:text-amber-600 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                            aria-label={description || "Remove component"}
+                            title="Remove component"
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button> */
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                aria-hidden="true"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button> */
 }
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -59,9 +59,6 @@ const GridComponent: FunctionComponent = () => {
     // Grid layout configuration
     const userComponentContextValue = useContext(userComponentContext);
     const userComponent = userComponentContextValue?.userComponent;
-
-    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>("");
-
     const getBreakpointFromWidth = (width: number): string => {
         if (width >= 1150) return "lg";
         if (width >= 996) return "md";
@@ -69,61 +66,47 @@ const GridComponent: FunctionComponent = () => {
         if (width >= 480) return "xs";
         return "xxs";
     };
+    const [currentBreakpoint, setCurrentBreakpoint] = useState<string>(
+        getBreakpointFromWidth(window.innerWidth),
+    );
+    const changingBreakpoint = useRef(false);
 
-    useEffect(() => {
-        setCurrentBreakpoint(getBreakpointFromWidth(window.innerWidth));
-    }, []);
     const ignoreLayoutChange = useRef(false);
-    const saveLayoutDb = useRef(false);
     const [compactType] = useState<
         "vertical" | "horizontal" | null | undefined
     >("vertical");
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const [layouts, setLayouts] = useState<Layouts | undefined>();
     const lastSavedLayout = useRef<Layout[]>([]);
-    const isFirstRender = useRef(true);
+    if (layouts && layouts[currentBreakpoint]) {
+        lastSavedLayout.current = layouts[currentBreakpoint];
+    }
+
+    const isFirstRender = useRef<boolean>(true);
+
     useEffect(() => {
         axios
             .get("http://localhost:3000/layout", {
                 withCredentials: true,
             })
             .then((e) => {
-                setLayouts(e.data.dataGrid);
+                setLayouts(e.data);
             });
     }, []);
 
-    useEffect(() => {
-        if (!layouts || layouts[currentBreakpoint].length === 0 ) return;
-
-        // Don't run on first render
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
+    // saving layout to the database
+    const saveLayout = async () => {
+        console.log("save to db");
+        try {
+            axios.put(
+                "http://localhost:3000/savingLayout",
+                { layouts },
+                { withCredentials: true },
+            );
+        } catch (e) {
+            console.error(e);
         }
-
-        // Compare current layout with last saved
-        const oldLayout = JSON.stringify(lastSavedLayout.current);
-        const newLayout = JSON.stringify(layouts);
-
-        if (oldLayout !== newLayout && !saveLayoutDb.current) {
-            console.log("save to db");
-            try {
-                axios.put(
-                    "http://localhost:3000/savingLayout",
-                    { layouts },
-                    { withCredentials: true },
-                );
-            } catch (e) {
-                console.error(e);
-            }
-            saveLayoutDb.current = true;
-        }
-    }, [layouts]);
+    };
 
     if (
         !userComponent ||
@@ -133,63 +116,60 @@ const GridComponent: FunctionComponent = () => {
         return <LoadingAnimation />;
     }
 
-    // callback when layouts change
-    // lastSavedLayout ref is used for saving the last layout before changing,
-    // in this case it is used for saving the layout before a breakpoint change
-    // ignoreLayoutChange ref is used for ignoring the layoutChanges
-    // when a breakpoint is made
+    // callback when layout is change
+    // callback after new breakpoint (not firstload)
     const onLayoutChange = (layout: Layout[], allLayouts: Layouts) => {
-        console.log("layout");
-        lastSavedLayout.current = layout;
+        if (!isFirstRender.current) {
+            lastSavedLayout.current = layout;
 
-        if (!ignoreLayoutChange.current) {
-            setLayouts(allLayouts);
-            saveLayoutDb.current = false;
-            console.log("layout set");
+            if (
+                !ignoreLayoutChange.current &&
+                !(
+                    !layouts ||
+                    (layouts[currentBreakpoint].length === 0 &&
+                        currentBreakpoint)
+                )
+            ) {
+                setLayouts({
+                    ...allLayouts,
+                    [currentBreakpoint]: layout,
+                });
+                console.log("layout change on layout change");
+                if (!changingBreakpoint.current) {
+                    saveLayout();
+                }
+            }
+            ignoreLayoutChange.current = false;
+            changingBreakpoint.current = false;
         }
-        ignoreLayoutChange.current = false;
     };
 
-    // callback when breakpoint change
-    // onbreakpoint -> rerender -> onlayoutchange
-    // during rerender, ignoreLayoutChange will be
-    // set to default value (false)
-    // Save current layout before switch
-    // using lastSavedLayout ref
-    // Update currentBreakpoint after saving
     const onBreakpointChange = (newBreakpoint: string) => {
-        console.log(window.innerWidth)
-        console.log("breakpoint");
+        console.log(window.innerWidth);
 
         if (lastSavedLayout.current) {
             ignoreLayoutChange.current = true;
-
-            setLayouts((prevLayouts) => {
+            setLayouts((prevLayout) => {
                 return {
-                    ...prevLayouts,
+                    ...prevLayout,
                     [currentBreakpoint]: lastSavedLayout.current,
                 };
             });
-        }
-        setCurrentBreakpoint(newBreakpoint);
-    };
-    //
-    // generate data
-    const GenerateData = (props: { comp: weatherDataType }) => {
-        const data = props.comp.componentData;
-        if (typeof data === "string" || typeof data === "number") {
-            return <>{data}</>;
-        }
-        if (typeof data === "object" && data !== null && !Array.isArray(data)) {
-            const compDataArr = Object.entries(data);
-
-            if (!compDataArr || !compDataArr.length) {
-                return <div></div>;
+            console.log(
+                "change layouts on break point",
+                currentBreakpoint,
+                newBreakpoint,
+            );
+            if (layouts && layouts[currentBreakpoint]) {
+                lastSavedLayout.current = layouts[currentBreakpoint];
             }
-            return compDataArr.map(([key], index) => {
-                return <div key={index}>{key}</div>;
-            });
         }
+
+        setCurrentBreakpoint(newBreakpoint);
+        changingBreakpoint.current = true;
+        isFirstRender.current = false;
+
+        console.log("setting new breakpoint");
     };
 
     // Generating the components:
@@ -225,7 +205,11 @@ const GridComponent: FunctionComponent = () => {
                         {/* Data */}
                         <div>
                             <div className="text-4xl font-semibold text-amber-200">
-                                {comp && <GenerateData comp={comp} />}
+                                {comp && (
+                                    <span className="weather-value">
+                                        {comp.componentData}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -253,7 +237,7 @@ const GridComponent: FunctionComponent = () => {
                         isBounded={false}
                         layouts={layouts}
                         measureBeforeMount={false}
-                        useCSSTransforms={mounted}
+                        useCSSTransforms
                         compactType={compactType}
                         preventCollision={!compactType}
                         onLayoutChange={onLayoutChange}

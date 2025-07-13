@@ -15,27 +15,39 @@ datasource db {
 }
 
 model User {
-  userId         Int              @id @default(autoincrement())
-  username       String           @default("user") @db.VarChar(14)
-  email          String           @unique @db.VarChar(254)
-  hash           String           @unique @db.VarChar(64)
-  salt           String           @unique @db.VarChar(64)
-  role           String           @default("user")
+  userId         Int             @id @default(autoincrement())
+  username       String          @default("user") @db.VarChar(14)
+  email          String          @unique @db.VarChar(254)
+  hash           String          @unique @db.VarChar(64)
+  salt           String          @unique @db.VarChar(64)
+  role           String          @default("user")
   // a user can have many weather components
   WeatherLayouts WeatherLayout[]
-  RefreshToken   RefreshToken[]
+  RefreshTokens  RefreshToken[]
+}
+
+model WeatherLayout {
+  userId     Int
+  layoutSize String @db.VarChar(14)
+  user       User   @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+
+  WeatherComponents WeatherComponent[]
+
+  @@id([layoutSize, userId])
 }
 
 // user 1-many weatherLayout
-model WeatherLayout {
-  weatherCompId Int
-  userId        Int
-  dataGrid      Json
+model WeatherComponent {
+  layoutSize String @db.VarChar(14)
+  userId     Int
 
-  user User @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+  weatherId String
+  dataGrid  Json
 
-  @@id([weatherCompId, userId])
-}
+  WeatherLayout WeatherLayout @relation(fields: [layoutSize, userId], references: [layoutSize, userId])
+
+  @@id([layoutSize, userId, weatherId]) 
+} 
 
 // refresh token database
 // refreshToken 1-1 user
