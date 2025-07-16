@@ -7,7 +7,8 @@ import {
     useCallback,
 } from "react";
 import axios from "axios";
-import { flushSync } from "react-dom";
+const backendUrl = import.meta.env.VITE_BACKEND_HOST;
+
 axios.defaults.withCredentials = true;
 
 export type AuthContextType = {
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const checkAuth = async () => {
         try {
             // Only call /verifyingToken, let backend handle refresh logic
-            const res = await axios.post("http://localhost:4000/verifyingToken");
+            const res = await axios.post(`${backendUrl}/verifyingToken`);
             setIsAuthenticated(res.data.valid === true);
         } catch (err) {
             console.error("Auth check failed", err);

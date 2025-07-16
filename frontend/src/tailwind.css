@@ -18,13 +18,15 @@
     -moz-osx-font-smoothing: grayscale;
     --radius: 0.625rem;
     /* --background: oklch(52.562% 0.01137 17.233); */
-    --foreground: oklch(0.145 0 0);
+
+    --background: #e9dcdc;
+    --foreground: oklch(36.506% 0.00691 17.145);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
+    --primary: oklch(26.968% 0.00147 16.1);
+    --primary-foreground: oklch(99.107% 0.00011 271.152);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
@@ -53,20 +55,19 @@
 @media (prefers-color-scheme: dark) {
     :root {
             --primary-white: #fcffff;
-
             --primary-card: #888f9c;
             --header-text: #e9f1f7;
             --background-color: #495365;
             --describe-text: #fff7d6;
 
-            --background: oklch(0.145 0 0);
-            --foreground: oklch(0.985 0 0);
+            --background: oklch(24.039% 0.00151 16.27);
+            --foreground: oklch(92.571% 0.00106 11.689);
             --card: oklch(0.205 0 0);
             --card-foreground: oklch(0.985 0 0);
             --popover: oklch(0.205 0 0);
             --popover-foreground: oklch(0.985 0 0);
-            --primary: oklch(0.922 0 0);
-            --primary-foreground: oklch(0.205 0 0);
+            --primary: oklch(91.564% 0.01645 17.111);
+            --primary-foreground: oklch(29.012% 0.00144 15.981);
             --secondary: oklch(0.269 0 0);
             --secondary-foreground: oklch(0.985 0 0);
             --muted: oklch(0.269 0 0);

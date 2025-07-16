@@ -19,6 +19,7 @@ import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { error } from "console";
 import { createBaseLayout, createLayout } from "./db/defaultLayout.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
+import { authRoute } from "./authServer.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -35,6 +36,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // *routes
 // authenticate the user to access weather
+
+app.use("/auth", authRoute)
+
 
 app.get("/", authenticateToken, (req, res) => {
   res.json({ email: req.body.email });

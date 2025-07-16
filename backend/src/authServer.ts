@@ -1,4 +1,6 @@
 import express from "express";
+
+import { Router } from "express";
 import { genPassword, verifyPassword } from "./lib/passwordUtils.js";
 import { registerValidator } from "../../../learningAuth/backend/validator/validation.js";
 // import { pool } from "./db/pool.js";
@@ -25,17 +27,17 @@ const prisma = new PrismaClient();
 // refreshToken search
 
 // *middleware config
-const app = express();
+const authRoute = Router();
 // cors for connecting to vite
-app.use(cors(corsOption));
+authRoute.use(cors(corsOption));
 // const PgSession = connectPgSimple(session);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+authRoute.use(express.json());
+authRoute.use(express.urlencoded({ extended: true }));
+authRoute.use(cookieParser());
 
 // register
-app.post("/register", registerValidator, async (req, res) => {
+authRoute.post("/register", registerValidator, async (req, res) => {
   const { username, email, password } = req.body;
   const saltHash = genPassword(password);
   const salt = saltHash.salt;
@@ -87,7 +89,7 @@ app.post("/register", registerValidator, async (req, res) => {
 // user sends the refresh token
 // if refreshToken is validated
 // ->access token
-app.post("/verifyingToken", async (req, res) => {
+authRoute.post("/verifyingToken", async (req, res) => {
   // extracting the token
   const refreshToken = req.cookies.refreshToken;
   const accessToken = req.cookies.accessToken;
@@ -138,7 +140,7 @@ app.post("/verifyingToken", async (req, res) => {
 // user send email
 // -> generate access and refresh token
 // -> storing the history of the refresh token
-app.post("/login", async (req, res) => {
+authRoute.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log(email, password);
   try {
@@ -195,7 +197,7 @@ app.post("/login", async (req, res) => {
 });
 
 // deleting user tokens when logging out
-app.delete("/logout", async (req, res) => {
+authRoute.delete("/logout", async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   try {
     await prisma.refreshToken.delete({
@@ -213,6 +215,4 @@ app.delete("/logout", async (req, res) => {
   }
 });
 
-app.listen(4000, () => {
-  console.log("jwt authentication");
-});
+export { authRoute }
