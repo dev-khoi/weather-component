@@ -28,5 +28,5 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["src", "src/libs"]
+    "include": ["src", "src/libs", "src/Weather/getAndStoreWeather.tsx", "src/helpers/layoutDb.ts"]
 }

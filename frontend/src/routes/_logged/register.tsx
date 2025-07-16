@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 
-import { SignUpForm } from "@/components/sign-up-form";
+import { SignUpForm } from "@/components/ui/signUpForm";
 import { useAuth } from "@/auth/auth";
-import { LoadingAnimation } from "@/components/loading";
+import { LoadingAnimation } from "@/components/ui/loading";
 
 export const Route = createFileRoute("/_logged/register")({
     component: RouteComponent,

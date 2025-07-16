@@ -15,6 +15,10 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import { generateAccessToken } from "./auth/authentication.js";
 import { PrismaClient } from "./../generated/prisma/index.js";
+import { verifyAccessToken } from "./lib/passwordUtils.js";
+import { error } from "console";
+import { createBaseLayout, createLayout } from "./db/defaultLayout.js";
+import { InputJsonValue } from "@prisma/client/runtime/library.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -36,18 +40,17 @@ app.get("/", authenticateToken, (req, res) => {
   res.json({ email: req.body.email });
 });
 
-app.get("/layout", async (req, res) => {
+app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
   // extracting the token
-  const accessToken = req.cookies.accessToken;
+  const decoded = req.decoded;
+
   // if invalid accessToken
   // send to verifyingToken
-  if (accessToken == null) {
+  if (!decoded) {
     res.sendStatus(401);
-    console.log("tampered cookie");
     return;
   }
 
-  // hand
   const tryFetchLayout = async (userId) => {
     const layoutSizes = await prisma.weatherLayout.findMany({
       where: {
@@ -67,71 +70,119 @@ app.get("/layout", async (req, res) => {
       const values = layout.WeatherComponents.map((v) => v.dataGrid);
       return { [key]: values };
     });
-
-    return layouts.reduce((acc, cur) => {
-      return { ...acc, ...cur };
-    }, {});
+    return Object.assign({}, ...layouts);
   };
 
-  // verifying access token
-  // prettier-ignore
-  jwt.verify(accessToken,process.env.ACCESS_SECRET_TOKEN,async (err, decoded) => {
-      if(!err){
-        const userId = Number(decoded.userId)
-        const dataGrid = await tryFetchLayout(userId);
-        res
-            .status(200)
-            .json(dataGrid);
-            console.log("working")
-         return ;
-      }
-       res.status(401).json({ message: "unauthorized" });
-
-    }
-  );
+  const userId = Number(decoded.userId);
+  const dataGrid = await tryFetchLayout(userId);
+  res.status(200).json(dataGrid);
   return;
 });
 
-app.put("/savingLayout", layoutValidator, (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  // if invalid accessToken
-  // send to verifyingToken
-  if (accessToken == null) {
-    res.sendStatus(401);
+app.put(
+  "/componentInLayouts",
+  layoutValidator,
+  verifyAccessToken,
+  async (req, res) => {
+    const decoded = req.decoded;
+    const layouts: { string: Layout[] } = req.body.layouts;
+
+    if (!decoded || !layouts) {
+      res.status(400).send({ message: "not working" });
+      return;
+    }
+
+    // data: [lg: [{dataGrid}, {dataGrid:2}], md:]
+    // remove & update the changes
+    const layoutsArr = Object.entries(layouts);
+    for (const [layoutSize, layoutComps] of layoutsArr) {
+      // UPDATING THE LAYOUTS
+      try {
+        await prisma.$transaction(async (tx) => {
+          // update
+          for (const comp of layoutComps) {
+            const update = await prisma.weatherComponent.updateMany({
+              where: {
+                layoutSize: layoutSize,
+                userId: Number(decoded.userId),
+                weatherId: comp.i,
+              },
+              data: {
+                dataGrid: { ...comp },
+              },
+            });
+            console.debug({ update });
+          }
+        });
+      } catch (e) {
+        console.error(e);
+      }
+
+      res.status(202).json({ message: "layout saved successfully" });
+      return;
+    }
+  }
+);
+
+app.delete(
+  "/componentInLayouts",
+  layoutValidator,
+  verifyAccessToken,
+  async (req, res) => {
+    const decoded = req.decoded;
+    const { id, breakpoint } = req.body;
+
+    if (!id || !breakpoint) {
+      res.status(400).send({ message: "id or breakpoint not found" });
+    }
+    // data: [lg: [{dataGrid}, {dataGrid:2}], md:]
+    // remove
+    try {
+      await prisma.$transaction(async (tx) => {
+        // delete
+        const remove = await prisma.weatherComponent.delete({
+          where: {
+            layoutSize_userId_weatherId: {
+              userId: Number(decoded.userId),
+              layoutSize: breakpoint,
+              weatherId: id,
+            },
+          },
+        });
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    res.send(202);
+  }
+);
+
+app.post("/componentInLayouts", verifyAccessToken, async (req, res) => {
+  const { newComp, breakpoint }: { newComp: Layout; breakpoint: string } =
+    req.body;
+  console.log(newComp, breakpoint);
+  const userId = req.decoded.userId;
+
+  if (!newComp || !breakpoint || !userId) {
+    res.status(400).json({ error: "Missing required fields" });
     return;
   }
-  // prettier-ignore
-  jwt.verify(accessToken, process.env.ACCESS_SECRET_TOKEN, async (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: "unauthorized" });
-      }
-      // ["lg": {}]
-      const layouts : {string : Layout[]} = req.body.layouts;
-
-     const layoutsArr = Object.entries(layouts);
-  console.log(layoutsArr)
-  for (const [layoutSize, layoutComps] of layoutsArr) {
-    for (const comp of layoutComps) {
-      const update = await prisma.weatherComponent.updateMany({
-        where: {
-          layoutSize: layoutSize,
-          userId: Number(decoded.userId),
-          weatherId: comp.i, 
-        },
-        data: {
-          dataGrid: { ...comp },
-        },
-      });
-        console.log(update)
-
-    }
+  const layoutJson: InputJsonValue = JSON.parse(JSON.stringify(newComp));
+  try {
+    await prisma.weatherComponent.create({
+      data: {
+        layoutSize: breakpoint,
+        userId: Number(userId),
+        weatherId: newComp.i,
+        dataGrid: layoutJson,
+      },
+    });
+  } catch (e) {
+    console.error(e);
   }
-
-      
-    
-      res.send(202)
-    }
-  );
+  res.status(201).json({ message: "Component created successfully" });
+  return;
 });
 
 app.listen(3000, () => {

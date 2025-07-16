@@ -5,7 +5,7 @@ import { useAuth } from "./auth/auth";
 import { AuthProvider } from "./auth/auth";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import { LoadingAnimation } from "./components/loading";
+import { LoadingAnimation } from "./components/ui/loading";
 
 // Create a new router instance
 const router = createRouter({
@@ -30,15 +30,10 @@ function InnerApp() {
 
 function App() {
     const auth = useAuth();
-    if(auth.isLoading){
-      return(
-        <div>verifying</div>
-      )
+    if (auth.isLoading) {
+        return <div>verifying</div>;
     }
-    return (
-        
-            <InnerApp />
-    );
+    return <InnerApp />;
 }
 // Render the app
 const rootElement = document.getElementById("root")!;
@@ -46,10 +41,8 @@ const rootElement = document.getElementById("root")!;
 const root = ReactDOM.createRoot(rootElement);
 root.render(
     <StrictMode>
-      <AuthProvider>
-        <App />
-
-        
-      </AuthProvider>
+        <AuthProvider>
+            <App />
+        </AuthProvider>
     </StrictMode>,
 );

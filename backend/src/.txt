@@ -85,3 +85,23 @@
    │   Client   │
    └────────────┘
         ✔ User fully logged out
+
+
+
+  // verifying access token
+  // prettier-ignore
+  jwt.verify(accessToken,process.env.ACCESS_SECRET_TOKEN,async (err, decoded) => {
+      if(!err){
+        const userId = Number(decoded.userId)
+        const dataGrid = await tryFetchLayout(userId);
+        res
+            .status(200)
+            .json(dataGrid);
+            console.log("working")
+         return ;
+      }
+       res.status(401).json({ message: "unauthorized" });
+
+    }
+  );
+  return;
