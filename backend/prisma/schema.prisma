@@ -18,8 +18,10 @@ model User {
   userId         Int             @id @default(autoincrement())
   username       String          @default("user") @db.VarChar(14)
   email          String          @unique @db.VarChar(254)
-  hash           String          @unique @db.VarChar(64)
-  salt           String          @unique @db.VarChar(64)
+  provider       String          @default("local")
+  providerId     String?         @unique
+  hash           String?          @unique @db.VarChar(64)
+  salt           String?         @unique @db.VarChar(64)
   role           String          @default("user")
   // a user can have many weather components
   WeatherLayouts WeatherLayout[]
@@ -46,8 +48,8 @@ model WeatherComponent {
 
   WeatherLayout WeatherLayout @relation(fields: [layoutSize, userId], references: [layoutSize, userId])
 
-  @@id([layoutSize, userId, weatherId]) 
-} 
+  @@id([layoutSize, userId, weatherId])
+}
 
 // refresh token database
 // refreshToken 1-1 user

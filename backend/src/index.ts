@@ -1,5 +1,5 @@
-import express from "express";
-
+import express, { Request, Response } from "express";
+import { Layout } from "./types/type.js";
 import { authenticateToken } from "./auth/authentication.js";
 import { layoutValidator } from "./validator/validation.js";
 // SECRET KEY
@@ -12,14 +12,11 @@ const corsOption = {
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
 import cookieParser from "cookie-parser";
-import jwt from "jsonwebtoken";
 import { generateAccessToken } from "./auth/authentication.js";
 import { PrismaClient } from "./../generated/prisma/index.js";
 import { verifyAccessToken } from "./lib/passwordUtils.js";
-import { error } from "console";
-import { createBaseLayout, createLayout } from "./db/defaultLayout.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
-import { authRoute } from "./authServer.js";
+import { authRoute } from "./authServer/authServer.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -37,10 +34,9 @@ app.use(cookieParser());
 // *routes
 // authenticate the user to access weather
 
-app.use("/auth", authRoute)
+app.use("/auth", authRoute);
 
-
-app.get("/", authenticateToken, (req, res) => {
+app.get("/", authenticateToken, (req: Request, res: Response) => {
   res.json({ email: req.body.email });
 });
 
@@ -55,10 +51,10 @@ app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
     return;
   }
 
-  const tryFetchLayout = async (userId) => {
+  const tryFetchLayout = async (userId: string) => {
     const layoutSizes = await prisma.weatherLayout.findMany({
       where: {
-        userId: userId,
+        userId: Number(userId),
       },
       select: {
         layoutSize: true,
@@ -77,8 +73,7 @@ app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
     return Object.assign({}, ...layouts);
   };
 
-  const userId = Number(decoded.userId);
-  const dataGrid = await tryFetchLayout(userId);
+  const dataGrid = await tryFetchLayout(decoded.userId);
   res.status(200).json(dataGrid);
   return;
 });
@@ -87,7 +82,7 @@ app.put(
   "/componentInLayouts",
   layoutValidator,
   verifyAccessToken,
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const decoded = req.decoded;
     const layouts: { string: Layout[] } = req.body.layouts;
 
@@ -132,12 +127,13 @@ app.delete(
   "/componentInLayouts",
   layoutValidator,
   verifyAccessToken,
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const decoded = req.decoded;
     const { id, breakpoint } = req.body;
 
-    if (!id || !breakpoint) {
+    if (!id || !breakpoint || !decoded) {
       res.status(400).send({ message: "id or breakpoint not found" });
+      return;
     }
     // data: [lg: [{dataGrid}, {dataGrid:2}], md:]
     // remove
@@ -162,32 +158,41 @@ app.delete(
   }
 );
 
-app.post("/componentInLayouts", verifyAccessToken, async (req, res) => {
-  const { newComp, breakpoint }: { newComp: Layout; breakpoint: string } =
-    req.body;
-  console.log(newComp, breakpoint);
-  const userId = req.decoded.userId;
+app.post(
+  "/componentInLayouts",
+  verifyAccessToken,
+  async (req: Request, res: Response) => {
+    const { newComp, breakpoint }: { newComp: Layout; breakpoint: string } =
+      req.body;
+    console.log(newComp, breakpoint);
 
-  if (!newComp || !breakpoint || !userId) {
-    res.status(400).json({ error: "Missing required fields" });
+    if (!req.decoded || !newComp || !breakpoint) {
+      res.status(400).json({ error: "Missing required fields" });
+      return;
+    }
+    const userId = req.decoded.userId;
+
+    if (!userId) {
+      res.status(400).json({ error: "Missing required fields" });
+      return;
+    }
+    const layoutJson: InputJsonValue = JSON.parse(JSON.stringify(newComp));
+    try {
+      await prisma.weatherComponent.create({
+        data: {
+          layoutSize: breakpoint,
+          userId: Number(userId),
+          weatherId: newComp.i,
+          dataGrid: layoutJson,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    res.status(201).json({ message: "Component created successfully" });
     return;
   }
-  const layoutJson: InputJsonValue = JSON.parse(JSON.stringify(newComp));
-  try {
-    await prisma.weatherComponent.create({
-      data: {
-        layoutSize: breakpoint,
-        userId: Number(userId),
-        weatherId: newComp.i,
-        dataGrid: layoutJson,
-      },
-    });
-  } catch (e) {
-    console.error(e);
-  }
-  res.status(201).json({ message: "Component created successfully" });
-  return;
-});
+);
 
 app.listen(3000, () => {
   console.log("server on port 3000 started");

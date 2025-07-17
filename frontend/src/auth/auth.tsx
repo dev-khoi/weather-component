@@ -7,7 +7,7 @@ import {
     useCallback,
 } from "react";
 import axios from "axios";
-const backendUrl = import.meta.env.VITE_BACKEND_HOST;
+const backendUrl = import.meta.env.VITE_AUTH_HOST;
 
 axios.defaults.withCredentials = true;
 
