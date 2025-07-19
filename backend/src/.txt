@@ -158,3 +158,22 @@
   //   }
   // );
 
+  const idStr = typeof userId === "number" ? userId.toString() : `${userId}`;
+
+  return jwt.sign({ userId: idStr }, secretAccessToken, {
+    expiresIn: "300s",
+  });
+};
+
+const generateRefreshToken = (userId: number | string) => {
+  const idStr = typeof userId === "number" ? userId.toString() : `${userId}`;
+
+  return jwt.sign({ userId: idStr }, secretRefreshToken, {
+    expiresIn: "15d",
+  });
+};
+
+
+session token date:
+access: 15minutes
+expire: 15d

@@ -5,18 +5,20 @@ import { layoutValidator } from "./validator/validation.js";
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
+const frontend = process.env.FRONTEND_URL!;
+
 import cors from "cors";
 const corsOption = {
-  origin: ["http://localhost:5173"],
+  origin: [frontend],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
 import cookieParser from "cookie-parser";
-import { generateAccessToken } from "./auth/authentication.js";
 import { PrismaClient } from "./../generated/prisma/index.js";
 import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
 import { authRoute } from "./authServer/authServer.js";
+import { errorHandler } from "./authServer/authErrorHandler.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -27,6 +29,7 @@ const app = express();
 // cors for connecting to vite
 app.use(cors(corsOption));
 // const PgSession = connectPgSimple(session);
+app.use(errorHandler);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -95,6 +98,9 @@ app.put(
     // remove & update the changes
     const layoutsArr = Object.entries(layouts);
     for (const [layoutSize, layoutComps] of layoutsArr) {
+      if (layoutComps.length < 1) {
+        throw new Error("cannot have 0 layoutComps");
+      }
       // UPDATING THE LAYOUTS
       try {
         await prisma.$transaction(async (tx) => {
@@ -116,7 +122,6 @@ app.put(
       } catch (e) {
         console.error(e);
       }
-
       res.status(202).json({ message: "layout saved successfully" });
       return;
     }
@@ -139,6 +144,16 @@ app.delete(
     // remove
     try {
       await prisma.$transaction(async (tx) => {
+        const matchingComponents = await prisma.weatherComponent.findMany({
+          where: {
+            userId: Number(decoded.userId),
+            layoutSize: breakpoint,
+          },
+        });
+
+        if (matchingComponents.length <= 1) {
+          throw new Error("Cannot delete the last remaining layout component.");
+        }
         // delete
         const remove = await prisma.weatherComponent.delete({
           where: {
