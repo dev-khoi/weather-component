@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "express-dev": "nodemon --exec tsx src/index.ts",
     "auth-dev": "nodemon --exec tsx src/authServer.ts",
-    "prisma-dev": "nodemon --exec tsx db/database.ts"
+    "prisma-dev": "nodemon --exec tsx db/database.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",

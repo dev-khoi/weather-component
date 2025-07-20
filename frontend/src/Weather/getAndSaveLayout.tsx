@@ -27,7 +27,6 @@ import { Label } from "@/components/ui/label";
 import {
     createLayout,
     getListMissingId,
-    provokeGeolocation,
 } from "@/helpers/helper.ts";
 import {
     updateLayoutDb,
@@ -350,6 +349,9 @@ const GridComponent: FunctionComponent = () => {
         event: MouseEvent | TouchEvent,
         element: HTMLElement,
     ) => {
+        if(layout || oldItem || newItem || placeholder || event){
+
+        }
         const { top } = element.getBoundingClientRect();
 
         if (isMobile) {
@@ -436,6 +438,7 @@ const GridComponent: FunctionComponent = () => {
                     onLayoutChange={onLayoutChange}
                     onBreakpointChange={onBreakpointChange}
                     isDroppable
+                    isBounded
                     draggableCancel=".cancelSelector"
                     isDraggable={editMode}
                     isResizable={editMode}

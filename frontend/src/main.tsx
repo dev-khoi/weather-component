@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import {
     RouterProvider,
     createRouter,
-    useRouterState,
 } from "@tanstack/react-router";
 import { useAuth } from "./auth/auth";
 import { AuthProvider } from "./auth/auth";

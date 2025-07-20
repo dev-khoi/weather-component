@@ -9,7 +9,7 @@ import {
     MenuItem,
     MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const authUrl = import.meta.env.VITE_AUTH_HOST;
 
@@ -24,6 +24,7 @@ const navigation = [
 const user = [
     <MenuItem key="login">
         <a
+            data-testid="login"
             href="/login"
             className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
         >
@@ -32,6 +33,7 @@ const user = [
     </MenuItem>,
     <MenuItem key="logout">
         <button
+            data-testid="logout"
             type="button"
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
             onClick={async () => {
@@ -113,7 +115,10 @@ const NavBar = () => {
                         {/* Profile dropdown */}
                         <Menu as="div" className="relative ml-3">
                             <div>
-                                <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
+                                <MenuButton
+                                    data-testid="main-menu"
+                                    className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
+                                >
                                     <span className="absolute -inset-1.5" />
                                     <span className="sr-only">
                                         Open user menu

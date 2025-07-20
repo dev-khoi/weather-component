@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GalleryVerticalEnd } from "lucide-react";
 
 import { LoginForm } from "@/components/ui/loginForm";
 import { useAuth } from "@/auth/auth";
@@ -19,7 +18,7 @@ function RouteComponent() {
                 <LoadingAnimation />
             ) : (
                 <>
-                    <div className="bg-opacity-70 flex min-h-svh flex-col items-center justify-center gap-6 p-2 md:p-10">
+                    <div  className=" bg-opacity-70 flex min-h-svh flex-col items-center justify-center gap-6 p-2 md:p-10">
                         <div className="flex w-full max-w-sm flex-col gap-6">
                             <a
                                 href="/"

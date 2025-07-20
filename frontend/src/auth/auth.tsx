@@ -4,7 +4,6 @@ import {
     useState,
     useEffect,
     useContext,
-    useCallback,
 } from "react";
 import axios from "axios";
 const backendUrl = import.meta.env.VITE_AUTH_HOST;

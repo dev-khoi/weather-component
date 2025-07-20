@@ -52,7 +52,7 @@ export function SignUpForm({
             setError("passwords did not match")
         }
         try {
-            const response = await axios.post(
+            await axios.post(
                 `${authUrl}/local/register`,
                 {
                     username,
@@ -219,7 +219,7 @@ export function SignUpForm({
                                         </span>
                                     </div>
                                 </div>
-                                <Button type="submit" className="w-full">
+                                <Button type="submit" className="w-full cursor-pointer">
                                     Sign up
                                 </Button>
                             </div>

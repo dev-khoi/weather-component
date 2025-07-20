@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import React from "react";
 
 const HeadInfoSkeleton = () => {
     return (
@@ -23,7 +22,6 @@ const AddComponentButtonSkeleton = () => {
     return (
         <div className="inline-flex items-center gap-2 py-1 px-3 border-2 border-gray-300 dark:border-gray-700 rounded-lg bg-gray-200 dark:bg-gray-800 animate-pulse">
             <div className="h-5 w-32 rounded bg-gray-400 dark:bg-gray-600" />
-
         </div>
     );
 };
@@ -45,7 +43,7 @@ const ToolbarSkeleton = () => {
 const SkeletonGrid = () => {
     return (
         <>
-            <ToolbarSkeleton />
+            <ToolbarSkeleton data-testid="loading" />
             <div className="grid grid-cols-[repeat(auto-fit,minmax(380px,1fr))] gap-4 p-0 sm:p-4">
                 {Array.from({ length: 16 }).map((_, index) => (
                     <div

@@ -91,7 +91,6 @@ function getListMissingId(
 }
 
 const colWidth = 2;
-const gridCols = 12;
 const tileHeight = 3;
 
 const createLayout = (id: string) => {

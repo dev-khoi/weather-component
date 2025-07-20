@@ -7,7 +7,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { FaEyeSlash } from "react-icons/fa";
@@ -66,7 +65,11 @@ export function LoginForm({
         }
     };
     return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <div
+            data-testid="login-form"
+            className={cn("flex flex-col gap-6", className)}
+            {...props}
+        >
             <Card>
                 <CardHeader className="text-center">
                     <CardTitle className="text-xl">Welcome back</CardTitle>
@@ -109,7 +112,10 @@ export function LoginForm({
                             </div>
                             <div className="grid gap-6">
                                 {error && (
-                                    <p className="text-red-500 text-sm mt-2">
+                                    <p
+                                        data-testid="error"
+                                        className="text-red-500 text-sm mt-2"
+                                    >
                                         {error}
                                     </p>
                                 )}
@@ -163,7 +169,11 @@ export function LoginForm({
                                         </span>
                                     </div>
                                 </div>
-                                <Button type="submit" className="w-full">
+                                <Button
+                                    type="submit"
+                                    data-testid="login"
+                                    className="w-full cursor-pointer"
+                                >
                                     Login
                                 </Button>
                             </div>

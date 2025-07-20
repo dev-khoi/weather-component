@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GalleryVerticalEnd } from "lucide-react";
 
 import { SignUpForm } from "@/components/ui/signUpForm";
 import { useAuth } from "@/auth/auth";
