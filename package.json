@@ -1,0 +1,25 @@
+{
+  "name": "weather-dnd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "test": "npx playwright test",
+    "url": "git+https://github.com/Kai-Nguyen11/weather-app-react.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Kai-Nguyen11/weather-app-react/issues"
+  },
+  "homepage": "https://github.com/Kai-Nguyen11/weather-app-react#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/node": "^24.0.15"
+
+  }
+}

@@ -1,0 +1,26 @@
+name: weather
+
+on:
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          node-version: 20
+      - run: npm run test
+      - name: Build Backend (if applicable)
+        working-directory: ./backend
+        run: npm run build # Assumes 'npm run build' exists in backend/package.json
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build # Assumes 'npm run build' exists in frontend/package.json
+        env:
+          VITE_AUTH_HOST: http://localhost:3000/auth
