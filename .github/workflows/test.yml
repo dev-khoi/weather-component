@@ -17,7 +17,16 @@ jobs:
         with:
           node-version: 20
       - run: npm install
-      - name: Build Backend (if applicable)
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build Backend
         working-directory: ./backend
         run: npm run build # Assumes 'npm run build' exists in backend/package.json
       - name: Build Frontend
