@@ -124,7 +124,7 @@ const GridComponent: FunctionComponent = () => {
             .get("http://localhost:3000/componentInLayouts", {
                 withCredentials: true,
             })
-            .then((e) => {
+            .then((e: any) => {
                 console.log(e.data);
                 setAllLayouts(e.data);
             });
