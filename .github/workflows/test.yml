@@ -25,6 +25,7 @@ jobs:
       - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm install
+        run: npm init playwright@latest
 
       - name: Build Backend
         working-directory: ./backend
