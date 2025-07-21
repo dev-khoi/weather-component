@@ -32,7 +32,8 @@ jobs:
       - name: Build Frontend
         working-directory: ./frontend
         run: npm run build # Assumes 'npm run build' exists in frontend/package.json
-      - run: npm run test
 
+      - name: set up test
+        run: npm run test
         env:
           VITE_AUTH_HOST: http://localhost:3000/auth
