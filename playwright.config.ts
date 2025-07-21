@@ -34,9 +34,9 @@ export default defineConfig({
   ],
   // Run your local dev server before starting the tests.
   webServer: {
-    command: "cd frontend && npm run dev",
+    command:
+      'npx concurrently "cd backend && npm run express-dev" "cd frontend && npm run dev"',
     url: "http://localhost:5173/",
     reuseExistingServer: !process.env.CI,
   },
 });
-
