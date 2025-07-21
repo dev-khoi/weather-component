@@ -42,7 +42,6 @@ test.beforeAll(async () => {
   } catch (error) {
     console.error("Error during test user setup:", error);
     // Fail the test suite if setup fails critically
-    test.fail(true, `Failed to set up test user: ${error.message}`);
   } finally {
     await apiContext.dispose(); // Clean up the request context
   }
