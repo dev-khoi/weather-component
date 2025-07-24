@@ -141,7 +141,7 @@ export function LoginForm({
                                             href="#"
                                             className="ml-auto text-sm underline-offset-4 hover:underline"
                                         >
-                                            Forgot your password?
+                                            Forgot your password? 
                                         </a>
                                     </div>
                                     <div className="relative flex items-center w-full justify-between">

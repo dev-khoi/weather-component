@@ -47,9 +47,9 @@ export function SignUpForm({
 
     const handleLocalSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if(password !== passwordConfirm){
-            setPasswordConfirm("")
-            setError("passwords did not match")
+        if (password !== passwordConfirm) {
+            setPasswordConfirm("");
+            setError("passwords did not match");
         }
         try {
             await axios.post(
@@ -67,7 +67,7 @@ export function SignUpForm({
                 },
             );
             // Success case
-            console.log("sucess")
+            console.log("sucess");
             window.location.href = "/weather";
         } catch (err: any) {
             console.log(err);
@@ -134,10 +134,11 @@ export function SignUpForm({
                                         type="username"
                                         placeholder="devKhoi"
                                         minLength={2}
+                                        maxLength={14}
                                         value={username}
-                                         onChange={(e) =>
-                                                setUsername(e.target.value)
-                                            }
+                                        onChange={(e) =>
+                                            setUsername(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -150,8 +151,8 @@ export function SignUpForm({
                                         placeholder="m@example.com"
                                         value={email}
                                         onChange={(e) =>
-                                                setEmail(e.target.value)
-                                            }
+                                            setEmail(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -201,7 +202,9 @@ export function SignUpForm({
                                             name="password-confirm"
                                             value={passwordConfirm}
                                             onChange={(e) =>
-                                                setPasswordConfirm(e.target.value)
+                                                setPasswordConfirm(
+                                                    e.target.value,
+                                                )
                                             }
                                             required
                                         />
@@ -219,7 +222,10 @@ export function SignUpForm({
                                         </span>
                                     </div>
                                 </div>
-                                <Button type="submit" className="w-full cursor-pointer">
+                                <Button
+                                    type="submit"
+                                    className="w-full cursor-pointer"
+                                >
                                     Sign up
                                 </Button>
                             </div>
