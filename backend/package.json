@@ -8,8 +8,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "express-dev": "nodemon --exec tsx src/index.ts",
-    "auth-dev": "nodemon --exec tsx src/authServer.ts",
+    "express-dev": "nodemon --exec tsx src/api/index.ts",
     "prisma-dev": "nodemon --exec tsx db/database.ts",
     "build": "tsc"
   },

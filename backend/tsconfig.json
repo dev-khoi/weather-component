@@ -1,15 +1,19 @@
 {
   "compilerOptions": {
-    "outDir": "public", 
+    "outDir": "dist",                      // Proper build output directory
     "strict": true,
-    "moduleResolution": "node", 
+    "moduleResolution": "node",
     "target": "ES2020",
-    "module": "commonjs",
+    "module": "ESNext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]                         
+    }
   },
-  "include": ["src/**/*.ts", "index.ts"], // Include all .ts files in src and index.ts if it's at the root of api/
-  "exclude": ["node_modules", "public"] // Exclude node_modules and the output directory itself
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
