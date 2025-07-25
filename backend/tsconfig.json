@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "public", 
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node", 
     "target": "ES2020",
     "module": "commonjs",
     "esModuleInterop": true,
@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist"]
+  "include": ["src/**/*.ts", "index.ts"], // Include all .ts files in src and index.ts if it's at the root of api/
+  "exclude": ["node_modules", "public"] // Exclude node_modules and the output directory itself
 }

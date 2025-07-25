@@ -231,6 +231,6 @@ app.post(
   }
 );
 
-app.listen(3000, () => {
-  console.log("server on port 3000 started");
-});
+app.listen(3000, () => console.log("Server ready on port 3000."));
+
+module.exports = app;
