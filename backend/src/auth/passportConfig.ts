@@ -23,7 +23,6 @@ passport.use(
       profile: Profile,
       done: VerifyCallback
     ) => {
-      console.log("if there is user goping to passport");
       const existingUser = await prisma.user.findUnique({
         where: {
           providerId: profile.id, // assumes profile.id is unique to this provider

@@ -63,7 +63,6 @@ const WeatherData = ({ children }: { children: ReactNode }) => {
     });
     const { unit } = useUnit();
     const weatherLoading = useRef<Boolean>(true);
-
     // save weather data and head info to local storage
     useEffect(() => {
         if (!weatherLoading.current && weatherComponent.length > 0) {
@@ -92,11 +91,28 @@ const WeatherData = ({ children }: { children: ReactNode }) => {
         }
     }, [weatherHeadInfo]);
 
+    const assignWeatherData = async () => {
+        try {
+            getLocation().then((location: LatLongType) =>
+                getWeather({ location, unit }).then((data) => {
+                    // pass weather data into formatting function
+                    const formattedData = formatNewWeatherData(data);
+
+                    // setting and saving data into local storage
+                    weatherLoading.current = false;
+                    setWeatherComponent(formattedData.weatherData);
+                    setWeatherHeadInfo(formattedData.weatherInfo);
+                }),
+            );
+        } catch (e) {
+            console.error(e);
+        }
+    };
     // load data into localStorage
     useEffect(() => {
         const stored = localStorage.getItem("userComponentData");
         const cacheTime = localStorage.getItem("weather_data_time");
-        const cachedUnit = localStorage.getItem("weather_data_unit"); 
+        const cachedUnit = localStorage.getItem("weather_data_unit");
 
         const now = Date.now();
         // time for page to pull new from api
@@ -111,21 +127,7 @@ const WeatherData = ({ children }: { children: ReactNode }) => {
         ) {
             setWeatherComponent(JSON.parse(stored));
         } else {
-            try {
-                getLocation().then((location: LatLongType) =>
-                    getWeather({ location, unit }).then((data) => {
-                        // pass weather data into formatting function
-                        const formattedData = formatNewWeatherData(data);
-
-                        // setting and saving data into local storage
-                        weatherLoading.current = false;
-                        setWeatherComponent(formattedData.weatherData);
-                        setWeatherHeadInfo(formattedData.weatherInfo);
-                    }),
-                );
-            } catch (e) {
-                console.error(e);
-            }
+            assignWeatherData();
         }
     }, [unit]);
 
@@ -215,6 +217,7 @@ const WeatherData = ({ children }: { children: ReactNode }) => {
                 weatherData: weatherComponent,
                 setWeatherData: setWeatherComponent,
                 headInfo: weatherHeadInfo,
+                assignWeatherData,
             }}
         >
             {children}
