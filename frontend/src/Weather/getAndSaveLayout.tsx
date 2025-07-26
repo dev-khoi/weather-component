@@ -38,6 +38,8 @@ import { GetLocationButton } from "@/components/ui/getLocationButton.tsx";
 import { UnitToggleSwitch } from "@/components/ui/unitToggleButton.tsx";
 import { SkeletonGrid } from "@/components/ui/pageSkeletonLoading.tsx";
 
+
+const host = import.meta.env.VITE_BACKEND_HOST
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
@@ -118,7 +120,7 @@ const GridComponent: FunctionComponent = () => {
     // Fetching all breakpoint layouts
     useEffect(() => {
         axios
-            .get("http://localhost:3000/componentInLayouts", {
+            .get(`${host}/componentInLayouts`, {
                 withCredentials: true,
             })
             .then((e: any) => {
