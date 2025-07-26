@@ -97,7 +97,7 @@ authRoute.post(
                 .cookie("accessToken", accessToken, {
                   httpOnly: true,
                   secure: true,
-                  sameSite: "strict",
+                  sameSite: "none",
                   maxAge: 15 * 60 * 1000, // 15 min
                 })
                 .status(200)
@@ -128,13 +128,15 @@ authRoute.delete(
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
+
       path: "/",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
+
       path: "/",
     });
 
