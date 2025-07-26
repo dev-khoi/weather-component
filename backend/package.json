@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "express-dev": "nodemon --exec tsx src/index.ts",
     "prisma-dev": "nodemon --exec tsx db/database.ts",
-    "build": "tsc && prisma generate"
+    "build": "tsc && prisma generate",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@google/genai": "^1.12.0",
