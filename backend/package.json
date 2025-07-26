@@ -12,7 +12,7 @@
     "prisma-dev": "nodemon --exec tsx db/database.ts",
     "build": "npm install && tsc",
     "postinstall": "prisma generate",
-    "start": "node dist/index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "@google/genai": "^1.12.0",
