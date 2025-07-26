@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDir": "src",
+
     "outDir": "dist", // Proper build output directory
     "strict": true,
     "useUnknownInCatchVariables": true,
