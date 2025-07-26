@@ -96,7 +96,7 @@ authRoute.post(
               return res
                 .cookie("accessToken", accessToken, {
                   httpOnly: true,
-                  secure: false,
+                  secure: true,
                   sameSite: "strict",
                   maxAge: 15 * 60 * 1000, // 15 min
                 })
