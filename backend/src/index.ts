@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { CustomError, Layout } from "./types/type.js";
 import { authenticateToken } from "./auth/authentication.js";
 import { layoutValidator } from "./validator/validation.js";
+
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
@@ -13,8 +14,9 @@ const corsOption = {
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
+
 import cookieParser from "cookie-parser";
-import { PrismaClient } from "./../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
 import { authRoute } from "./authServer/authServer.js";
@@ -233,4 +235,4 @@ app.post(
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
-module.exports = app;
+export default app;
