@@ -55,10 +55,12 @@ const GridComponent: FunctionComponent = () => {
     // weather data
     const weatherDataContextValue = useContext(weatherDataContext);
 
-    const { weatherData, headInfo } = weatherDataContextValue || {
-        weatherData: [],
-        headInfo: { location: "loading", time: "loading" },
-    };
+    const { weatherData, headInfo, assignWeatherData } =
+        weatherDataContextValue || {
+            weatherData: [],
+            headInfo: { location: "loading", time: "loading" },
+            assignWeatherData: () => {},
+        };
     const [permissionState, setPermissionState] = useState<
         "granted" | "prompt" | "denied" | null
     >(null);
@@ -67,7 +69,10 @@ const GridComponent: FunctionComponent = () => {
             setPermissionState(result.state);
 
             // Optional: Listen for changes (e.g. if user changes permission mid-session)
-            result.onchange = () => setPermissionState(result.state);
+            result.onchange = () => {
+                setPermissionState(result.state);
+                assignWeatherData();
+            };
         });
     }, []);
 
@@ -161,7 +166,6 @@ const GridComponent: FunctionComponent = () => {
     };
 
     const onBreakpointChange = (newBreakpoint: string) => {
-        console.log(window.innerWidth);
         changingBreakpoint.current = true;
 
         if (lastSavedLayout.current) {

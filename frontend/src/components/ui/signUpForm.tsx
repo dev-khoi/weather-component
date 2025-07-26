@@ -67,10 +67,8 @@ export function SignUpForm({
                 },
             );
             // Success case
-            console.log("sucess");
             window.location.href = "/weather";
         } catch (err: any) {
-            console.log(err);
             if (err.response) {
                 // Server responded with error status
                 setError(err.response.data.msg || "Login failed");

@@ -23,7 +23,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     }
 
     req.user = jwt_payload;
-    console.log(req.user);
     next();
   });
 };
@@ -31,7 +30,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
 // generate the access token for user
 // ideally expires at least 10 minutes
 const generateAccessToken = (userId: number | string) => {
-  console.log(userId);
   const idStr = typeof userId === "number" ? userId.toString() : `${userId}`;
 
   return jwt.sign({ userId: idStr }, secretAccessToken, {

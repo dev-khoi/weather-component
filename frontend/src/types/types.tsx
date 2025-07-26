@@ -29,6 +29,7 @@ interface UserComponentContextType {
     weatherData: WeatherDataType[];
     setWeatherData: Dispatch<SetStateAction<WeatherDataType[]>>;
     headInfo: HeadInfo;
+    assignWeatherData: () => Promise<void>;
 }
 
 interface WeatherComponentContextType {
@@ -44,8 +45,6 @@ interface ComponentListType {
     id: string;
     componentName: string;
 }
-
-
 
 export type {
     ComponentState,
