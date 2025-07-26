@@ -1,7 +1,25 @@
 {
   "compilerOptions": {
-    "outDir": "dist",                      // Proper build output directory
+    "outDir": "dist", // Proper build output directory
     "strict": true,
+    "useUnknownInCatchVariables": true,
+    // Ensures 'throw' statements throw Error objects
+    "exactOptionalPropertyTypes": true,
+
+    // Enables strict null checks
+    "strictNullChecks": true,
+
+    // Enables strict function types
+    "strictFunctionTypes": true,
+
+    // Ensures 'this' is typed correctly
+    "noImplicitThis": true,
+
+    // Prevents falling through cases in switch statements
+    "noFallthroughCasesInSwitch": true,
+
+    // Reports errors for unreachable code
+    "allowUnreachableCode": false,
     "moduleResolution": "node",
     "target": "ES2020",
     "module": "ESNext",
@@ -11,11 +29,9 @@
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]                         
-    },
-
-
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

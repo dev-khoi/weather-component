@@ -1,9 +1,8 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import jwt, { VerifyErrors } from "jsonwebtoken";
 
 import { CustomError, MyJwtPayload } from "../types/type.js";
-import { genPassword, verifyPassword } from "../lib/passwordUtils.js";
-import { registerValidator } from "../validator/validation.js";
+
 // import { pool } from "./db/pool.js";
 import {
   generateAccessToken,

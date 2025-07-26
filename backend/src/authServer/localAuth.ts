@@ -82,7 +82,7 @@ localAuthRoute.post(
 // -> storing the history of the refresh token
 localAuthRoute.post(
   "/login",
-  expressAsyncHandler(async (req, res, next: NextFunction) => {
+  expressAsyncHandler(async (req : Request, res : Response, next: NextFunction) => {
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({
