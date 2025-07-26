@@ -12,7 +12,7 @@ const frontend = process.env.FRONTEND_URL!;
 
 
 // database
-import { PrismaClient, User } from "../../generated/prisma/index.js";
+import { PrismaClient, User } from "@prisma/client";
 import { errorHandler } from "./authErrorHandler.js";
 import { CustomError } from "../types/type.js";
 import expressAsyncHandler from "express-async-handler";

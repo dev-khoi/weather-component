@@ -20,7 +20,7 @@ const frontend = process.env.FRONTEND!;
 
 import cookieParser from "cookie-parser";
 // database
-import { PrismaClient } from "../../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import { errorHandler } from "./authErrorHandler.js";
 import { CustomError } from "../types/type.js";
 import expressAsyncHandler from "express-async-handler";
