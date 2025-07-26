@@ -10,8 +10,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -20,7 +21,7 @@ model User {
   email          String          @unique @db.VarChar(254)
   provider       String          @default("local")
   providerId     String?         @unique
-  hash           String?          @unique @db.VarChar(64)
+  hash           String?         @unique @db.VarChar(64)
   salt           String?         @unique @db.VarChar(64)
   role           String          @default("user")
   // a user can have many weather components

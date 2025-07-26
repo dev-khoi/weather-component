@@ -24,10 +24,7 @@ import { HeadInfo } from "@/components/ui/info.tsx";
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-    createLayout,
-    getListMissingId,
-} from "@/helpers/helper.ts";
+import { createLayout, getListMissingId } from "@/helpers/helper.ts";
 import {
     updateLayoutDb,
     deleteComponentDb,
@@ -165,12 +162,8 @@ const GridComponent: FunctionComponent = () => {
                     ...allLayouts,
                     [currentBreakpoint]: layout,
                 });
-                console.log("layout change on layout change");
-                if (!changingBreakpoint.current && editMode) {
-                    updateLayoutDb(allLayouts);
-                }
+                ignoreLayoutChange.current = false;
             }
-            ignoreLayoutChange.current = false;
         }
     };
 
@@ -358,8 +351,7 @@ const GridComponent: FunctionComponent = () => {
         event: MouseEvent | TouchEvent,
         element: HTMLElement,
     ) => {
-        if(layout || oldItem || newItem || placeholder || event){
-
+        if (layout || oldItem || newItem || placeholder || event) {
         }
         const { top } = element.getBoundingClientRect();
 
