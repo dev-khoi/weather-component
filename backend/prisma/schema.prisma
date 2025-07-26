@@ -5,60 +5,59 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 model User {
-  userId         Int             @id @default(autoincrement())
-  username       String          @default("user") @db.VarChar(14)
-  email          String          @unique @db.VarChar(254)
-  provider       String          @default("local")
-  providerId     String?         @unique
-  hash           String?         @unique @db.VarChar(64)
-  salt           String?         @unique @db.VarChar(64)
-  role           String          @default("user")
-  // a user can have many weather components
-  WeatherLayouts WeatherLayout[]
-  RefreshTokens  RefreshToken[]
+    userId         Int             @id @default(autoincrement())
+    username       String          @default("user") @db.VarChar(14)
+    email          String          @unique @db.VarChar(254)
+    provider       String          @default("local")
+    providerId     String?         @unique
+    hash           String?         @unique @db.VarChar(64)
+    salt           String?         @unique @db.VarChar(64)
+    role           String          @default("user")
+    // a user can have many weather components
+    WeatherLayouts WeatherLayout[]
+    RefreshTokens  RefreshToken[]
 }
 
 model WeatherLayout {
-  userId     Int
-  layoutSize String @db.VarChar(14)
-  user       User   @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+    userId     Int
+    layoutSize String @db.VarChar(14)
+    user       User   @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
 
-  WeatherComponents WeatherComponent[]
+    WeatherComponents WeatherComponent[]
 
-  @@id([layoutSize, userId])
+    @@id([layoutSize, userId])
 }
 
 // user 1-many weatherLayout
 model WeatherComponent {
-  layoutSize String @db.VarChar(14)
-  userId     Int
+    layoutSize String @db.VarChar(14)
+    userId     Int
 
-  weatherId String
-  dataGrid  Json
+    weatherId String
+    dataGrid  Json
 
-  WeatherLayout WeatherLayout @relation(fields: [layoutSize, userId], references: [layoutSize, userId])
+    WeatherLayout WeatherLayout @relation(fields: [layoutSize, userId], references: [layoutSize, userId])
 
-  @@id([layoutSize, userId, weatherId])
+    @@id([layoutSize, userId, weatherId])
 }
 
 // refresh token database
 // refreshToken 1-1 user
 model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  userId    Int
-  user      User     @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+    id        Int      @id @default(autoincrement())
+    token     String   @unique
+    userId    Int
+    user      User     @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+    expiresAt DateTime
+    createdAt DateTime @default(now())
 }

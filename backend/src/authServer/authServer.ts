@@ -27,7 +27,7 @@ const corsOption = {
 import cookieParser from "cookie-parser";
 
 // database
-import { PrismaClient } from "../../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import { googleAuthRoute } from "./googleAuth.js";
 import { localAuthRoute } from "./localAuth.js";
 import { errorHandler } from "./authErrorHandler.js";
