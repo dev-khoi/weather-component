@@ -41,6 +41,8 @@ import { GetLocationButton } from "@/components/ui/getLocationButton.tsx";
 import { UnitToggleSwitch } from "@/components/ui/unitToggleButton.tsx";
 import { SkeletonGrid } from "@/components/ui/pageSkeletonLoading.tsx";
 
+
+const host = import.meta.env.VITE_BACKEND_HOST
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
@@ -56,10 +58,11 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 const GridComponent: FunctionComponent = () => {
     // weather data
     const weatherDataContextValue = useContext(weatherDataContext);
-    if (!weatherDataContextValue) {
-        return;
-    }
-    const { weatherData, headInfo } = weatherDataContextValue;
+
+    const { weatherData, headInfo } = weatherDataContextValue || {
+        weatherData: [],
+        headInfo: { location: "loading", time: "loading" },
+    };
     const [permissionState, setPermissionState] = useState<
         "granted" | "prompt" | "denied" | null
     >(null);
@@ -71,9 +74,7 @@ const GridComponent: FunctionComponent = () => {
             result.onchange = () => setPermissionState(result.state);
         });
     }, []);
-    if (permissionState === "denied" || permissionState == "prompt") {
-        return <GetLocationButton />;
-    }
+
     //~
     // Grid layout configuration
     const getBreakpointFromWidth = (width: number): string => {
@@ -129,6 +130,9 @@ const GridComponent: FunctionComponent = () => {
                 setAllLayouts(e.data);
             });
     }, []);
+    if (permissionState === "denied" || permissionState == "prompt") {
+        return <GetLocationButton />;
+    }
     if (
         !weatherData ||
         weatherData.length === 0 ||
@@ -394,6 +398,12 @@ const GridComponent: FunctionComponent = () => {
                             checked={editMode}
                             onCheckedChange={() => {
                                 setEditMode(!editMode);
+                                if (
+                                    !changingBreakpoint.current &&
+                                    editMode
+                                ) {
+                                    updateLayoutDb(allLayouts);
+                                }
                             }}
                             className="mr-1"
                             aria-readonly
