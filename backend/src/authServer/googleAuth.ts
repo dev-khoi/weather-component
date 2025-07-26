@@ -75,13 +75,15 @@ googleAuthRoute.get(
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
+
         maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
+
         maxAge: 15 * 24 * 60 * 60 * 1000,
       })
       .redirect(`${frontend}/weather`);

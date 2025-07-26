@@ -1,38 +1,38 @@
-  import express from "express";
-  import jwt, { VerifyErrors } from "jsonwebtoken";
+import express from "express";
+import jwt, { VerifyErrors } from "jsonwebtoken";
 
-  import { CustomError, MyJwtPayload } from "../types/type.js";
+import { CustomError, MyJwtPayload } from "../types/type.js";
 
-  // import { pool } from "./db/pool.js";
-  import {
-    generateAccessToken,
-    generateRefreshToken,
-  } from "../auth/authentication.js";
-  import { passport } from "../auth/passportConfig.js";
+// import { pool } from "./db/pool.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../auth/authentication.js";
+import { passport } from "../auth/passportConfig.js";
 
-  // SECRET KEY
-  import dotenv from "dotenv";
-  dotenv.config();
-  const frontend = process.env.FRONTEND_URL!;
-  const secretAccessToken = process.env.ACCESS_SECRET_TOKEN!;
-  const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN!;
+// SECRET KEY
+import dotenv from "dotenv";
+dotenv.config();
+const frontend = process.env.FRONTEND_URL!;
+const secretAccessToken = process.env.ACCESS_SECRET_TOKEN!;
+const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN!;
 
-  import cors from "cors";
-  const corsOption = {
-    origin: [frontend],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  };
-  import cookieParser from "cookie-parser";
+import cors from "cors";
+const corsOption = {
+  origin: [frontend],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+};
+import cookieParser from "cookie-parser";
 
-  // database
-  import { PrismaClient } from "@prisma/client";
-  import { googleAuthRoute } from "./googleAuth.js";
-  import { localAuthRoute } from "./localAuth.js";
-  import { errorHandler } from "./authErrorHandler.js";
-  import expressAsyncHandler from "express-async-handler";
-  const prisma = new PrismaClient();
-  // refreshToken search
+// database
+import { PrismaClient } from "@prisma/client";
+import { googleAuthRoute } from "./googleAuth.js";
+import { localAuthRoute } from "./localAuth.js";
+import { errorHandler } from "./authErrorHandler.js";
+import expressAsyncHandler from "express-async-handler";
+const prisma = new PrismaClient();
+// refreshToken search
 
 // *middleware config
 const authRoute = express.Router();
@@ -104,7 +104,7 @@ authRoute.post(
                 .cookie("accessToken", accessToken, {
                   httpOnly: true,
                   secure: true,
-                  sameSite: "strict",
+                  sameSite: "none",
                   maxAge: 15 * 60 * 1000, // 15 min
                 })
                 .status(200)
@@ -135,13 +135,15 @@ authRoute.delete(
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
+
       path: "/",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
+
       path: "/",
     });
 

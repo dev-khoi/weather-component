@@ -78,7 +78,7 @@ localAuthRoute.post(
       await createNewUserLayout(user.userId);
     }
 
-    res.status(200).json({msg: "user created successfully"});
+    res.status(200).json({ msg: "user created successfully" });
     return;
   })
 );
@@ -89,60 +89,64 @@ localAuthRoute.post(
 // -> storing the history of the refresh token
 localAuthRoute.post(
   "/login",
-  expressAsyncHandler(async (req : Request, res : Response, next: NextFunction) => {
-    const { email, password } = req.body;
+  expressAsyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        userId: true,
-        hash: true,
-        salt: true,
-      },
-    });
-
-    if (!user || !user.hash || !user.salt) {
-      const error: CustomError = new Error("Invalid email or password");
-      error.status = 401;
-      throw error;
-    }
-
-    const { userId, hash, salt } = user;
-
-    if (verifyPassword(password, hash, salt)) {
-      // ?missing password checking step
-      const accessToken = generateAccessToken(userId);
-      const refreshToken = generateRefreshToken(userId);
-      await prisma.refreshToken.create({
-        data: {
-          token: refreshToken,
-          userId: userId,
-          expiresAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+      const user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          userId: true,
+          hash: true,
+          salt: true,
         },
       });
 
-      // change secure to true
-      res
-        .cookie("accessToken", accessToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "strict",
-          maxAge: 15 * 60 * 1000,
-        })
-        .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "strict",
-          maxAge: 15 * 24 * 60 * 60 * 1000,
+      if (!user || !user.hash || !user.salt) {
+        const error: CustomError = new Error("Invalid email or password");
+        error.status = 401;
+        throw error;
+      }
+
+      const { userId, hash, salt } = user;
+
+      if (verifyPassword(password, hash, salt)) {
+        // ?missing password checking step
+        const accessToken = generateAccessToken(userId);
+        const refreshToken = generateRefreshToken(userId);
+        await prisma.refreshToken.create({
+          data: {
+            token: refreshToken,
+            userId: userId,
+            expiresAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+          },
         });
-    } else {
-      const error: CustomError = new Error("Invalid email or password");
-      error.status = 401;
-      throw error;
+
+        // change secure to true
+        res
+          .cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+
+            maxAge: 15 * 60 * 1000,
+          })
+          .cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+
+            maxAge: 15 * 24 * 60 * 60 * 1000,
+          });
+      } else {
+        const error: CustomError = new Error("Invalid email or password");
+        error.status = 401;
+        throw error;
+      }
+      res.status(200).json({ message: "Login successful" }); // Or send other relevant non-sensitive user data
+      return;
     }
-    res.status(200).json({ message: "Login successful" }); // Or send other relevant non-sensitive user data
-    return;
-  })
+  )
 );
 localAuthRoute.use(errorHandler);
 
