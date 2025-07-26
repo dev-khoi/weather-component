@@ -12,7 +12,7 @@
     "prisma-dev": "nodemon --exec tsx db/database.ts",
     "build": "npm install && tsc",
     "postinstall": "prisma generate",
-    "start": "node dist/index.js"
+    "start": "node dist/src/index.js"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",
