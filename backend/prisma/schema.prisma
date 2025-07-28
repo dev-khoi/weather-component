@@ -16,7 +16,7 @@ datasource db {
 
 model User {
     userId         Int             @id @default(autoincrement())
-    username       String          @default("user") @db.VarChar(14)
+    username       String          @default("user") @db.VarChar(30)
     email          String          @unique @db.VarChar(254)
     provider       String          @default("local")
     providerId     String?         @unique
