@@ -44,4 +44,4 @@
 
 ---
 
-🌐 Connect With Me: linkedin: [https://www.linkedin.com/in/daknguyen/]
+🌐 Connect With Me: [LinkedIn](https://www.linkedin.com/in/daknguyen/)
