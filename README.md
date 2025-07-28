@@ -34,7 +34,7 @@
 | **Backend**  | Node.js (Express), TypeScript             |
 | **Database** | PostgreSQL                                |
 | **Auth**     | JWT-based and google 0auth authentication |
-| **Hosting**  | Render                                    |
+| **Hosting**  | Render, superbase                                    |
 
 ---
 
