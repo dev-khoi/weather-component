@@ -74,7 +74,7 @@ const GridComponent: FunctionComponent = () => {
                 assignWeatherData();
             };
         });
-    }, []);
+    }, [permissionState]);
 
     //~
     // Grid layout configuration
@@ -131,7 +131,7 @@ const GridComponent: FunctionComponent = () => {
                 setAllLayouts(e.data);
             });
     }, []);
-    if (permissionState === "denied" || permissionState == "prompt") {
+    if (permissionState === "denied") {
         return <GetLocationButton />;
     }
     if (
