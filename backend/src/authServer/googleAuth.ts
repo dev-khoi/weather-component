@@ -84,6 +84,5 @@ googleAuthRoute.get(
     return;
   })
 );
-googleAuthRoute.use(errorHandler);
 
 export { googleAuthRoute };
