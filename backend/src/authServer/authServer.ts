@@ -6,14 +6,12 @@ import { CustomError, MyJwtPayload } from "../types/type.js";
 // import { pool } from "./db/pool.js";
 import {
   generateAccessToken,
-  generateRefreshToken,
 } from "../auth/authentication.js";
 import { passport } from "../auth/passportConfig.js";
 
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
-const frontend = process.env.FRONTEND_URL!;
 const secretAccessToken = process.env.ACCESS_SECRET_TOKEN!;
 const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN!;
 
@@ -33,9 +31,7 @@ const authRoute = express.Router();
 authRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
 // const PgSession = connectPgSimple(session);
-authRoute.use(express.json());
-authRoute.use(express.urlencoded({ extended: true }));
-authRoute.use(cookieParser());
+
 // jwt and google signing up and logging in
 // all create access and refresh token
 authRoute.use("/local", localAuthRoute);

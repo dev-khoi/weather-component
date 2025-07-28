@@ -31,7 +31,6 @@ let refreshTokenArr = [];
 const app = express();
 // cors for connecting to vite
 // const PgSession = connectPgSimple(session);
-app.use(errorHandler);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -232,6 +231,7 @@ app.post(
     return;
   }
 );
+app.use(errorHandler);
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
