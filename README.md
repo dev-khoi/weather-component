@@ -32,7 +32,7 @@
 | ------------ | ----------------------------------------- |
 | **Frontend** | React, TypeScript, Tailwind CSS           |
 | **Backend**  | Node.js (Express), TypeScript             |
-| **Database** | PostgreSQL                                |
+| **Database** | PostgreSQL (Prisma ORM)                               |
 | **Auth**     | JWT-based and google 0auth authentication |
 | **Hosting**  | Render, superbase                                    |
 
