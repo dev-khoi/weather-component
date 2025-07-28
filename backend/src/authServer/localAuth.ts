@@ -18,7 +18,6 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 // database
 import { PrismaClient } from "@prisma/client";
-import { errorHandler } from "./authErrorHandler.js";
 import { CustomError } from "../types/type.js";
 import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
@@ -132,6 +131,5 @@ localAuthRoute.post(
     }
   )
 );
-localAuthRoute.use(errorHandler);
 
 export { localAuthRoute };
