@@ -14,16 +14,10 @@ import { createNewUserLayout } from "../db/defaultLayout.js";
 
 import { passport } from "../auth/passportConfig.js";
 
-import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 const frontend = process.env.FRONTEND!;
 
-const corsOption = {
-  origin: [frontend],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-};
 import cookieParser from "cookie-parser";
 // database
 import { PrismaClient } from "@prisma/client";
@@ -37,7 +31,6 @@ const prisma = new PrismaClient();
 const localAuthRoute = Router();
 localAuthRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
-localAuthRoute.use(cors(corsOption));
 // const PgSession = connectPgSimple(session);
 
 localAuthRoute.use(express.json());
