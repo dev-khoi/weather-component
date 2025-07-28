@@ -9,8 +9,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const frontend = process.env.FRONTEND_URL!;
 
-
-
 // database
 import { PrismaClient, User } from "@prisma/client";
 import { errorHandler } from "./authErrorHandler.js";
@@ -19,7 +17,7 @@ import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 
 const googleAuthRoute = express.Router();
-googleAuthRoute.use(passport.initialize());
+
 // refreshToken search
 googleAuthRoute.get(
   "/register", // becomes /auth/google/register

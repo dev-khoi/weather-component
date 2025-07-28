@@ -12,11 +12,8 @@ import {
 // SECRET KEY
 import { createNewUserLayout } from "../db/defaultLayout.js";
 
-import { passport } from "../auth/passportConfig.js";
-
 import dotenv from "dotenv";
 dotenv.config();
-const frontend = process.env.FRONTEND!;
 
 import cookieParser from "cookie-parser";
 // database
@@ -29,15 +26,9 @@ const prisma = new PrismaClient();
 
 // *middleware config
 const localAuthRoute = Router();
-localAuthRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
 // const PgSession = connectPgSimple(session);
 
-localAuthRoute.use(express.json());
-localAuthRoute.use(express.urlencoded({ extended: true }));
-localAuthRoute.use(cookieParser());
-const secretAccessToken = process.env.ACCESS_SECRET_TOKEN!;
-const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN!;
 
 localAuthRoute.post(
   "/register",
