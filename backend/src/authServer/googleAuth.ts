@@ -3,6 +3,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../auth/authentication.js";
+import cors from "cors";
 // SECRET KEY
 import { passport } from "../auth/passportConfig.js";
 import dotenv from "dotenv";
@@ -23,6 +24,7 @@ import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 
 const googleAuthRoute = express.Router();
+googleAuthRoute.use(cors(corsOption));
 googleAuthRoute.use(passport.initialize());
 // refreshToken search
 googleAuthRoute.get(
