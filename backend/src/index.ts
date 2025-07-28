@@ -30,13 +30,14 @@ let refreshTokenArr = [];
 // *middleware config
 const app = express();
 // cors for connecting to vite
-app.use(cors(corsOption));
 // const PgSession = connectPgSimple(session);
 app.use(errorHandler);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors(corsOption));
+
 // *routes
 // authenticate the user to access weather
 
@@ -71,9 +72,9 @@ app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
         },
       },
     });
-    const layouts = layoutSizes.map((layout : any) => {
+    const layouts = layoutSizes.map((layout: any) => {
       const key = layout.layoutSize;
-      const values = layout.WeatherComponents.map((v : any) => v.dataGrid);
+      const values = layout.WeatherComponents.map((v: any) => v.dataGrid);
       return { [key]: values };
     });
     return Object.assign({}, ...layouts);
@@ -106,7 +107,7 @@ app.put(
       }
       // UPDATING THE LAYOUTS
       try {
-        await prisma.$transaction(async (tx : any) => {
+        await prisma.$transaction(async (tx: any) => {
           // update
           for (const comp of layoutComps) {
             const update = await prisma.weatherComponent.updateMany({
@@ -146,7 +147,7 @@ app.delete(
     // data: [lg: [{dataGrid}, {dataGrid:2}], md:]
     // remove
     try {
-      await prisma.$transaction(async (tx : any) => {
+      await prisma.$transaction(async (tx: any) => {
         const matchingComponents = await prisma.weatherComponent.findMany({
           where: {
             userId: Number(decoded.userId),
