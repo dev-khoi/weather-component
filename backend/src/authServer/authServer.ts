@@ -18,12 +18,6 @@ const frontend = process.env.FRONTEND_URL!;
 const secretAccessToken = process.env.ACCESS_SECRET_TOKEN!;
 const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN!;
 
-import cors from "cors";
-const corsOption = {
-  origin: [frontend],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-};
 import cookieParser from "cookie-parser";
 
 // database
@@ -39,7 +33,6 @@ const prisma = new PrismaClient();
 const authRoute = express.Router();
 authRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
-authRoute.use(cors(corsOption));
 // const PgSession = connectPgSimple(session);
 authRoute.use(express.json());
 authRoute.use(express.urlencoded({ extended: true }));
