@@ -4,7 +4,7 @@ export const registerValidator = [
   body("email").isEmail().withMessage("Invalid email").normalizeEmail(),
 
   body("username")
-    .isLength({ min: 2 })
+    .isLength({ min: 2 }).isLength({max:30})
     .withMessage("First name too short")
     .trim()
     .escape(),
