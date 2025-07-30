@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.layoutValidator = exports.loginValidator = exports.registerValidator = void 0;
@@ -6,6 +7,13 @@ exports.registerValidator = [
     (0, express_validator_1.body)("email").isEmail().withMessage("Invalid email").normalizeEmail(),
     (0, express_validator_1.body)("username")
         .isLength({ min: 2 })
+=======
+import { body } from "express-validator";
+export const registerValidator = [
+    body("email").isEmail().withMessage("Invalid email").normalizeEmail(),
+    body("username")
+        .isLength({ min: 2 }).isLength({ max: 30 })
+>>>>>>> b387e29 (fix test file and config)
         .withMessage("First name too short")
         .trim()
         .escape(),

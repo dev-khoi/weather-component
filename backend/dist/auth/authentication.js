@@ -23,7 +23,6 @@ const authenticateToken = (req, res, next) => {
             return;
         }
         req.user = jwt_payload;
-        console.log(req.user);
         next();
     });
 };
@@ -31,7 +30,6 @@ exports.authenticateToken = authenticateToken;
 // generate the access token for user
 // ideally expires at least 10 minutes
 const generateAccessToken = (userId) => {
-    console.log(userId);
     const idStr = typeof userId === "number" ? userId.toString() : `${userId}`;
     return jsonwebtoken_1.default.sign({ userId: idStr }, secretAccessToken, {
         expiresIn: "300s",

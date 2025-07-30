@@ -20,7 +20,6 @@ passport_1.default.use(new passport_google_oauth2_1.Strategy({
     clientSecret: googleClientSecret,
     callbackURL: `${backendUrl}/auth/google/callback`,
 }, async (accessToken, refreshToken, profile, done) => {
-    console.log("if there is user goping to passport");
     const existingUser = await prisma.user.findUnique({
         where: {
             providerId: profile.id, // assumes profile.id is unique to this provider

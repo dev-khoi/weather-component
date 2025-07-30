@@ -10,6 +10,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authentication_js_1 = require("../auth/authentication.js");
 const passportConfig_js_1 = require("../auth/passportConfig.js");
 // SECRET KEY
+<<<<<<< HEAD
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const frontend = process.env.FRONTEND_URL;
@@ -22,6 +23,12 @@ const corsOption = {
     methods: ["GET", "POST", "PUT", "DELETE"],
 };
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+=======
+import dotenv from "dotenv";
+dotenv.config();
+const secretAccessToken = process.env.ACCESS_SECRET_TOKEN;
+const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN;
+>>>>>>> b387e29 (fix test file and config)
 // database
 const index_js_1 = require("../../generated/prisma/index.js");
 const googleAuth_js_1 = require("./googleAuth.js");
@@ -35,11 +42,15 @@ const authRoute = express_1.default.Router();
 exports.authRoute = authRoute;
 authRoute.use(passportConfig_js_1.passport.initialize());
 // cors for connecting to frontend (vite)
+<<<<<<< HEAD
 authRoute.use((0, cors_1.default)(corsOption));
 // const PgSession = connectPgSimple(session);
 authRoute.use(express_1.default.json());
 authRoute.use(express_1.default.urlencoded({ extended: true }));
 authRoute.use((0, cookie_parser_1.default)());
+=======
+// const PgSession = connectPgSimple(session);
+>>>>>>> b387e29 (fix test file and config)
 // jwt and google signing up and logging in
 // all create access and refresh token
 authRoute.use("/local", localAuth_js_1.localAuthRoute);
@@ -78,8 +89,8 @@ authRoute.post("/verifyingToken", (0, express_async_handler_1.default)(async (re
                 return res
                     .cookie("accessToken", accessToken, {
                     httpOnly: true,
-                    secure: false,
-                    sameSite: "strict",
+                    secure: true,
+                    sameSite: "none",
                     maxAge: 15 * 60 * 1000, // 15 min
                 })
                     .status(200)
@@ -105,13 +116,13 @@ authRoute.delete("/logout", (0, express_async_handler_1.default)(async (req, res
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         path: "/",
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         path: "/",
     });
     res.status(200).send({ message: "login success" });

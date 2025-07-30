@@ -11,12 +11,8 @@ const passportConfig_js_1 = require("../auth/passportConfig.js");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const frontend = process.env.FRONTEND_URL;
-const corsOption = {
-    origin: [frontend],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-};
 // database
+<<<<<<< HEAD
 const index_js_1 = require("../../generated/prisma/index.js");
 const authErrorHandler_js_1 = require("./authErrorHandler.js");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
@@ -24,6 +20,12 @@ const prisma = new index_js_1.PrismaClient();
 const googleAuthRoute = express_1.default.Router();
 exports.googleAuthRoute = googleAuthRoute;
 googleAuthRoute.use(passportConfig_js_1.passport.initialize());
+=======
+import { PrismaClient } from "@prisma/client";
+import expressAsyncHandler from "express-async-handler";
+const prisma = new PrismaClient();
+const googleAuthRoute = express.Router();
+>>>>>>> b387e29 (fix test file and config)
 // refreshToken search
 googleAuthRoute.get("/register", // becomes /auth/google/register
 passportConfig_js_1.passport.authenticate("google", {
@@ -64,17 +66,21 @@ passportConfig_js_1.passport.authenticate("google", {
     res
         .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 15 * 60 * 1000,
     })
         .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 15 * 24 * 60 * 60 * 1000,
     })
         .redirect(`${frontend}/weather`);
     return;
 }));
+<<<<<<< HEAD
 googleAuthRoute.use(authErrorHandler_js_1.errorHandler);
+=======
+export { googleAuthRoute };
+>>>>>>> b387e29 (fix test file and config)

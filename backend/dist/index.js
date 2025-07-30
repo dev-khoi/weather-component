@@ -27,12 +27,20 @@ let refreshTokenArr = [];
 // *middleware config
 const app = (0, express_1.default)();
 // cors for connecting to vite
+<<<<<<< HEAD
 app.use((0, cors_1.default)(corsOption));
 // const PgSession = connectPgSimple(session);
 app.use(authErrorHandler_js_1.errorHandler);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
+=======
+// const PgSession = connectPgSimple(session);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(cors(corsOption));
+>>>>>>> b387e29 (fix test file and config)
 // *routes
 // authenticate the user to access weather
 app.use("/auth", authServer_js_1.authRoute);
@@ -179,6 +187,12 @@ app.post("/componentInLayouts", passwordUtils_js_1.verifyAccessToken, async (req
     res.status(201).json({ message: "Component created successfully" });
     return;
 });
+<<<<<<< HEAD
 app.listen(3000, () => {
     console.log("server on port 3000 started");
 });
+=======
+app.use(errorHandler);
+app.listen(3000, () => console.log("Server ready on port 3000."));
+export default app;
+>>>>>>> b387e29 (fix test file and config)
