@@ -44,6 +44,9 @@ jobs:
 >>>>>>> d7b9f5d (account check)
 
       - name: set up interface test
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: npm run test
 
       #deploy
