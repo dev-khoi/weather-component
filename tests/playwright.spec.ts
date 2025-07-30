@@ -1,11 +1,7 @@
 import { test, expect, request } from "@playwright/test";
 import { defineConfig } from "@playwright/test";
 
-// Define test user credentials
-const timestamp = Date.now().toString().slice(-6); // Use only last 6 digits
-const TEST_USER_EMAIL = `test${timestamp}@example.com`;
-const TEST_USER_PASSWORD = "TestPassword123!";
-const TEST_USER_USERNAME = `test${timestamp}`; // Assuming username is also part of registration
+
 
 // --- Before all tests in this file, ensure a test user exists via API ---
 // test.beforeAll(async () => {
