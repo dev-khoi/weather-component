@@ -1,4 +1,4 @@
-import passport, { Profile } from "passport";
+  import passport, { Profile } from "passport";
 import { VerifyCallback } from "passport-google-oauth2";
 import { Strategy as OAuth2Strategy } from "passport-google-oauth2";
 import dotenv from "dotenv";
