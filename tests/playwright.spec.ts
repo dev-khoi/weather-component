@@ -71,6 +71,7 @@ test.describe("Login Functionality", () => {
     // 6. Assert successful redirection to the main app page (e.g., '/')
     // Use a regex to match the base URL or specific dashboard URL
     await page.waitForURL("/weather");
+    
     await expect(page).toHaveURL("/weather"); // Verify the final URL
 
     // 7. Assert that a logged-in indicator is visible (e.g., a "Logout" button, user profile link)
