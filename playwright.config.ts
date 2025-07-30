@@ -39,12 +39,13 @@ export default defineConfig({
   // Run your local dev server before starting the tests.
   webServer: [
     {
-      command:
-        `GOOGLE_CLIENT_ID=${process.env.GOOGLE_CLIENT_ID} ` +
-        `GOOGLE_CLIENT_SECRET=${process.env.GOOGLE_CLIENT_SECRET} ` +
-        `cd backend && npm run express-dev`,
+      command: `cd backend && npm run express-dev`,
       url: "http://localhost:3000/",
       reuseExistingServer: !process.env.CI,
+      env: {
+        GOOGLE_CLIENT_ID: `${process.env.GOOGLE_CLIENT_ID}`,
+        GOOGLE_CLIENT_SECRET: `${process.env.GOOGLE_CLIENT_SECRET}`,
+      },
     },
     {
       command: "cd frontend && npm run dev",
