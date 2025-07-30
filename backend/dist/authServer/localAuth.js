@@ -1,4 +1,3 @@
-import express from "express";
 import { Router } from "express";
 import { genPassword, verifyPassword } from "../lib/passwordUtils.js";
 import { registerValidator } from "../validator/validation.js";
@@ -6,34 +5,17 @@ import { registerValidator } from "../validator/validation.js";
 import { generateAccessToken, generateRefreshToken, } from "../auth/authentication.js";
 // SECRET KEY
 import { createNewUserLayout } from "../db/defaultLayout.js";
-import { passport } from "../auth/passportConfig.js";
-import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
-const frontend = process.env.FRONTEND;
-const corsOption = {
-    origin: [frontend],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-};
-import cookieParser from "cookie-parser";
 // database
 import { PrismaClient } from "@prisma/client";
-import { errorHandler } from "./authErrorHandler.js";
 import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 // refreshToken search
 // *middleware config
 const localAuthRoute = Router();
-localAuthRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
-localAuthRoute.use(cors(corsOption));
 // const PgSession = connectPgSimple(session);
-localAuthRoute.use(express.json());
-localAuthRoute.use(express.urlencoded({ extended: true }));
-localAuthRoute.use(cookieParser());
-const secretAccessToken = process.env.ACCESS_SECRET_TOKEN;
-const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN;
 localAuthRoute.post("/register", registerValidator, expressAsyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
     const saltHash = genPassword(password);
@@ -98,14 +80,14 @@ localAuthRoute.post("/login", expressAsyncHandler(async (req, res, next) => {
         res
             .cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             maxAge: 15 * 60 * 1000,
         })
             .cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+            sameSite: "none",
             maxAge: 15 * 24 * 60 * 60 * 1000,
         });
     }
@@ -117,5 +99,4 @@ localAuthRoute.post("/login", expressAsyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Login successful" }); // Or send other relevant non-sensitive user data
     return;
 }));
-localAuthRoute.use(errorHandler);
 export { localAuthRoute };

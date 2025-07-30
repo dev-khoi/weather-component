@@ -5,18 +5,11 @@ import { passport } from "../auth/passportConfig.js";
 import dotenv from "dotenv";
 dotenv.config();
 const frontend = process.env.FRONTEND_URL;
-const corsOption = {
-    origin: [frontend],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-};
 // database
 import { PrismaClient } from "@prisma/client";
-import { errorHandler } from "./authErrorHandler.js";
 import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 const googleAuthRoute = express.Router();
-googleAuthRoute.use(passport.initialize());
 // refreshToken search
 googleAuthRoute.get("/register", // becomes /auth/google/register
 passport.authenticate("google", {
@@ -57,18 +50,17 @@ passport.authenticate("google", {
     res
         .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 15 * 60 * 1000,
     })
         .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 15 * 24 * 60 * 60 * 1000,
     })
         .redirect(`${frontend}/weather`);
     return;
 }));
-googleAuthRoute.use(errorHandler);
 export { googleAuthRoute };

@@ -17,8 +17,8 @@ test.describe("Login Functionality", () => {
 
     // 3. Fill in valid credentials
     // Using getByPlaceholder for robustness, adjust if your inputs have different labels/names
-    await page.fill('input[placeholder="Email"]', 'example@gmail.com');
-    await page.fill('input[placeholder="Password"]', 'example');
+    await page.fill('input[placeholder="Email"]', "example@gmail.com");
+    await page.fill('input[placeholder="Password"]', "example");
 
     // 4. Click the login button
     await page.getByTestId("login").click(); // Assuming button text is 'Login'

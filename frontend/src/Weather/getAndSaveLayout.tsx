@@ -39,9 +39,7 @@ import { UnitToggleSwitch } from "@/components/ui/UnitToggleButton.tsx";
 import { SkeletonGrid } from "@/components/ui/PageSkeletonLoading.tsx";
 import { AiChat } from "@/components/ui/WeatherAiAssistant.tsx";
 
-
-
-const host = import.meta.env.VITE_BACKEND_HOST
+const host = import.meta.env.VITE_BACKEND_HOST;
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
@@ -397,10 +395,7 @@ const GridComponent: FunctionComponent = () => {
                             checked={editMode}
                             onCheckedChange={() => {
                                 setEditMode(!editMode);
-                                if (
-                                    !changingBreakpoint.current &&
-                                    editMode
-                                ) {
+                                if (!changingBreakpoint.current && editMode) {
                                     updateLayoutDb(allLayouts);
                                 }
                             }}
@@ -426,7 +421,7 @@ const GridComponent: FunctionComponent = () => {
             </div>
 
             {/* Ai for chat */}
-            <AiChat weatherData={JSON.stringify(weatherData)}/>
+            <AiChat weatherData={JSON.stringify(weatherData)} />
             {/* grid layout */}
             <div>
                 <ResponsiveReactGridLayout
