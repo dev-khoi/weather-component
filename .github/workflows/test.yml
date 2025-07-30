@@ -35,4 +35,7 @@ jobs:
         run: npm run build # Assumes 'npm run build' exists in frontend/package.json
 
       - name: set up interface test
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: npm run test
