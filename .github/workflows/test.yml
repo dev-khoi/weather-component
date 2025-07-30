@@ -34,7 +34,5 @@ jobs:
         working-directory: ./frontend
         run: npm run build # Assumes 'npm run build' exists in frontend/package.json
 
-
-            
       - name: set up interface test
         run: npm run test
