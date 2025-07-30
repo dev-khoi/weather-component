@@ -17,14 +17,12 @@ const authenticateToken = (req, res, next) => {
             return;
         }
         req.user = jwt_payload;
-        console.log(req.user);
         next();
     });
 };
 // generate the access token for user
 // ideally expires at least 10 minutes
 const generateAccessToken = (userId) => {
-    console.log(userId);
     const idStr = typeof userId === "number" ? userId.toString() : `${userId}`;
     return jwt.sign({ userId: idStr }, secretAccessToken, {
         expiresIn: "300s",

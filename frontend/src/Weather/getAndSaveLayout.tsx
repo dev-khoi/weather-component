@@ -378,7 +378,7 @@ const GridComponent: FunctionComponent = () => {
     };
     return (
         <div className="overflow-visible">
-            <div className="sticky  flex-col items-center  justify-center px-2 md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-40 py-2 rounded-xl rounded-t-none">
+            <div className="sticky  flex-col items-center justify-center px-2 md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-40 py-2 rounded-xl rounded-t-none">
                 <div className="relative flex justify-center items-start mt-2">
                     <HeadInfo
                         location={headInfo.location}

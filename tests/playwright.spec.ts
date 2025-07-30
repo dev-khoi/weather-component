@@ -8,44 +8,44 @@ const TEST_USER_PASSWORD = "TestPassword123!";
 const TEST_USER_USERNAME = `test${timestamp}`; // Assuming username is also part of registration
 
 // --- Before all tests in this file, ensure a test user exists via API ---
-test.beforeAll(async () => {
-  // Create a request context to make API calls directly
-  const apiContext = await request.newContext({
-    baseURL: process.env.PLAYWRIGHT_BACKEND_URL || "http://localhost:3000", // Use backend URL from env or default
-  });
+// test.beforeAll(async () => {
+//   // Create a request context to make API calls directly
+//   const apiContext = await request.newContext({
+//     baseURL: process.env.PLAYWRIGHT_BACKEND_URL || "http://localhost:3000", // Use backend URL from env or default
+//   });
 
-  try {
-    // Attempt to register a new user for testing
-    const response = await apiContext.post("/auth/local/register", {
-      data: {
-        username: TEST_USER_USERNAME,
-        email: TEST_USER_EMAIL,
-        password: TEST_USER_PASSWORD,
-      },
-    });
+//   try {
+//     // Attempt to register a new user for testing
+//     const response = await apiContext.post("/auth/local/register", {
+//       data: {
+//         username: TEST_USER_USERNAME,
+//         email: TEST_USER_EMAIL,
+//         password: TEST_USER_PASSWORD,
+//       },
+//     });
 
-    if (response.ok()) {
-      console.log(`Test user ${TEST_USER_EMAIL} registered successfully.`);
-    } else {
-      const errorBody = await response.json();
-      // If user already exists (e.g., from a previous failed run), that's okay for login tests
-      if (errorBody.message && errorBody.message.includes("already exists")) {
-        console.warn(`Test user ${TEST_USER_EMAIL} already exists.`);
-      } else {
-        throw new Error(
-          `Failed to register test user: ${response} - ${JSON.stringify(
-            errorBody
-          )}`
-        );
-      }
-    }
-  } catch (error) {
-    console.error("Error during test user setup:", error);
-    // Fail the test suite if setup fails critically
-  } finally {
-    await apiContext.dispose(); // Clean up the request context
-  }
-});
+//     if (response.ok()) {
+//       console.log(`Test user ${TEST_USER_EMAIL} registered successfully.`);
+//     } else {
+//       const errorBody = await response.json();
+//       // If user already exists (e.g., from a previous failed run), that's okay for login tests
+//       if (errorBody.message && errorBody.message.includes("already exists")) {
+//         console.warn(`Test user ${TEST_USER_EMAIL} already exists.`);
+//       } else {
+//         throw new Error(
+//           `Failed to register test user: ${response} - ${JSON.stringify(
+//             errorBody
+//           )}`
+//         );
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error during test user setup:", error);
+//     // Fail the test suite if setup fails critically
+//   } finally {
+//     await apiContext.dispose(); // Clean up the request context
+//   }
+// });
 test.describe("Login Functionality", () => {
   // --- Test Case 1: Successful Login ---
   test("should allow an existing user to log in successfully", async ({
@@ -62,8 +62,8 @@ test.describe("Login Functionality", () => {
 
     // 3. Fill in valid credentials
     // Using getByPlaceholder for robustness, adjust if your inputs have different labels/names
-    await page.fill('input[placeholder="Email"]', TEST_USER_EMAIL);
-    await page.fill('input[placeholder="Password"]', TEST_USER_PASSWORD);
+    await page.fill('input[placeholder="Email"]', 'example@gmail.com');
+    await page.fill('input[placeholder="Password"]', 'example');
 
     // 4. Click the login button
     await page.getByTestId("login").click(); // Assuming button text is 'Login'
