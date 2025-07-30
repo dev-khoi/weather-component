@@ -40,13 +40,14 @@ export default defineConfig({
   webServer: [
     {
       command:
-      "cd backend && npm run express-dev",
+        `GOOGLE_CLIENT_ID=${process.env.GOOGLE_CLIENT_ID} ` +
+        `GOOGLE_CLIENT_SECRET=${process.env.GOOGLE_CLIENT_SECRET} ` +
+        `cd backend && npm run express-dev`,
       url: "http://localhost:3000/",
       reuseExistingServer: !process.env.CI,
     },
     {
-      command:
-       "cd frontend && npm run dev",
+      command: "cd frontend && npm run dev",
       url: "http://localhost:5173/",
       reuseExistingServer: !process.env.CI,
     },
