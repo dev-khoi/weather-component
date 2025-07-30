@@ -17,7 +17,6 @@ jobs:
         with:
           node-version: 20
       - run: npm install
-      - run: npm init playwright@latest
 
       - name: Install Backend Dependencies
         working-directory: ./backend
