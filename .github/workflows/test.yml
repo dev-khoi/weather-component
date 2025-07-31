@@ -29,29 +29,11 @@ jobs:
       - name: Build Backend
         working-directory: ./backend
         run: npm run build # Assumes 'npm run build' exists in backend/package.json
-        env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
       - name: Build Frontend
         working-directory: ./frontend
         run: npm run build # Assumes 'npm run build' exists in frontend/package.json
 
 
       - name: set up interface test
-        env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: npm run test
-
-      #deploy
-      - name: Install zip tool
-        uses: montudor/action-zip@v1
-      - name: Create Zip file for Lambda function
-        run: zip -r code.zip .
-      - name: AWS CLI v2
-        uses: imehedi/actions-awscli-v2@latest
-        with:
-          args: "lambda update-function-code \
-            --function-name arn:aws:lambda:us-east-2:591931937748:function:weatherCompBackend \
-            --zip-file fileb://code.zip"
-
