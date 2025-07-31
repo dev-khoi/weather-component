@@ -2,34 +2,13 @@ import passport, { Profile } from "passport";
 import { VerifyCallback } from "passport-google-oauth2";
 import { Strategy as OAuth2Strategy } from "passport-google-oauth2";
 import dotenv from "dotenv";
-import { PrismaClient } from "../../generated/prisma";
-import { createNewUserLayout } from "../db/defaultLayout";
+import { PrismaClient } from "@prisma/client";
+// import { createNewUserLayout } from "../db/defaultLayout";
 dotenv.config();
-const googleClientId = process.env.GOOGLE_CLIENT_ID!;
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET!;
+const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 const backendUrl = process.env.BACKEND_URL!;
 const prisma = new PrismaClient();
-<<<<<<< HEAD
-
-passport.use(
-  new OAuth2Strategy(
-    {
-      clientID: googleClientId,
-      clientSecret: googleClientSecret,
-      callbackURL: `${backendUrl}/auth/google/callback`,
-    },
-    async (
-      accessToken: string,
-      refreshToken: string,
-      profile: Profile,
-      done: VerifyCallback
-    ) => {
-      const existingUser = await prisma.user.findUnique({
-        where: {
-          providerId: profile.id, // assumes profile.id is unique to this provider
-        },
-      });
-=======
 const colWidth = 2;
 const gridCols = 12;
 const tileHeight = 3;
@@ -108,7 +87,6 @@ const createNewUserLayout = async (userId: number) => {
   await prisma.$transaction([layoutCreates, ...componentCreates]);
 };
 if (!googleClientId || !googleClientSecret || !backendUrl) {
-  
 } else {
   passport.use(
     new OAuth2Strategy(
@@ -153,6 +131,5 @@ if (!googleClientId || !googleClientSecret || !backendUrl) {
     )
   );
 }
->>>>>>> 7364318 (fix passportConfig)
 
 export { passport };
