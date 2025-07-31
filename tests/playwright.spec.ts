@@ -1,11 +1,7 @@
 import { test, expect, request } from "@playwright/test";
 import { defineConfig } from "@playwright/test";
 
-// Define test user credentials
-const timestamp = Date.now().toString().slice(-6); // Use only last 6 digits
-const TEST_USER_EMAIL = `test${timestamp}@example.com`;
-const TEST_USER_PASSWORD = "TestPassword123!";
-const TEST_USER_USERNAME = `test${timestamp}`; // Assuming username is also part of registration
+
 
 // --- Before all tests in this file, ensure a test user exists via API ---
 // test.beforeAll(async () => {
@@ -70,14 +66,9 @@ test.describe("Login Functionality", () => {
 
     // 6. Assert successful redirection to the main app page (e.g., '/')
     // Use a regex to match the base URL or specific dashboard URL
-<<<<<<< HEAD
-    await page.waitForURL("/weather");
-    await expect(page).toHaveURL("/weather"); // Verify the final URL
-=======
     // await page.waitForURL("http://localhost:5173/weather");
     
     // await expect(page).toHaveURL("http://localhost:5173/weather"); // Verify the final URL
->>>>>>> 7364318 (fix passportConfig)
 
     // 7. Assert that a logged-in indicator is visible (e.g., a "Logout" button, user profile link)
     // Replace with an actual element that appears post-login
@@ -101,12 +92,6 @@ test.describe("Login Functionality", () => {
 
     // 3. Click the login button
     await page.getByTestId("login").click(); // Assuming button text is 'Login'
-
-    // // 4. Assert that an error message is displayed
-    // // Look for a common error message or a specific error container
-    // await expect(
-    //   page.getByText("Invalid email or password") || page.getByTestId("testid")
-    // ).toBeVisible();
 
     // 5. Assert that the page does NOT navigate away from the login page
     await expect(page).toHaveURL("/login"); // Still on the login page
