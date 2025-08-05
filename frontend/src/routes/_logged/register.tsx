@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SignUpForm } from "@/components/ui/signUpForm";
+import { SignUpForm } from "@/components/ui/SignUpForm";
 import { useAuth } from "@/auth/auth";
 import { LoadingAnimation } from "@/components/ui/loading";
 

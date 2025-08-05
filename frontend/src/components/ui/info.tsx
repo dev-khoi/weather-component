@@ -7,9 +7,9 @@ const HeadInfo = ({
     time: string;
 }) => {
     return (
-        <div className="text-[#fcffff] flex flex-col items-center text-white-300 text-xl md:text-2xl lg:text-3xl font-bold opacity-90">
-            <h2 className="text-4xl" aria-describedby="the time">{time ?? "loading"}</h2>
-            <h2 className="text-4xl" aria-describedby="the location">{location ?? "loading"}</h2>
+        <div className="text-[#fcffff] flex flex-col items-center">
+            <h2 className=" text-white-300 text-2xl md:text-3xl lg:text-4xl font-bold opacity-90" aria-describedby="the time">{time ?? "loading"}</h2>
+            <h2 className=" text-white-300 text-2xl md:text-3xl lg:text-4xl font-bold opacity-90" aria-describedby="the location">{location ?? "loading"}</h2>
         </div>
     );
 };
