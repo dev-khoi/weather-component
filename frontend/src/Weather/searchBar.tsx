@@ -83,10 +83,10 @@ const SearchBar = ({
     return (
         <>
             <button
-                className="bg-(--background-color) inline-flex items-center align-middle gap-2 border-2 border-card dark:border-border  rounded-lg py-1 px-3"
+                className="text-lg md:text-xl bg-(--background-color) inline-flex items-center align-middle gap-2 border-2 border-card dark:border-border  rounded-lg py-1 px-3"
                 onClick={toggleDialog}
             >
-                Add component
+                + Add
                 <div className="hidden gap-1 sm:flex">
                     <kbd className="bg-primary-foreground text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">
                         Ctrl
@@ -134,19 +134,33 @@ const SearchBar = ({
                     bg-white text-black"
                     />
                     <ul className="space-y-2">
-                        {componentList.map((comp) => (
-                            <li key={comp.id}>
-                                <button
-                                    onClick={() =>{ addComponent(comp.id);
-                                        setComponentList(componentList.filter((e) => e.id !== comp.id))
-                                     }}
-                                    className="w-full text-left px-3 py-2 bg-gray-500 rounded-md 
+                        {!!componentList.length ? (
+                            componentList.map((comp) => (
+                                <li key={comp.id}>
+                                    <button
+                                        onClick={() => {
+                                            addComponent(comp.id);
+                                            setComponentList(
+                                                componentList.filter(
+                                                    (e) => e.id !== comp.id,
+                                                ),
+                                            );
+                                        }}
+                                        className="w-full text-left px-3 py-2 bg-gray-500 rounded-md 
                                hover:bg-gray-400 "
-                                >
-                                    {comp.componentName}
-                                </button>
-                            </li>
-                        ))}
+                                    >
+                                        {comp.componentName}
+                                    </button>
+                                </li>
+                            ))
+                        ) : (
+                            <div
+                                className="w-full text-left px-3 py-2 rounded-md 
+                               hover:bg-gray-400 "
+                            >
+                                No more component
+                            </div>
+                        )}
                     </ul>
                 </dialog>
             )}

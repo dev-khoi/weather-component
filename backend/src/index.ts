@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { Layout } from "./types/type.js";
+import { CustomError, Layout } from "./types/type.js";
 import { authenticateToken } from "./auth/authentication.js";
 import { layoutValidator } from "./validator/validation.js";
 // SECRET KEY
@@ -19,6 +19,7 @@ import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
 import { authRoute } from "./authServer/authServer.js";
 import { errorHandler } from "./authServer/authErrorHandler.js";
+import { geminiPrompt } from "./ai/gemini.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -44,6 +45,26 @@ app.get("/", authenticateToken, (req: Request, res: Response) => {
   res.json({ email: req.body.email });
 });
 
+app.post("/weatherAi", verifyAccessToken, async (req, res) => {
+   console.debug("in")
+  const { weatherData, question } = req.body;
+  if (
+    !weatherData ||
+    !question ||
+    question.length > 100 ||
+    question.length === 0
+  ) {
+    const error: CustomError = new Error("invalid data and question");
+    error.status = 400; // Bad Request
+    throw error;
+  }
+
+  const promptRes = await geminiPrompt(question, weatherData);
+ 
+  res.json({ answer: promptRes });
+});
+
+// route for handling layouts
 app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
   // extracting the token
   const decoded = req.decoded;
@@ -69,9 +90,9 @@ app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
         },
       },
     });
-    const layouts = layoutSizes.map((layout : any) => {
+    const layouts = layoutSizes.map((layout: any) => {
       const key = layout.layoutSize;
-      const values = layout.WeatherComponents.map((v : any) => v.dataGrid);
+      const values = layout.WeatherComponents.map((v: any) => v.dataGrid);
       return { [key]: values };
     });
     return Object.assign({}, ...layouts);
@@ -104,7 +125,7 @@ app.put(
       }
       // UPDATING THE LAYOUTS
       try {
-        await prisma.$transaction(async (tx : any) => {
+        await prisma.$transaction(async (tx: any) => {
           // update
           for (const comp of layoutComps) {
             const update = await prisma.weatherComponent.updateMany({
@@ -144,7 +165,7 @@ app.delete(
     // data: [lg: [{dataGrid}, {dataGrid:2}], md:]
     // remove
     try {
-      await prisma.$transaction(async (tx : any) => {
+      await prisma.$transaction(async (tx: any) => {
         const matchingComponents = await prisma.weatherComponent.findMany({
           where: {
             userId: Number(decoded.userId),

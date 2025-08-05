@@ -37,15 +37,16 @@ import { SearchBar } from "./searchBar.tsx";
 import { isMobile } from "react-device-detect";
 
 import type { ComponentListType } from "@/types/types";
-import { GetLocationButton } from "@/components/ui/getLocationButton.tsx";
-import { UnitToggleSwitch } from "@/components/ui/unitToggleButton.tsx";
-import { SkeletonGrid } from "@/components/ui/pageSkeletonLoading.tsx";
+import { GetLocationButton } from "@/components/ui/GetLocationButton.tsx";
+import { UnitToggleSwitch } from "@/components/ui/UnitToggleButton.tsx";
+import { SkeletonGrid } from "@/components/ui/PageSkeletonLoading.tsx";
+import { AiChat } from "@/components/ui/WeatherAiAssistant.tsx";
 
 
-const host = import.meta.env.VITE_BACKEND_HOST
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
+
 // };
 
 //~ logic:
@@ -387,7 +388,7 @@ const GridComponent: FunctionComponent = () => {
     };
     return (
         <div className="overflow-visible">
-            <div className="sticky  flex-col items-center justify-center px-2 md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-40 py-2 rounded-xl rounded-t-none">
+            <div className="sticky flex-col sm:flex-row items-center justify-center  px-2  md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-32 py-2 rounded-xl rounded-t-none">
                 <div className="relative flex justify-center items-start mt-2">
                     <HeadInfo
                         location={headInfo.location}
@@ -415,9 +416,9 @@ const GridComponent: FunctionComponent = () => {
 
                         <Label
                             htmlFor="edit-mode"
-                            className="w-fit text-lg mr-4 md:text-md"
+                            className="w-fit text-lg md:text-2xl mr-4 md:text-md"
                         >
-                            Edit layout
+                            Edit
                         </Label>
                     </div>
 
@@ -430,6 +431,8 @@ const GridComponent: FunctionComponent = () => {
                 </div>
             </div>
 
+            {/* Ai for chat */}
+            <AiChat weatherData={JSON.stringify(weatherData)}/>
             {/* grid layout */}
             <div>
                 <ResponsiveReactGridLayout
