@@ -22,11 +22,7 @@ import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
 import { authRoute } from "./authServer/authServer.js";
 import { errorHandler } from "./authServer/authErrorHandler.js";
-<<<<<<< HEAD
 import { geminiPrompt } from "./ai/gemini.js";
-=======
-
->>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
