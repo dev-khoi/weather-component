@@ -34,11 +34,13 @@ import { SearchBar } from "./searchBar.tsx";
 import { isMobile } from "react-device-detect";
 
 import type { ComponentListType } from "@/types/types";
-import { GetLocationButton } from "@/components/ui/GetLocationButton.tsx";
-import { UnitToggleSwitch } from "@/components/ui/UnitToggleButton.tsx";
-import { SkeletonGrid } from "@/components/ui/PageSkeletonLoading.tsx";
-import { AiChat } from "@/components/ui/WeatherAiAssistant.tsx";
-
+import { GetLocationButton } from "@/components/functionalUi/GetLocationButton.tsx";
+import { UnitToggleSwitch } from "@/components/functionalUi/UnitToggleButton.tsx";
+import { SkeletonGrid } from "@/components/functionalUi/PageSkeletonLoading.tsx";
+import { AiChat } from "@/components/functionalUi/WeatherAiAssistant.tsx";
+import { SaveLayoutButton } from "@/components/functionalUi/SaveLayoutButton.tsx";
+import { Button } from "@headlessui/react";
+import { Loader2Icon } from "lucide-react";
 
 const host = import.meta.env.VITE_BACKEND_HOST;
 // const removeComponent = (id: number) => {
@@ -88,6 +90,7 @@ const GridComponent: FunctionComponent = () => {
         if (width >= 480) return "xs";
         return "xxs";
     };
+    const [loading, setLoading] = useState<boolean>(false);
     const [currentBreakpoint, setCurrentBreakpoint] = useState<string>(
         getBreakpointFromWidth(window.innerWidth),
     );
@@ -109,7 +112,7 @@ const GridComponent: FunctionComponent = () => {
 
     const scrollRef = useRef<NodeJS.Timeout | null>(null);
     const [scroll, setScroll] = useState<"up" | "down" | null>(null);
-
+    const [updatingLayout, setUpdatingLayout] = useState<boolean>(false);
     const lastSavedLayout = useRef<Layout[]>([]);
     if (allLayouts && allLayouts[currentBreakpoint]) {
         lastSavedLayout.current = allLayouts[currentBreakpoint];
@@ -236,6 +239,7 @@ const GridComponent: FunctionComponent = () => {
 
             try {
                 await addComponentDb(newComp, currentBreakpoint);
+
                 await updateLayoutDb(allLayouts);
             } catch (e) {
                 console.error(e);
@@ -381,11 +385,7 @@ const GridComponent: FunctionComponent = () => {
     };
     return (
         <div className="overflow-visible">
-<<<<<<< HEAD
             <div className="sticky flex-col sm:flex-row items-center justify-center  px-2  md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-32 py-2 rounded-xl rounded-t-none">
-=======
-            <div className="sticky  flex-col items-center justify-center px-2 md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-40 py-2 rounded-xl rounded-t-none">
->>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
                 <div className="relative flex justify-center items-start mt-2">
                     <HeadInfo
                         location={headInfo.location}
@@ -394,46 +394,63 @@ const GridComponent: FunctionComponent = () => {
                 </div>
                 {/* tool bar and time */}
                 <div className="z-10 bg-gray-800 dark:bg-gray-750  text-accent-foreground justify-self-center flex justify-center items-center space-x-4 px-6 py-3 mt-4 mb-4 w-fit  border rounded-xl">
-                    <div className=" bg-(--background-color) inline-flex items-center align-middle gap-2 border-2 border-card dark:border-border  rounded-lg py-1 px-3">
-                        <Switch
-                            id="edit-mode"
-                            checked={editMode}
-                            onCheckedChange={() => {
-                                setEditMode(!editMode);
-<<<<<<< HEAD
-                                if (
-                                    !changingBreakpoint.current &&
-                                    editMode
-                                ) {
-=======
-                                if (!changingBreakpoint.current && editMode) {
->>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
-                                    updateLayoutDb(allLayouts);
-                                }
-                            }}
-                            className="mr-1"
-                            aria-readonly
-                        />
-
-                        <Label
-                            htmlFor="edit-mode"
-                            className="w-fit text-lg md:text-2xl mr-4 md:text-md"
-                        >
-                            Edit
-                        </Label>
+                    <div className="flex flex-col space-y-2">
+                        <div className=" bg-(--background-color) inline-flex items-center align-middle gap-2 border-2 border-card dark:border-border  rounded-lg py-1 px-3">
+                            <Switch
+                                id="edit-mode"
+                                checked={editMode}
+                                onCheckedChange={() => {
+                                    setEditMode(!editMode);
+                                }}
+                                className="mr-1"
+                                aria-readonly
+                                disabled={updatingLayout}
+                            />
+                            <Label
+                                htmlFor="edit-mode"
+                                className="w-fit text-lg md:text-2xl mr-4 md:text-md"
+                            >
+                                Edit
+                            </Label>
+                        </div>
+                        {editMode && (
+                            <Button
+                                className="text-lg md:text-xl text-center bg-(--background-color) flex justify-center items-center align-middle border-2 border-card dark:border-border  rounded-lg py-1 px-3"
+                                disabled={updatingLayout}
+                                onClick={async () => {
+                                    setUpdatingLayout(true);
+                                    await updateLayoutDb(allLayouts).then(
+                                        () => {
+                                            setUpdatingLayout(false);
+                                            setEditMode(false);
+                                        },
+                                    );
+                                }}
+                            >
+                                {updatingLayout ? (
+                                    <Loader2Icon className="animate-spin">
+                                        {" "}
+                                        "saving..."
+                                    </Loader2Icon>
+                                ) : (
+                                    "save"
+                                )}
+                            </Button>
+                        )}
                     </div>
 
                     <SearchBar
                         originComponentList={searchList}
                         currentBreakpoint={currentBreakpoint}
                         addComponent={addComponent}
+                        disabled={updatingLayout}
                     />
                     <UnitToggleSwitch />
                 </div>
             </div>
 
             {/* Ai for chat */}
-            <AiChat weatherData={JSON.stringify(weatherData)}/>
+            <AiChat weatherData={JSON.stringify(weatherData)} />
             {/* grid layout */}
             <div>
                 <ResponsiveReactGridLayout

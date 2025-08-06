@@ -12,11 +12,8 @@ import {
 // SECRET KEY
 import { createNewUserLayout } from "../db/defaultLayout.js";
 
-<<<<<<< HEAD
 import { passport } from "../auth/passportConfig.js";
 
-=======
->>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 import dotenv from "dotenv";
 dotenv.config();
 

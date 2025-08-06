@@ -9,11 +9,8 @@ import dotenv from "dotenv";
 dotenv.config();
 const frontend = process.env.FRONTEND_URL!;
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 // database
 import { PrismaClient, User } from "@prisma/client";
 import { errorHandler } from "./authErrorHandler.js";

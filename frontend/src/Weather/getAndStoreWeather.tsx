@@ -127,11 +127,8 @@ const WeatherData = ({ children }: { children: ReactNode }) => {
         ) {
             setWeatherComponent(JSON.parse(stored));
         } else {
-<<<<<<< HEAD
             setWeatherComponent([]);
             setWeatherHeadInfo({time:"loading", location:"loading"});
-=======
->>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
             assignWeatherData();
         }
     }, [unit]);

@@ -5,7 +5,7 @@ const host =  import.meta.env.VITE_BACKEND_HOST
 const updateLayoutDb = async (allLayouts: Layouts) => {
     console.debug("save to db");
     try {
-        axios.put(
+        await axios.put(
             `${host}/componentInLayouts`,
             { layouts: allLayouts },
             { withCredentials: true },
@@ -17,7 +17,7 @@ const updateLayoutDb = async (allLayouts: Layouts) => {
 
 const deleteComponentDb = async (id: string, breakpoint: string) => {
     try {
-        axios.delete(`${host}/componentInLayouts`, {
+        await axios.delete(`${host}/componentInLayouts`, {
             data: {
                 id,
                 breakpoint,
@@ -32,7 +32,7 @@ const deleteComponentDb = async (id: string, breakpoint: string) => {
 const addComponentDb = async (newComp: Layout, breakpoint: string) => {
     console.log(newComp, breakpoint);
     try {
-        axios.post(
+        await axios.post(
             `${host}/componentInLayouts`,
             {
                 newComp,
