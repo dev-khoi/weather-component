@@ -1,32 +1,28 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const authentication_js_1 = require("./auth/authentication.js");
-const validation_js_1 = require("./validator/validation.js");
+import express from "express";
+import { authenticateToken } from "./auth/authentication.js";
+import { layoutValidator } from "./validator/validation.js";
 // SECRET KEY
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import dotenv from "dotenv";
+dotenv.config();
 const frontend = process.env.FRONTEND_URL;
-const cors_1 = __importDefault(require("cors"));
+import cors from "cors";
 const corsOption = {
     origin: [frontend],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 };
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const index_js_1 = require("./../generated/prisma/index.js");
-const passwordUtils_js_1 = require("./lib/passwordUtils.js");
-const authServer_js_1 = require("./authServer/authServer.js");
-const authErrorHandler_js_1 = require("./authServer/authErrorHandler.js");
-const prisma = new index_js_1.PrismaClient();
+import cookieParser from "cookie-parser";
+import { PrismaClient } from "@prisma/client";
+import { verifyAccessToken } from "./lib/passwordUtils.js";
+import { authRoute } from "./authServer/authServer.js";
+import { errorHandler } from "./authServer/authErrorHandler.js";
+const prisma = new PrismaClient();
 // !not ideal, store in a db
 let refreshTokenArr = [];
 // *middleware config
-const app = (0, express_1.default)();
+const app = express();
 // cors for connecting to vite
+<<<<<<< HEAD
 <<<<<<< HEAD
 app.use((0, cors_1.default)(corsOption));
 // const PgSession = connectPgSimple(session);
@@ -36,18 +32,24 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 =======
 // const PgSession = connectPgSimple(session);
+=======
+// const PgSession = connectPgSimple(session);
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors(corsOption));
+<<<<<<< HEAD
 >>>>>>> b387e29 (fix test file and config)
+=======
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 // *routes
 // authenticate the user to access weather
-app.use("/auth", authServer_js_1.authRoute);
-app.get("/", authentication_js_1.authenticateToken, (req, res) => {
+app.use("/auth", authRoute);
+app.get("/", authenticateToken, (req, res) => {
     res.json({ email: req.body.email });
 });
-app.get("/componentInLayouts", passwordUtils_js_1.verifyAccessToken, async (req, res) => {
+app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
     // extracting the token
     const decoded = req.decoded;
     // if invalid accessToken
@@ -81,7 +83,7 @@ app.get("/componentInLayouts", passwordUtils_js_1.verifyAccessToken, async (req,
     res.status(200).json(dataGrid);
     return;
 });
-app.put("/componentInLayouts", validation_js_1.layoutValidator, passwordUtils_js_1.verifyAccessToken, async (req, res) => {
+app.put("/componentInLayouts", layoutValidator, verifyAccessToken, async (req, res) => {
     const decoded = req.decoded;
     const layouts = req.body.layouts;
     if (!decoded || !layouts) {
@@ -121,7 +123,7 @@ app.put("/componentInLayouts", validation_js_1.layoutValidator, passwordUtils_js
         return;
     }
 });
-app.delete("/componentInLayouts", validation_js_1.layoutValidator, passwordUtils_js_1.verifyAccessToken, async (req, res) => {
+app.delete("/componentInLayouts", layoutValidator, verifyAccessToken, async (req, res) => {
     const decoded = req.decoded;
     const { id, breakpoint } = req.body;
     if (!id || !breakpoint || !decoded) {
@@ -158,7 +160,7 @@ app.delete("/componentInLayouts", validation_js_1.layoutValidator, passwordUtils
     }
     res.send(202);
 });
-app.post("/componentInLayouts", passwordUtils_js_1.verifyAccessToken, async (req, res) => {
+app.post("/componentInLayouts", verifyAccessToken, async (req, res) => {
     const { newComp, breakpoint } = req.body;
     console.log(newComp, breakpoint);
     if (!req.decoded || !newComp || !breakpoint) {
@@ -188,6 +190,7 @@ app.post("/componentInLayouts", passwordUtils_js_1.verifyAccessToken, async (req
     return;
 });
 <<<<<<< HEAD
+<<<<<<< HEAD
 app.listen(3000, () => {
     console.log("server on port 3000 started");
 });
@@ -196,3 +199,8 @@ app.use(errorHandler);
 app.listen(3000, () => console.log("Server ready on port 3000."));
 export default app;
 >>>>>>> b387e29 (fix test file and config)
+=======
+app.use(errorHandler);
+app.listen(3000, () => console.log("Server ready on port 3000."));
+export default app;
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80

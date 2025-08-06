@@ -1,17 +1,12 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.googleAuthRoute = void 0;
-const express_1 = __importDefault(require("express"));
-const authentication_js_1 = require("../auth/authentication.js");
+import express from "express";
+import { generateAccessToken, generateRefreshToken, } from "../auth/authentication.js";
 // SECRET KEY
-const passportConfig_js_1 = require("../auth/passportConfig.js");
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import { passport } from "../auth/passportConfig.js";
+import dotenv from "dotenv";
+dotenv.config();
 const frontend = process.env.FRONTEND_URL;
 // database
+<<<<<<< HEAD
 <<<<<<< HEAD
 const index_js_1 = require("../../generated/prisma/index.js");
 const authErrorHandler_js_1 = require("./authErrorHandler.js");
@@ -21,23 +16,28 @@ const googleAuthRoute = express_1.default.Router();
 exports.googleAuthRoute = googleAuthRoute;
 googleAuthRoute.use(passportConfig_js_1.passport.initialize());
 =======
+=======
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 import { PrismaClient } from "@prisma/client";
 import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 const googleAuthRoute = express.Router();
+<<<<<<< HEAD
 >>>>>>> b387e29 (fix test file and config)
+=======
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 // refreshToken search
 googleAuthRoute.get("/register", // becomes /auth/google/register
-passportConfig_js_1.passport.authenticate("google", {
+passport.authenticate("google", {
     scope: ["email", "profile"],
     session: false,
 }));
 // Step 2: Handle callback from Google
 googleAuthRoute.get("/callback", // becomes /auth/google/callback
-passportConfig_js_1.passport.authenticate("google", {
+passport.authenticate("google", {
     session: false,
     failureRedirect: `${frontend}/login`,
-}), (0, express_async_handler_1.default)(async (req, res) => {
+}), expressAsyncHandler(async (req, res) => {
     const user = req.user;
     if (!user || !user.userId || !user.email) {
         const error = new Error("Missing authentication");
@@ -54,8 +54,8 @@ passportConfig_js_1.passport.authenticate("google", {
         error.status = 401; // Bad Request
         throw error;
     }
-    const accessToken = (0, authentication_js_1.generateAccessToken)(user.userId);
-    const refreshToken = (0, authentication_js_1.generateRefreshToken)(user.userId);
+    const accessToken = generateAccessToken(user.userId);
+    const refreshToken = generateRefreshToken(user.userId);
     await prisma.refreshToken.create({
         data: {
             token: refreshToken,
@@ -80,7 +80,11 @@ passportConfig_js_1.passport.authenticate("google", {
     return;
 }));
 <<<<<<< HEAD
+<<<<<<< HEAD
 googleAuthRoute.use(authErrorHandler_js_1.errorHandler);
 =======
 export { googleAuthRoute };
 >>>>>>> b387e29 (fix test file and config)
+=======
+export { googleAuthRoute };
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80

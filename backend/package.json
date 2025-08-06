@@ -9,13 +9,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "express-dev": "nodemon --exec tsx src/index.ts",
-    "auth-dev": "nodemon --exec tsx src/authServer.ts",
     "prisma-dev": "nodemon --exec tsx db/database.ts",
-    "build": "tsc"
+    "build": "npm install && tsc",
+    "postinstall": "prisma generate",
+    "start": "node dist/index.js"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@google/genai": "^1.12.0",
     "@prisma/client": "^6.10.1",
+=======
+    "@google/genai": "^1.11.0",
+    "@prisma/client": "^6.12.0",
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
     "connect-pg-simple": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -25,6 +31,7 @@
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "node": "^20.19.4",
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth": "^2.0.0",
@@ -32,7 +39,8 @@
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "pino": "^9.7.0",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
@@ -45,7 +53,7 @@
     "@types/passport-google-oauth2": "^0.1.10",
     "@types/passport-jwt": "^4.0.1",
     "@typescript-eslint/parser": "^8.35.1",
-    "prisma": "^6.11.1",
+    "prisma": "^6.12.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.20.3",

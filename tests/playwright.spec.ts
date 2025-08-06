@@ -1,6 +1,50 @@
 import { test, expect, request } from "@playwright/test";
 import { defineConfig } from "@playwright/test";
 
+<<<<<<< HEAD
+=======
+
+
+// --- Before all tests in this file, ensure a test user exists via API ---
+// test.beforeAll(async () => {
+//   // Create a request context to make API calls directly
+//   const apiContext = await request.newContext({
+//     baseURL: process.env.PLAYWRIGHT_BACKEND_URL || "http://localhost:3000", // Use backend URL from env or default
+//   });
+
+//   try {
+//     // Attempt to register a new user for testing
+//     const response = await apiContext.post("/auth/local/register", {
+//       data: {
+//         username: TEST_USER_USERNAME,
+//         email: TEST_USER_EMAIL,
+//         password: TEST_USER_PASSWORD,
+//       },
+//     });
+
+//     if (response.ok()) {
+//       console.log(`Test user ${TEST_USER_EMAIL} registered successfully.`);
+//     } else {
+//       const errorBody = await response.json();
+//       // If user already exists (e.g., from a previous failed run), that's okay for login tests
+//       if (errorBody.message && errorBody.message.includes("already exists")) {
+//         console.warn(`Test user ${TEST_USER_EMAIL} already exists.`);
+//       } else {
+//         throw new Error(
+//           `Failed to register test user: ${response} - ${JSON.stringify(
+//             errorBody
+//           )}`
+//         );
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error during test user setup:", error);
+//     // Fail the test suite if setup fails critically
+//   } finally {
+//     await apiContext.dispose(); // Clean up the request context
+//   }
+// });
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 test.describe("Login Functionality", () => {
   // --- Test Case 1: Successful Login ---
   test("should allow an existing user to log in successfully", async ({
@@ -22,6 +66,23 @@ test.describe("Login Functionality", () => {
 
     // 4. Click the login button
     await page.getByTestId("login").click(); // Assuming button text is 'Login'
+<<<<<<< HEAD
+=======
+
+    // 6. Assert successful redirection to the main app page (e.g., '/')
+    // Use a regex to match the base URL or specific dashboard URL
+    await page.waitForURL("/weather");
+    
+    await expect(page).toHaveURL("/weather"); // Verify the final URL
+
+    // 7. Assert that a logged-in indicator is visible (e.g., a "Logout" button, user profile link)
+    // Replace with an actual element that appears post-login
+
+//     const menuButton = page.getByTestId("main-menu");
+// await menuButton.waitFor({ state: "visible" }); // or "attached"
+// await menuButton.click();
+//     await expect(page.getByTestId("logout")).toBeVisible();
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
   });
 
   // --- Test Case 2: Failed Login with Invalid Credentials ---

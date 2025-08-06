@@ -9,17 +9,20 @@ import dotenv from "dotenv";
 dotenv.config();
 const frontend = process.env.FRONTEND_URL!;
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 // database
-import { PrismaClient, User } from "../../generated/prisma/index.js";
+import { PrismaClient, User } from "@prisma/client";
 import { errorHandler } from "./authErrorHandler.js";
 import { CustomError } from "../types/type.js";
 import expressAsyncHandler from "express-async-handler";
 const prisma = new PrismaClient();
 
 const googleAuthRoute = express.Router();
-googleAuthRoute.use(passport.initialize());
+
 // refreshToken search
 googleAuthRoute.get(
   "/register", // becomes /auth/google/register
@@ -70,20 +73,21 @@ googleAuthRoute.get(
     res
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
+
         maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
+
         maxAge: 15 * 24 * 60 * 60 * 1000,
       })
       .redirect(`${frontend}/weather`);
     return;
   })
 );
-googleAuthRoute.use(errorHandler);
 
 export { googleAuthRoute };

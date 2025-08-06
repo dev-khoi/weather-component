@@ -177,6 +177,7 @@ const generateRefreshToken = (userId: number | string) => {
 session token date:
 access: 15minutes
 expire: 15d
+<<<<<<< HEAD
      '
 
 
@@ -194,3 +195,72 @@ Answer now with a concise, actionable recommendation.
 
 User question: what should i wear
 Weather data:
+=======
+
+
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  userId         Int             @id @default(autoincrement())
+  username       String          @default("user") @db.VarChar(14)
+  email          String          @unique @db.VarChar(254)
+  provider       String          @default("local")
+  providerId     String?         @unique
+  hash           String?         @unique @db.VarChar(64)
+  salt           String?         @unique @db.VarChar(64)
+  role           String          @default("user")
+  // a user can have many weather components
+  WeatherLayouts WeatherLayout[]
+  RefreshTokens  RefreshToken[]
+}
+
+model WeatherLayout {
+  userId     Int
+  layoutSize String @db.VarChar(14)
+  user       User   @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+
+  WeatherComponents WeatherComponent[]
+
+  @@id([layoutSize, userId])
+}
+
+// user 1-many weatherLayout
+model WeatherComponent {
+  layoutSize String @db.VarChar(14)
+  userId     Int
+
+  weatherId String
+  dataGrid  Json
+
+  WeatherLayout WeatherLayout @relation(fields: [layoutSize, userId], references: [layoutSize, userId])
+
+  @@id([layoutSize, userId, weatherId])
+}
+
+// refresh token database
+// refreshToken 1-1 user
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80

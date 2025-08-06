@@ -24,10 +24,7 @@ import { HeadInfo } from "@/components/ui/info.tsx";
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-    createLayout,
-    getListMissingId,
-} from "@/helpers/helper.ts";
+import { createLayout, getListMissingId } from "@/helpers/helper.ts";
 import {
     updateLayoutDb,
     deleteComponentDb,
@@ -43,6 +40,7 @@ import { SkeletonGrid } from "@/components/ui/PageSkeletonLoading.tsx";
 import { AiChat } from "@/components/ui/WeatherAiAssistant.tsx";
 
 
+const host = import.meta.env.VITE_BACKEND_HOST;
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
@@ -128,7 +126,7 @@ const GridComponent: FunctionComponent = () => {
     // Fetching all breakpoint layouts
     useEffect(() => {
         axios
-            .get("http://localhost:3000/componentInLayouts", {
+            .get(`${host}/componentInLayouts`, {
                 withCredentials: true,
             })
             .then((e: any) => {
@@ -165,12 +163,8 @@ const GridComponent: FunctionComponent = () => {
                     ...allLayouts,
                     [currentBreakpoint]: layout,
                 });
-                console.log("layout change on layout change");
-                if (!changingBreakpoint.current && editMode) {
-                    updateLayoutDb(allLayouts);
-                }
+                ignoreLayoutChange.current = false;
             }
-            ignoreLayoutChange.current = false;
         }
     };
 
@@ -358,8 +352,7 @@ const GridComponent: FunctionComponent = () => {
         event: MouseEvent | TouchEvent,
         element: HTMLElement,
     ) => {
-        if(layout || oldItem || newItem || placeholder || event){
-
+        if (layout || oldItem || newItem || placeholder || event) {
         }
         const { top } = element.getBoundingClientRect();
 
@@ -388,7 +381,11 @@ const GridComponent: FunctionComponent = () => {
     };
     return (
         <div className="overflow-visible">
+<<<<<<< HEAD
             <div className="sticky flex-col sm:flex-row items-center justify-center  px-2  md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-32 py-2 rounded-xl rounded-t-none">
+=======
+            <div className="sticky  flex-col items-center justify-center px-2 md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-40 py-2 rounded-xl rounded-t-none">
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
                 <div className="relative flex justify-center items-start mt-2">
                     <HeadInfo
                         location={headInfo.location}
@@ -403,10 +400,14 @@ const GridComponent: FunctionComponent = () => {
                             checked={editMode}
                             onCheckedChange={() => {
                                 setEditMode(!editMode);
+<<<<<<< HEAD
                                 if (
                                     !changingBreakpoint.current &&
                                     editMode
                                 ) {
+=======
+                                if (!changingBreakpoint.current && editMode) {
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
                                     updateLayoutDb(allLayouts);
                                 }
                             }}

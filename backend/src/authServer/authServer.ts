@@ -1,27 +1,24 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import jwt, { VerifyErrors } from "jsonwebtoken";
 
 import { CustomError, MyJwtPayload } from "../types/type.js";
-import { genPassword, verifyPassword } from "../lib/passwordUtils.js";
-import { registerValidator } from "../validator/validation.js";
+
 // import { pool } from "./db/pool.js";
 import {
   generateAccessToken,
-  generateRefreshToken,
 } from "../auth/authentication.js";
 import { passport } from "../auth/passportConfig.js";
 
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
-const frontend = process.env.FRONTEND_URL!;
 const secretAccessToken = process.env.ACCESS_SECRET_TOKEN!;
 const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN!;
 
 import cookieParser from "cookie-parser";
 
 // database
-import { PrismaClient } from "../../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import { googleAuthRoute } from "./googleAuth.js";
 import { localAuthRoute } from "./localAuth.js";
 import { errorHandler } from "./authErrorHandler.js";
@@ -34,9 +31,7 @@ const authRoute = express.Router();
 authRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
 // const PgSession = connectPgSimple(session);
-authRoute.use(express.json());
-authRoute.use(express.urlencoded({ extended: true }));
-authRoute.use(cookieParser());
+
 // jwt and google signing up and logging in
 // all create access and refresh token
 authRoute.use("/local", localAuthRoute);
@@ -97,8 +92,8 @@ authRoute.post(
               return res
                 .cookie("accessToken", accessToken, {
                   httpOnly: true,
-                  secure: false,
-                  sameSite: "strict",
+                  secure: true,
+                  sameSite: "none",
                   maxAge: 15 * 60 * 1000, // 15 min
                 })
                 .status(200)
@@ -129,13 +124,15 @@ authRoute.delete(
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
+
       path: "/",
     });
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
+
       path: "/",
     });
 

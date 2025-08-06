@@ -39,6 +39,7 @@ export default defineConfig({
   // Run your local dev server before starting the tests.
   webServer: [
     {
+<<<<<<< HEAD
       command:
       "cd backend && npm run express-dev",
       url: "http://localhost:3000/",
@@ -47,6 +48,18 @@ export default defineConfig({
     {
       command:
        "cd frontend && npm run dev",
+=======
+      command: `cd backend && npm run express-dev`,
+      url: "http://localhost:3000/",
+      reuseExistingServer: !process.env.CI,
+      env: {
+        GOOGLE_CLIENT_ID: `${process.env.GOOGLE_CLIENT_ID}`,
+        GOOGLE_CLIENT_SECRET: `${process.env.GOOGLE_CLIENT_SECRET}`,
+      },
+    },
+    {
+      command: "cd frontend && npm run dev",
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
       url: "http://localhost:5173/",
       reuseExistingServer: !process.env.CI,
     },

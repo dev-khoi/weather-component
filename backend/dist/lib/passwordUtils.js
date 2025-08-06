@@ -1,24 +1,16 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyAccessToken = void 0;
-exports.genPassword = genPassword;
-exports.verifyPassword = verifyPassword;
-const crypto_1 = __importDefault(require("crypto"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 function genPassword(password) {
-    const salt = crypto_1.default.randomBytes(32).toString("hex");
-    const hash = crypto_1.default
+    const salt = crypto.randomBytes(32).toString("hex");
+    const hash = crypto
         .pbkdf2Sync(password, salt, 10000, 32, "sha512")
         .toString("hex"); // 32 bytes
     return { salt, hash };
 }
 function verifyPassword(password, hash, salt) {
-    const hashVerify = crypto_1.default
+    const hashVerify = crypto
         .pbkdf2Sync(password, salt, 10000, 32, "sha512")
         .toString("hex"); // 32 bytes
     return hash === hashVerify;
@@ -30,7 +22,7 @@ const verifyAccessToken = (req, res, next) => {
         res.sendStatus(401);
         return;
     }
-    jsonwebtoken_1.default.verify(accessToken, process.env.ACCESS_SECRET_TOKEN, async (err, decoded) => {
+    jwt.verify(accessToken, process.env.ACCESS_SECRET_TOKEN, async (err, decoded) => {
         if (err || !decoded || typeof decoded === "string") {
             return res.status(401).json({ message: "unauthorized" });
         }
@@ -38,4 +30,4 @@ const verifyAccessToken = (req, res, next) => {
     });
     next();
 };
-exports.verifyAccessToken = verifyAccessToken;
+export { genPassword, verifyPassword, verifyAccessToken };

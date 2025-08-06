@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { CustomError, Layout } from "./types/type.js";
 import { authenticateToken } from "./auth/authentication.js";
 import { layoutValidator } from "./validator/validation.js";
+
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
@@ -12,14 +13,20 @@ const corsOption = {
   origin: [frontend],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
+
 };
+
 import cookieParser from "cookie-parser";
-import { PrismaClient } from "./../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
 import { authRoute } from "./authServer/authServer.js";
 import { errorHandler } from "./authServer/authErrorHandler.js";
+<<<<<<< HEAD
 import { geminiPrompt } from "./ai/gemini.js";
+=======
+
+>>>>>>> 94f14efb092748d6a22654a2beb9d9eeae76ce80
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -29,7 +36,6 @@ let refreshTokenArr = [];
 const app = express();
 // cors for connecting to vite
 // const PgSession = connectPgSimple(session);
-app.use(errorHandler);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -230,7 +236,8 @@ app.post(
     return;
   }
 );
+app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("server on port 3000 started");
-});
+app.listen(3000, () => console.log("Server ready on port 3000."));
+
+export default app;
