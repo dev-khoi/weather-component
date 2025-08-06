@@ -87,6 +87,7 @@ const GridComponent: FunctionComponent = () => {
         if (width >= 480) return "xs";
         return "xxs";
     };
+    const [loading, setLoading] = useState<boolean>(false);
     const [currentBreakpoint, setCurrentBreakpoint] = useState<string>(
         getBreakpointFromWidth(window.innerWidth),
     );
@@ -108,7 +109,7 @@ const GridComponent: FunctionComponent = () => {
 
     const scrollRef = useRef<NodeJS.Timeout | null>(null);
     const [scroll, setScroll] = useState<"up" | "down" | null>(null);
-
+    const [updatingLayout, setUpdatingLayout] = useState<boolean>(false);
     const lastSavedLayout = useRef<Layout[]>([]);
     if (allLayouts && allLayouts[currentBreakpoint]) {
         lastSavedLayout.current = allLayouts[currentBreakpoint];
@@ -235,6 +236,7 @@ const GridComponent: FunctionComponent = () => {
 
             try {
                 await addComponentDb(newComp, currentBreakpoint);
+
                 await updateLayoutDb(allLayouts);
             } catch (e) {
                 console.error(e);
@@ -415,6 +417,7 @@ const GridComponent: FunctionComponent = () => {
                         originComponentList={searchList}
                         currentBreakpoint={currentBreakpoint}
                         addComponent={addComponent}
+                        disabled={updatingLayout}
                     />
                     <UnitToggleSwitch />
                 </div>

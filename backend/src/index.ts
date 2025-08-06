@@ -13,7 +13,6 @@ const corsOption = {
   origin: [frontend],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
-
 };
 
 import cookieParser from "cookie-parser";
@@ -33,9 +32,10 @@ const app = express();
 // cors for connecting to vite
 // const PgSession = connectPgSimple(session);
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(express.json());
+
 app.use(cors(corsOption));
 
 // *routes
@@ -48,7 +48,7 @@ app.get("/", authenticateToken, (req: Request, res: Response) => {
 });
 
 app.post("/weatherAi", verifyAccessToken, async (req, res) => {
-   console.debug("in")
+  console.debug("in");
   const { weatherData, question } = req.body;
   if (
     !weatherData ||
@@ -62,8 +62,9 @@ app.post("/weatherAi", verifyAccessToken, async (req, res) => {
   }
 
   const promptRes = await geminiPrompt(question, weatherData);
- 
+
   res.json({ answer: promptRes });
+  return;
 });
 
 // route for handling layouts
@@ -111,7 +112,8 @@ app.put(
   verifyAccessToken,
   async (req: Request, res: Response) => {
     const decoded = req.decoded;
-    const layouts: { string: Layout[] } = req.body.layouts;
+    const a = req.body;
+    const layouts: { [key: string]: Layout[] } = req.body.layouts;
 
     if (!decoded || !layouts) {
       res.status(400).send({ message: "not working" });
@@ -144,11 +146,12 @@ app.put(
           }
         });
       } catch (e) {
+        throw new Error("update layout fail");
         console.error(e);
       }
-      res.status(202).json({ message: "layout saved successfully" });
-      return;
     }
+    res.status(202).json({ message: "layout saved successfully" });
+    return;
   }
 );
 
@@ -194,6 +197,7 @@ app.delete(
     }
 
     res.send(202);
+    return;
   }
 );
 

@@ -28,7 +28,6 @@ const localAuthRoute = Router();
 // cors for connecting to frontend (vite)
 // const PgSession = connectPgSimple(session);
 
-
 localAuthRoute.post(
   "/register",
   registerValidator,
