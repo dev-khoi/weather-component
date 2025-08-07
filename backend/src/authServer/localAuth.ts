@@ -12,12 +12,9 @@ import {
 // SECRET KEY
 import { createNewUserLayout } from "../db/defaultLayout.js";
 
-import { passport } from "../auth/passportConfig.js";
-
 import dotenv from "dotenv";
 dotenv.config();
 
-import cookieParser from "cookie-parser";
 // database
 import { PrismaClient } from "@prisma/client";
 import { CustomError } from "../types/type.js";
