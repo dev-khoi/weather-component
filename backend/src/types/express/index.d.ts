@@ -1,9 +1,14 @@
 import express from "express";
 
+interface Decoded {
+  userId: string;
+}
 declare global {
   namespace Express {
     interface Request {
-      decoded?: Record<string, string>
+      decoded?: Decoded;
     }
   }
 }
+
+export { Decoded };

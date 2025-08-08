@@ -9,6 +9,14 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:3000/layout/componentInLayouts
+Content-Type: application/json
+
+{
+    "accessToken" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0IiwiaWF0IjoxNzU0NTgxMjg0LCJleHAiOjE3NTQ1ODE1ODR9.DAEKt3MQuRWz0khr1PQZaPx3Ynclzc40dCCw25OPj3A",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0IiwiaWF0IjoxNzU0NDkzODU3LCJleHAiOjE3NTU3ODk4NTd9.7YEFRKm6TYQTm4SMoFIOWZAykwz45DaM3ZcmiBg-bMg"
+}
+###
 POST http://localhost:4000/token
 Content-Type: application/json
 

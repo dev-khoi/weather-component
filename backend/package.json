@@ -7,12 +7,12 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "express-dev": "nodemon --exec tsx src/index.ts",
     "prisma-dev": "nodemon --exec tsx db/database.ts",
     "build": "npm install && tsc",
     "postinstall": "prisma generate",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "vitest"
   },
   "dependencies": {
     "@google/genai": "^1.12.0",
@@ -36,8 +36,7 @@
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
     "save-dev": "^0.0.1-security",
-    "serverless-http": "^3.2.0",
-    "vitest": "^3.2.4"
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
@@ -50,10 +49,12 @@
     "@types/passport-google-oauth2": "^0.1.10",
     "@types/passport-jwt": "^4.0.1",
     "@typescript-eslint/parser": "^8.35.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "prisma": "^6.12.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

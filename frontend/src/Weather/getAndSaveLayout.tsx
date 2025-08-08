@@ -38,11 +38,10 @@ import { GetLocationButton } from "@/components/functionalUi/GetLocationButton.t
 import { UnitToggleSwitch } from "@/components/functionalUi/UnitToggleButton.tsx";
 import { SkeletonGrid } from "@/components/functionalUi/PageSkeletonLoading.tsx";
 import { AiChat } from "@/components/functionalUi/WeatherAiAssistant.tsx";
-import { SaveLayoutButton } from "@/components/functionalUi/SaveLayoutButton.tsx";
 import { Button } from "@headlessui/react";
 import { Loader2Icon } from "lucide-react";
 
-const host = import.meta.env.VITE_BACKEND_HOST;
+const host = import.meta.env.VITE_LAYOUT_HOST;
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
@@ -129,7 +128,7 @@ const GridComponent: FunctionComponent = () => {
     // Fetching all breakpoint layouts
     useEffect(() => {
         axios
-            .get(`${host}/componentInLayouts`, {
+            .get(`${host}/componentsInLayouts`, {
                 withCredentials: true,
             })
             .then((e: any) => {
@@ -404,7 +403,7 @@ const GridComponent: FunctionComponent = () => {
                                 }}
                                 className="mr-1"
                                 aria-readonly
-                                disabled={updatingLayout}
+                                disabled={updatingLayout || editMode}
                             />
                             <Label
                                 htmlFor="edit-mode"
