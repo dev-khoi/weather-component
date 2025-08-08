@@ -34,10 +34,10 @@ import { SearchBar } from "./searchBar.tsx";
 import { isMobile } from "react-device-detect";
 
 import type { ComponentListType } from "@/types/types";
-import { GetLocationButton } from "@/components/ui/GetLocationButton.tsx";
-import { UnitToggleSwitch } from "@/components/ui/UnitToggleButton.tsx";
-import { SkeletonGrid } from "@/components/ui/PageSkeletonLoading.tsx";
-import { AiChat } from "@/components/ui/WeatherAiAssistant.tsx";
+import { GetLocationButton } from "@/components/functionalUi/GetLocationButton.tsx";
+import { UnitToggleSwitch } from "@/components/functionalUi/UnitToggleButton.tsx";
+import { SkeletonGrid } from "@/components/functionalUi/PageSkeletonLoading.tsx";
+import { AiChat } from "@/components/functionalUi/WeatherAiAssistant.tsx";
 
 const host = import.meta.env.VITE_BACKEND_HOST;
 // const removeComponent = (id: number) => {

@@ -7,7 +7,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "express-dev": "nodemon --exec tsx src/index.ts",
     "prisma-dev": "nodemon --exec tsx db/database.ts",
     "build": "npm install && tsc",
