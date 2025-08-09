@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const colWidth = 2;
 const gridCols = 12;
@@ -80,4 +80,4 @@ const createNewUserLayout = async (userId: number) => {
   ...componentCreates
 ]);
 };
-export { createNewUserLayout  };
+export { createNewUserLayout };

@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import crypto from "crypto";
 import jwt, { VerifyErrors } from "jsonwebtoken";
 import dotenv from "dotenv";

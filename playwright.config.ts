@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7364318 (fix passportConfig)
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: "tests",
@@ -33,10 +37,20 @@ export default defineConfig({
     },
   ],
   // Run your local dev server before starting the tests.
-  webServer: {
-    command:
-      'npx concurrently "cd backend && npm run express-dev" "cd frontend && npm run dev"',
-    url: "http://localhost:5173/",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: `cd backend && npm run express-dev`,
+      url: "http://localhost:3000/",
+      reuseExistingServer: !process.env.CI,
+      env: {
+        GOOGLE_CLIENT_ID: `${process.env.GOOGLE_CLIENT_ID}`,
+        GOOGLE_CLIENT_SECRET: `${process.env.GOOGLE_CLIENT_SECRET}`,
+      },
+    },
+    {
+      command: "cd frontend && npm run dev",
+      url: "http://localhost:5173/",
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });

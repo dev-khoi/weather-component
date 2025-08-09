@@ -3,15 +3,18 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import { CiCircleRemove } from "react-icons/ci";
 import { IconContext } from "react-icons";
 import type { ComponentListType } from "@/types/types";
+import { Button } from "@headlessui/react";
 
 const SearchBar = ({
     originComponentList,
     currentBreakpoint,
     addComponent,
+    disabled
 }: {
     originComponentList: ComponentListType[];
     currentBreakpoint: string;
     addComponent: (id: string) => Promise<void>;
+    disabled: boolean
 }) => {
     // list of components that haven't been added
     const [componentList, setComponentList] =
@@ -82,11 +85,12 @@ const SearchBar = ({
 
     return (
         <>
-            <button
-                className="bg-(--background-color) inline-flex items-center align-middle gap-2 border-2 border-card dark:border-border  rounded-lg py-1 px-3"
+            <Button
+                className="text-lg md:text-xl bg-(--background-color) inline-flex items-center align-middle gap-2 border-2 border-card dark:border-border  rounded-lg py-1 px-3"
                 onClick={toggleDialog}
+                disabled={disabled}
             >
-                Add component
+                + Add
                 <div className="hidden gap-1 sm:flex">
                     <kbd className="bg-primary-foreground text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">
                         Ctrl
@@ -95,7 +99,7 @@ const SearchBar = ({
                         K
                     </kbd>
                 </div>
-            </button>
+            </Button>
 
             {/* dialog to add component */}
             {visible && (
@@ -113,7 +117,7 @@ const SearchBar = ({
                     <p className=" text-(-primary-white) text-lg md:text-md mb-4">
                         Add Component
                     </p>
-                    <button
+                    <Button
                         onClick={toggleDialog}
                         className="absolute right-2 top-2 "
                     >
@@ -122,7 +126,7 @@ const SearchBar = ({
                         >
                             <CiCircleRemove />
                         </IconContext>
-                    </button>
+                    </Button>
                     <input
                         ref={inputRef}
                         placeholder="Find a component"
@@ -134,19 +138,33 @@ const SearchBar = ({
                     bg-white text-black"
                     />
                     <ul className="space-y-2">
-                        {componentList.map((comp) => (
-                            <li key={comp.id}>
-                                <button
-                                    onClick={() =>{ addComponent(comp.id);
-                                        setComponentList(componentList.filter((e) => e.id !== comp.id))
-                                     }}
-                                    className="w-full text-left px-3 py-2 bg-gray-500 rounded-md 
+                        {!!componentList.length ? (
+                            componentList.map((comp) => (
+                                <li key={comp.id}>
+                                    <Button
+                                        onClick={() => {
+                                            addComponent(comp.id);
+                                            setComponentList(
+                                                componentList.filter(
+                                                    (e) => e.id !== comp.id,
+                                                ),
+                                            );
+                                        }}
+                                        className="w-full text-left px-3 py-2 bg-gray-500 rounded-md 
                                hover:bg-gray-400 "
-                                >
-                                    {comp.componentName}
-                                </button>
-                            </li>
-                        ))}
+                                    >
+                                        {comp.componentName}
+                                    </Button>
+                                </li>
+                            ))
+                        ) : (
+                            <div
+                                className="w-full text-left px-3 py-2 rounded-md 
+                               hover:bg-gray-400 "
+                            >
+                                No more component
+                            </div>
+                        )}
                     </ul>
                 </dialog>
             )}

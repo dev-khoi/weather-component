@@ -50,7 +50,7 @@ export const LandingPage = () => {
                     <section className="mt-16 px-4 pb-4 w-full" id="demo">
                         <div className="max-w-5xl mx-auto text-center">
                             <h2 className="text-4xl font-bold mb-4">
-                                Live Demo
+                                Demo
                             </h2>
                             <p className="text-describe text-xl  xs:text-sm font-medium mb-8">
                                 Experience the features — watch a quick

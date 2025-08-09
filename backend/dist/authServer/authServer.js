@@ -1,55 +1,36 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.authRoute = void 0;
-const express_1 = __importDefault(require("express"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+import express from "express";
+import jwt from "jsonwebtoken";
 // import { pool } from "./db/pool.js";
-const authentication_js_1 = require("../auth/authentication.js");
-const passportConfig_js_1 = require("../auth/passportConfig.js");
+import { generateAccessToken, } from "../auth/authentication.js";
+import { passport } from "../auth/passportConfig.js";
 // SECRET KEY
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const frontend = process.env.FRONTEND_URL;
+import dotenv from "dotenv";
+dotenv.config();
 const secretAccessToken = process.env.ACCESS_SECRET_TOKEN;
 const secretRefreshToken = process.env.REFRESH_SECRET_TOKEN;
-const cors_1 = __importDefault(require("cors"));
-const corsOption = {
-    origin: [frontend],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-};
-const cookie_parser_1 = __importDefault(require("cookie-parser"));
 // database
-const index_js_1 = require("../../generated/prisma/index.js");
-const googleAuth_js_1 = require("./googleAuth.js");
-const localAuth_js_1 = require("./localAuth.js");
-const authErrorHandler_js_1 = require("./authErrorHandler.js");
-const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const prisma = new index_js_1.PrismaClient();
+import { PrismaClient } from "@prisma/client";
+import { googleAuthRoute } from "./googleAuth.js";
+import { localAuthRoute } from "./localAuth.js";
+import { errorHandler } from "./authErrorHandler.js";
+import expressAsyncHandler from "express-async-handler";
+const prisma = new PrismaClient();
 // refreshToken search
 // *middleware config
-const authRoute = express_1.default.Router();
-exports.authRoute = authRoute;
-authRoute.use(passportConfig_js_1.passport.initialize());
+const authRoute = express.Router();
+authRoute.use(passport.initialize());
 // cors for connecting to frontend (vite)
-authRoute.use((0, cors_1.default)(corsOption));
 // const PgSession = connectPgSimple(session);
-authRoute.use(express_1.default.json());
-authRoute.use(express_1.default.urlencoded({ extended: true }));
-authRoute.use((0, cookie_parser_1.default)());
 // jwt and google signing up and logging in
 // all create access and refresh token
-authRoute.use("/local", localAuth_js_1.localAuthRoute);
-authRoute.use("/google", googleAuth_js_1.googleAuthRoute);
+authRoute.use("/local", localAuthRoute);
+authRoute.use("/google", googleAuthRoute);
 // creating new token for user by verifying the refresh token
 // authenticate the refresh token
 // user sends the refresh token
 // if refreshToken is validated
 // ->access token
-authRoute.post("/verifyingToken", (0, express_async_handler_1.default)(async (req, res) => {
+authRoute.post("/verifyingToken", expressAsyncHandler(async (req, res) => {
     // extracting the token
     const refreshToken = req.cookies.refreshToken;
     const accessToken = req.cookies.accessToken;
@@ -58,11 +39,11 @@ authRoute.post("/verifyingToken", (0, express_async_handler_1.default)(async (re
         return;
     }
     // verifying access token
-    jsonwebtoken_1.default.verify(accessToken, secretAccessToken, async (err, jwt_payload) => {
+    jwt.verify(accessToken, secretAccessToken, async (err, jwt_payload) => {
         // failed to veify access token
         // -> verifying refresh token
         if (err) {
-            return jsonwebtoken_1.default.verify(refreshToken, secretRefreshToken, (err, jwt_payload) => {
+            return jwt.verify(refreshToken, secretRefreshToken, (err, jwt_payload) => {
                 // failed to verify refresh token
                 if (err ||
                     !jwt_payload ||
@@ -74,12 +55,12 @@ authRoute.post("/verifyingToken", (0, express_async_handler_1.default)(async (re
                 }
                 // refreshToken successfully verified
                 // generate new accessToken);
-                const accessToken = (0, authentication_js_1.generateAccessToken)(jwt_payload.userId);
+                const accessToken = generateAccessToken(jwt_payload.userId);
                 return res
                     .cookie("accessToken", accessToken, {
                     httpOnly: true,
-                    secure: false,
-                    sameSite: "strict",
+                    secure: true,
+                    sameSite: "none",
                     maxAge: 15 * 60 * 1000, // 15 min
                 })
                     .status(200)
@@ -90,7 +71,7 @@ authRoute.post("/verifyingToken", (0, express_async_handler_1.default)(async (re
     });
 }));
 // deleting user tokens when logging out
-authRoute.delete("/logout", (0, express_async_handler_1.default)(async (req, res) => {
+authRoute.delete("/logout", expressAsyncHandler(async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         const error = new Error("No refresh token provided");
@@ -105,15 +86,16 @@ authRoute.delete("/logout", (0, express_async_handler_1.default)(async (req, res
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         path: "/",
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         path: "/",
     });
     res.status(200).send({ message: "login success" });
 }));
-authRoute.use(authErrorHandler_js_1.errorHandler);
+authRoute.use(errorHandler);
+export { authRoute };

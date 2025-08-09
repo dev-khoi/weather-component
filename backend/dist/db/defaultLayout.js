@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNewUserLayout = void 0;
-const prisma_1 = require("../../generated/prisma");
-const prisma = new prisma_1.PrismaClient();
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const colWidth = 2;
 const gridCols = 12;
 const tileHeight = 3;
@@ -74,4 +71,4 @@ const createNewUserLayout = async (userId) => {
         ...componentCreates
     ]);
 };
-exports.createNewUserLayout = createNewUserLayout;
+export { createNewUserLayout };

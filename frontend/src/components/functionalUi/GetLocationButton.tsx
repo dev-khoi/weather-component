@@ -1,4 +1,8 @@
 import { provokeGeolocation } from "@/helpers/helper";
+<<<<<<< HEAD
+=======
+import { Button } from "@headlessui/react";
+>>>>>>> 32faf6ada9952a022b0890e326e6c5d3c4405e11
 
 export const GetLocationButton = () => {
     return (
@@ -31,12 +35,20 @@ export const GetLocationButton = () => {
                         </svg>
                     </span>
                 </span>
+<<<<<<< HEAD
                 <button
+=======
+                <Button
+>>>>>>> 32faf6ada9952a022b0890e326e6c5d3c4405e11
                     onClick={provokeGeolocation}
                     className=" h-12 bg-amber-200 border-b-2 flex items-middle text-gray-700 text-3xl font-bold px-4 py-2 rounded-lg hover:bg-amber-100 transition duration-100"
                 >
                     click to show weather
+<<<<<<< HEAD
                 </button>
+=======
+                </Button>
+>>>>>>> 32faf6ada9952a022b0890e326e6c5d3c4405e11
             </div>
         </>
     );

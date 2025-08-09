@@ -24,10 +24,7 @@ import { HeadInfo } from "@/components/ui/info.tsx";
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-    createLayout,
-    getListMissingId,
-} from "@/helpers/helper.ts";
+import { createLayout, getListMissingId } from "@/helpers/helper.ts";
 import {
     updateLayoutDb,
     deleteComponentDb,
@@ -37,15 +34,16 @@ import { SearchBar } from "./searchBar.tsx";
 import { isMobile } from "react-device-detect";
 
 import type { ComponentListType } from "@/types/types";
-import { GetLocationButton } from "@/components/ui/getLocationButton.tsx";
-import { UnitToggleSwitch } from "@/components/ui/unitToggleButton.tsx";
-import { SkeletonGrid } from "@/components/ui/pageSkeletonLoading.tsx";
+import { GetLocationButton } from "@/components/functionalUi/GetLocationButton.tsx";
+import { UnitToggleSwitch } from "@/components/functionalUi/UnitToggleButton.tsx";
+import { SkeletonGrid } from "@/components/functionalUi/PageSkeletonLoading.tsx";
+import { AiChat } from "@/components/functionalUi/WeatherAiAssistant.tsx";
 
-
-const host = import.meta.env.VITE_BACKEND_HOST
+const host = import.meta.env.VITE_BACKEND_HOST;
 // const removeComponent = (id: number) => {
 //     const updatedComponents = component.filter((comp) => id !== comp.id);
 //     setComponent(updatedComponents);
+
 // };
 
 //~ logic:
@@ -78,7 +76,7 @@ const GridComponent: FunctionComponent = () => {
                 assignWeatherData();
             };
         });
-    }, []);
+    }, [permissionState]);
 
     //~
     // Grid layout configuration
@@ -89,6 +87,7 @@ const GridComponent: FunctionComponent = () => {
         if (width >= 480) return "xs";
         return "xxs";
     };
+    const [loading, setLoading] = useState<boolean>(false);
     const [currentBreakpoint, setCurrentBreakpoint] = useState<string>(
         getBreakpointFromWidth(window.innerWidth),
     );
@@ -110,7 +109,7 @@ const GridComponent: FunctionComponent = () => {
 
     const scrollRef = useRef<NodeJS.Timeout | null>(null);
     const [scroll, setScroll] = useState<"up" | "down" | null>(null);
-
+    const [updatingLayout, setUpdatingLayout] = useState<boolean>(false);
     const lastSavedLayout = useRef<Layout[]>([]);
     if (allLayouts && allLayouts[currentBreakpoint]) {
         lastSavedLayout.current = allLayouts[currentBreakpoint];
@@ -127,7 +126,7 @@ const GridComponent: FunctionComponent = () => {
     // Fetching all breakpoint layouts
     useEffect(() => {
         axios
-            .get("http://localhost:3000/componentInLayouts", {
+            .get(`${host}/componentInLayouts`, {
                 withCredentials: true,
             })
             .then((e: any) => {
@@ -135,7 +134,7 @@ const GridComponent: FunctionComponent = () => {
                 setAllLayouts(e.data);
             });
     }, []);
-    if (permissionState === "denied" || permissionState == "prompt") {
+    if (permissionState === "denied") {
         return <GetLocationButton />;
     }
     if (
@@ -164,12 +163,8 @@ const GridComponent: FunctionComponent = () => {
                     ...allLayouts,
                     [currentBreakpoint]: layout,
                 });
-                console.log("layout change on layout change");
-                if (!changingBreakpoint.current && editMode) {
-                    updateLayoutDb(allLayouts);
-                }
+                ignoreLayoutChange.current = false;
             }
-            ignoreLayoutChange.current = false;
         }
     };
 
@@ -241,6 +236,7 @@ const GridComponent: FunctionComponent = () => {
 
             try {
                 await addComponentDb(newComp, currentBreakpoint);
+
                 await updateLayoutDb(allLayouts);
             } catch (e) {
                 console.error(e);
@@ -357,8 +353,7 @@ const GridComponent: FunctionComponent = () => {
         event: MouseEvent | TouchEvent,
         element: HTMLElement,
     ) => {
-        if(layout || oldItem || newItem || placeholder || event){
-
+        if (layout || oldItem || newItem || placeholder || event) {
         }
         const { top } = element.getBoundingClientRect();
 
@@ -387,7 +382,7 @@ const GridComponent: FunctionComponent = () => {
     };
     return (
         <div className="overflow-visible">
-            <div className="sticky  flex-col items-center  justify-center px-2 md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-40 py-2 rounded-xl rounded-t-none">
+            <div className="sticky flex-col sm:flex-row items-center justify-center  px-2  md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-32 py-2 rounded-xl rounded-t-none">
                 <div className="relative flex justify-center items-start mt-2">
                     <HeadInfo
                         location={headInfo.location}
@@ -402,10 +397,7 @@ const GridComponent: FunctionComponent = () => {
                             checked={editMode}
                             onCheckedChange={() => {
                                 setEditMode(!editMode);
-                                if (
-                                    !changingBreakpoint.current &&
-                                    editMode
-                                ) {
+                                if (!changingBreakpoint.current && editMode) {
                                     updateLayoutDb(allLayouts);
                                 }
                             }}
@@ -415,9 +407,9 @@ const GridComponent: FunctionComponent = () => {
 
                         <Label
                             htmlFor="edit-mode"
-                            className="w-fit text-lg mr-4 md:text-md"
+                            className="w-fit text-lg md:text-2xl mr-4 md:text-md"
                         >
-                            Edit layout
+                            Edit
                         </Label>
                     </div>
 
@@ -425,11 +417,14 @@ const GridComponent: FunctionComponent = () => {
                         originComponentList={searchList}
                         currentBreakpoint={currentBreakpoint}
                         addComponent={addComponent}
+                        disabled={updatingLayout}
                     />
                     <UnitToggleSwitch />
                 </div>
             </div>
 
+            {/* Ai for chat */}
+            <AiChat weatherData={JSON.stringify(weatherData)} />
             {/* grid layout */}
             <div>
                 <ResponsiveReactGridLayout

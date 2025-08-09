@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
-import { Layout } from "./types/type.js";
+import { CustomError, Layout } from "./types/type.js";
 import { authenticateToken } from "./auth/authentication.js";
 import { layoutValidator } from "./validator/validation.js";
+
 // SECRET KEY
 import dotenv from "dotenv";
 dotenv.config();
@@ -13,12 +14,14 @@ const corsOption = {
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
+
 import cookieParser from "cookie-parser";
-import { PrismaClient } from "./../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import { verifyAccessToken } from "./lib/passwordUtils.js";
 import { InputJsonValue } from "@prisma/client/runtime/library.js";
 import { authRoute } from "./authServer/authServer.js";
 import { errorHandler } from "./authServer/authErrorHandler.js";
+import { geminiPrompt } from "./ai/gemini.js";
 const prisma = new PrismaClient();
 
 // !not ideal, store in a db
@@ -28,13 +31,12 @@ let refreshTokenArr = [];
 const app = express();
 // cors for connecting to vite
 // const PgSession = connectPgSimple(session);
-app.use(errorHandler);
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors(corsOption));
+app.use(express.json());
 
+app.use(cors(corsOption));
 // *routes
 // authenticate the user to access weather
 
@@ -44,6 +46,27 @@ app.get("/", authenticateToken, (req: Request, res: Response) => {
   res.json({ email: req.body.email });
 });
 
+app.post("/weatherAi", verifyAccessToken, async (req, res) => {
+  console.debug("in");
+  const { weatherData, question } = req.body;
+  if (
+    !weatherData ||
+    !question ||
+    question.length > 100 ||
+    question.length === 0
+  ) {
+    const error: CustomError = new Error("invalid data and question");
+    error.status = 400; // Bad Request
+    throw error;
+  }
+
+  const promptRes = await geminiPrompt(question, weatherData);
+
+  res.json({ answer: promptRes });
+  return;
+});
+
+// route for handling layouts
 app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
   // extracting the token
   const decoded = req.decoded;
@@ -69,9 +92,9 @@ app.get("/componentInLayouts", verifyAccessToken, async (req, res) => {
         },
       },
     });
-    const layouts = layoutSizes.map((layout : any) => {
+    const layouts = layoutSizes.map((layout: any) => {
       const key = layout.layoutSize;
-      const values = layout.WeatherComponents.map((v : any) => v.dataGrid);
+      const values = layout.WeatherComponents.map((v: any) => v.dataGrid);
       return { [key]: values };
     });
     return Object.assign({}, ...layouts);
@@ -88,7 +111,8 @@ app.put(
   verifyAccessToken,
   async (req: Request, res: Response) => {
     const decoded = req.decoded;
-    const layouts: { string: Layout[] } = req.body.layouts;
+    const a = req.body;
+    const layouts: { [key: string]: Layout[] } = req.body.layouts;
 
     if (!decoded || !layouts) {
       res.status(400).send({ message: "not working" });
@@ -104,7 +128,7 @@ app.put(
       }
       // UPDATING THE LAYOUTS
       try {
-        await prisma.$transaction(async (tx : any) => {
+        await prisma.$transaction(async (tx: any) => {
           // update
           for (const comp of layoutComps) {
             const update = await prisma.weatherComponent.updateMany({
@@ -121,11 +145,12 @@ app.put(
           }
         });
       } catch (e) {
+        throw new Error("update layout fail");
         console.error(e);
       }
-      res.status(202).json({ message: "layout saved successfully" });
-      return;
     }
+    res.status(202).json({ message: "layout saved successfully" });
+    return;
   }
 );
 
@@ -144,7 +169,7 @@ app.delete(
     // data: [lg: [{dataGrid}, {dataGrid:2}], md:]
     // remove
     try {
-      await prisma.$transaction(async (tx : any) => {
+      await prisma.$transaction(async (tx: any) => {
         const matchingComponents = await prisma.weatherComponent.findMany({
           where: {
             userId: Number(decoded.userId),
@@ -171,6 +196,7 @@ app.delete(
     }
 
     res.send(202);
+    return;
   }
 );
 
@@ -209,7 +235,8 @@ app.post(
     return;
   }
 );
+app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log("server on port 3000 started");
-});
+app.listen(3000, () => console.log("Server ready on port 3000."));
+
+export default app;
