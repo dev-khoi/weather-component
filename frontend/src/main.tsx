@@ -1,14 +1,11 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import {
-    RouterProvider,
-    createRouter,
-} from "@tanstack/react-router";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { useAuth } from "./auth/auth";
 import { AuthProvider } from "./auth/auth";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import { LoadingAnimation } from "./components/ui/loading";
+import { LoadingAnimation } from "./components/ui/LoadingAnimation";
 
 // Create a new router instance
 const router = createRouter({
@@ -33,7 +30,7 @@ function InnerApp() {
 
 function App() {
     const auth = useAuth();
-    if (auth.isLoading ) {
+    if (auth.isLoading) {
         return <LoadingAnimation />;
     }
     return <InnerApp />;

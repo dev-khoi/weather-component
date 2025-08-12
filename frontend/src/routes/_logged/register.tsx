@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { SignUpForm } from "@/components/functionalUi/SignUpForm";
 import { useAuth } from "@/auth/auth";
-import { LoadingAnimation } from "@/components/ui/loading";
+import { LoadingAnimation } from "@/components/ui/LoadingAnimation";
 
 export const Route = createFileRoute("/_logged/register")({
     component: RouteComponent,

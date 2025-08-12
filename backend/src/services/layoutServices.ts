@@ -1,5 +1,4 @@
 import { prisma } from "@/dbHelper/prismaDb";
-import { Decoded } from "@/types/express";
 import { CustomError, Layout } from "@/types/type";
 import { InputJsonValue } from "@prisma/client/runtime/library";
 

@@ -1,5 +1,5 @@
 import { useState, useRef, type SetStateAction, type Dispatch } from "react";
-import { Send, User, Sparkles } from "lucide-react";
+import { Send, Sparkles } from "lucide-react";
 import axios from "axios";
 import { LoadingMsg } from "./LoadingMsg";
 

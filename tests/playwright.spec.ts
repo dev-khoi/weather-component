@@ -22,6 +22,9 @@ test.describe("Login Functionality", () => {
 
     // 4. Click the login button
     await page.getByTestId("login").click(); // Assuming button text is 'Login'
+
+    await page.waitForURL("/weather");
+    await expect(page).toHaveURL("/weather"); // Verify the final URL
   });
 
   // --- Test Case 2: Failed Login with Invalid Credentials ---

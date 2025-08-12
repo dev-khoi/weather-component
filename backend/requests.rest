@@ -9,6 +9,8 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:3000/a
+###
 POST http://localhost:4000/token
 Content-Type: application/json
 

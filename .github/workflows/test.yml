@@ -19,6 +19,7 @@ jobs:
       - run: npx playwright install
       - run: npx playwright install-deps
 
+      # install
       - name: Install Backend Dependencies
         working-directory: ./backend
         run: npm install
@@ -26,16 +27,23 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
+      # build
       - name: Build Backend
         working-directory: ./backend
-        run: npm run build # Assumes 'npm run build' exists in backend/package.json
-
+        run: npm run build 
       - name: Build Frontend
         working-directory: ./frontend
-        run: npm run build # Assumes 'npm run build' exists in frontend/package.json
+        run: npm run build
 
-      - name: set up interface test
-        env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      # test
+      - name: backend test
+        working-directory: ./backend
         run: npm run test
+
+      # - run: npm run dev:test & npx wait-on http://localhost:5173
+
+      # - name: set up interface test
+      #   env:
+      #     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      #     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      #   run: npm run test

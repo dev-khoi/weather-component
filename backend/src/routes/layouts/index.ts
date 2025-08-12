@@ -13,18 +13,18 @@ import {
 const layoutRoute = express.Router();
 
 // route for handling layouts
-layoutRoute.get("/componentsInLayouts", getComponentsInLayouts);
+layoutRoute.get("/components", getComponentsInLayouts);
 
-layoutRoute.post("/componentsInLayouts", postComponentsInLayouts);
+layoutRoute.post("/components", postComponentsInLayouts);
 
 layoutRoute.put(
-  "/componentsInLayouts",
+  "/components",
   layoutValidator,
   putComponentsInLayouts
 );
 
 layoutRoute.delete(
-  `/componentsInLayouts/:breakpoint/:weatherId`,
+  `/components/:breakpoint/:weatherId`,
   layoutValidator,
   deleteComponentsInLayouts
 );
