@@ -1,5 +1,4 @@
 import express from "express";
-
 import { layoutValidator } from "@/validator/validation.js";
 
 import {
@@ -7,7 +6,7 @@ import {
   getComponentsInLayouts,
   postComponentsInLayouts,
   putComponentsInLayouts,
-} from "../../controller/layouts/layoutController";
+} from "@/controller/layouts/layoutController.js";
 
 // *middleware config
 const layoutRoute = express.Router();
@@ -17,11 +16,7 @@ layoutRoute.get("/components", getComponentsInLayouts);
 
 layoutRoute.post("/components", postComponentsInLayouts);
 
-layoutRoute.put(
-  "/components",
-  layoutValidator,
-  putComponentsInLayouts
-);
+layoutRoute.put("/components", layoutValidator, putComponentsInLayouts);
 
 layoutRoute.delete(
   `/components/:breakpoint/:weatherId`,

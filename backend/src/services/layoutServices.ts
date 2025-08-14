@@ -1,5 +1,5 @@
-import { prisma } from "@/dbHelper/prismaDb";
-import { CustomError, Layout } from "@/types/type";
+import { prisma } from "@/dbHelper/prismaDb.js";
+import { CustomError, Layout } from "@/types/type.js";
 import { InputJsonValue } from "@prisma/client/runtime/library";
 
 //^get

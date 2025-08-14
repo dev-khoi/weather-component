@@ -1,11 +1,11 @@
-import { CustomError, Layout } from "@/types/type";
+import { CustomError, Layout } from "@/types/type.js";
 import { Request, Response } from "express";
 import {
   fetchLayout,
   createComponentsInLayout,
   deleteComponentsAtBreakpoint,
   updateComponentsAtBreakpoint,
-} from "../../services/layoutServices";
+} from "../../services/layoutServices.js";
 
 //^ get
 const getComponentsInLayouts = async (req: Request, res: Response) => {

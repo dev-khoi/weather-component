@@ -1,37 +1,22 @@
 {
   "compilerOptions": {
-    "outDir": "dist", // Proper build output directory
+    "outDir": "dist",
     "strict": true,
-    "useUnknownInCatchVariables": true,
-    // Ensures 'throw' statements throw Error objects
-    "exactOptionalPropertyTypes": true,
-
-    // Enables strict null checks
-    "strictNullChecks": true,
-
-    // Enables strict function types
-    "strictFunctionTypes": true,
-
-    // Ensures 'this' is typed correctly
-    "noImplicitThis": true,
-
-    // Prevents falling through cases in switch statements
-    "noFallthroughCasesInSwitch": true,
-
-    // Reports errors for unreachable code
-    "allowUnreachableCode": false,
     "moduleResolution": "node",
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "resolveJsonModule": true,
+    "sourceMap": true
   },
-  "include": ["src", "tests"],
-  "exclude": ["node_modules", "dist"]
-} 
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}
