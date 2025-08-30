@@ -77,7 +77,7 @@ function getListMissingId(
 ) {
     if (!layoutComp) {
         weatherData.map((e) => {
-            e.id, e.componentName;
+            return ({id: e.id, componentName: e.componentName});
         });
     }
     const layoutIds = new Set(layoutComp.map((w) => w.i)); // Assuming `id` is the correct key

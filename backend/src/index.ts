@@ -33,7 +33,6 @@ app.use("/auth", authRoute);
 
 app.use("/layout", verifyAccessToken, layoutRoute);
 app.post("/weatherAi", verifyAccessToken, async (req, res) => {
-  console.debug("in");
   const { weatherData, question } = req.body;
   if (
     !weatherData ||

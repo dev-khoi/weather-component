@@ -102,6 +102,7 @@ const updateComponentsAtBreakpoint = async ({
 }) => {
   const layoutsArr = Object.entries(layouts);
   for (const [layoutSize, layoutComps] of layoutsArr) {
+    console.log(layoutSize);
     if (layoutComps.length < 1) {
       throw new Error("cannot have 0 layoutComps");
     }
@@ -110,20 +111,22 @@ const updateComponentsAtBreakpoint = async ({
       await prisma.$transaction(async (tx: any) => {
         //^ update
         for (const comp of layoutComps) {
-          const update = await prisma.weatherComponent.updateMany({
+          await tx.weatherComponent.update({
             where: {
-              layoutSize: layoutSize,
-              userId: Number(userId),
-              weatherId: comp.i,
+              layoutSize_userId_weatherId: {
+                layoutSize: layoutSize,
+                userId: Number(userId),
+                weatherId: comp.i,
+              },
             },
             data: {
               dataGrid: { ...comp },
             },
           });
-          console.debug({ update });
         }
       });
     } catch (e) {
+      console.log(e);
       const error: CustomError = new Error("Invalid or expired token");
       error.status = 401;
       throw error;

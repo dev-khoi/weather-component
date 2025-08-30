@@ -68,6 +68,7 @@ const GridComponent: FunctionComponent = () => {
     const [permissionState, setPermissionState] = useState<
         "granted" | "prompt" | "denied" | null
     >(null);
+
     useEffect(() => {
         navigator.permissions.query({ name: "geolocation" }).then((result) => {
             setPermissionState(result.state);
@@ -131,7 +132,6 @@ const GridComponent: FunctionComponent = () => {
                 withCredentials: true,
             })
             .then((e: any) => {
-                console.log(e.data);
                 setAllLayouts(e.data);
             });
     }, []);
@@ -149,7 +149,6 @@ const GridComponent: FunctionComponent = () => {
     // callback when layout is change
     // callback after new breakpoint (not firstload)
     const onLayoutChange = (layout: Layout[], allLayouts: Layouts) => {
-        console.log("layout");
         if (!isFirstRender.current || currentBreakpoint === "lg") {
             lastSavedLayout.current = layout;
             if (
@@ -164,8 +163,8 @@ const GridComponent: FunctionComponent = () => {
                     ...allLayouts,
                     [currentBreakpoint]: layout,
                 });
-                ignoreLayoutChange.current = false;
             }
+            ignoreLayoutChange.current = false;
         }
     };
 
@@ -215,7 +214,6 @@ const GridComponent: FunctionComponent = () => {
                     },
                 ),
             };
-            console.log(newAllLayouts);
             setAllLayouts(newAllLayouts);
         }
     };
@@ -295,7 +293,7 @@ const GridComponent: FunctionComponent = () => {
                     {editMode ? <RemoveButton comp={comp} /> : ""}
                     {/* ICON / DATA / name */}
                     <div className="flex flex-col items-center justify-center text-white h-full">
-                        <div className="flex items-start justify-center mb-2 ml-1">
+                        <div className="flex items-center justify-center mb-2 ml-1">
                             <div className="text-5xl mr-3"></div>
                             {weatherIcon[comp.componentName]}
                             <div className="text-sm tracking-wide">
@@ -409,24 +407,24 @@ const GridComponent: FunctionComponent = () => {
                                 Edit
                             </Label>
                         </div>
-                        {editMode && (
+                        { (updatingLayout|| editMode) && (
                             <Button
                                 className="text-lg md:text-xl text-center bg-(--background-color) flex justify-center items-center align-middle border-2 border-card dark:border-border  rounded-lg py-1 px-3"
                                 disabled={updatingLayout}
                                 onClick={async () => {
+
                                     setUpdatingLayout(true);
+                                    setEditMode(false);
                                     await updateLayoutDb(allLayouts).then(
                                         () => {
                                             setUpdatingLayout(false);
-                                            setEditMode(false);
                                         },
                                     );
                                 }}
                             >
                                 {updatingLayout ? (
                                     <Loader2Icon className="animate-spin">
-                                        {" "}
-                                        "saving..."
+                                        {"saving..."}
                                     </Loader2Icon>
                                 ) : (
                                     "save"

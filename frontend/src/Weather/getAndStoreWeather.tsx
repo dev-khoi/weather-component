@@ -62,7 +62,7 @@ const WeatherData = ({ children }: { children: ReactNode }) => {
         return { location: "loading", time: "loading" };
     });
     const { unit } = useUnit();
-    const weatherLoading = useRef<Boolean>(true);
+    const weatherLoading = useRef<boolean>(true);
     // save weather data and head info to local storage
     useEffect(() => {
         if (!weatherLoading.current && weatherComponent.length > 0) {

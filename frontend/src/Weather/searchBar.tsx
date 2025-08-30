@@ -9,24 +9,21 @@ const SearchBar = ({
     originComponentList,
     currentBreakpoint,
     addComponent,
-    disabled
+    disabled,
 }: {
     originComponentList: ComponentListType[];
     currentBreakpoint: string;
     addComponent: (id: string) => Promise<void>;
-    disabled: boolean
+    disabled: boolean;
 }) => {
     // list of components that haven't been added
     const [componentList, setComponentList] =
         useState<ComponentListType[]>(originComponentList);
 
     // dialog visibility
-    const [visible, setVisible] = useState<Boolean>(false);
+    const [visible, setVisible] = useState<boolean>(false);
     const dialogRef = useRef<HTMLDialogElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    if (!componentList || !currentBreakpoint) {
-        return;
-    }
 
     // List of weather components contains real data
     // dialog toggle
@@ -68,7 +65,9 @@ const SearchBar = ({
             document.removeEventListener("keydown", handleKeyPress);
         };
     }, [handleKeyPress]);
-
+    if (!componentList || !currentBreakpoint) {
+        return;
+    }
     // searching and adding componenent
     const searching = (e: string) => {
         const value = e.trim();
@@ -138,7 +137,7 @@ const SearchBar = ({
                     bg-white text-black"
                     />
                     <ul className="space-y-2">
-                        {!!componentList.length ? (
+                        {componentList.length ? (
                             componentList.map((comp) => (
                                 <li key={comp.id}>
                                     <Button

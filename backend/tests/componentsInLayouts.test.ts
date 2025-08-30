@@ -1,5 +1,5 @@
 import { describe } from "node:test";
-import { expect, test, vi } from "vitest";
+import { beforeEach, expect, it, test, vi } from "vitest";
 import { prisma } from "@/dbHelper/prismaDb";
 
 import {
@@ -21,8 +21,9 @@ vi.mock("@/dbHelper/prismaDb", () => ({
       findMany: vi.fn(),
       delete: vi.fn(),
       updateMany: vi.fn(),
+      update: vi.fn(),
     },
-    $transaction: vi.fn().mockImplementation(async (fn) => await fn({})),
+    $transaction: vi.fn().mockImplementation(async (fn) => await fn(prisma)),
   },
 }));
 
@@ -127,24 +128,28 @@ describe("testing components in layouts CRUD functions", async () => {
 
     await updateComponentsAtBreakpoint({ userId, layouts });
 
-    expect(prisma.weatherComponent.updateMany).toHaveBeenCalledTimes(3);
+    expect(prisma.weatherComponent.update).toHaveBeenCalledTimes(3);
 
-    expect(prisma.weatherComponent.updateMany).toHaveBeenCalledWith({
+    expect(prisma.weatherComponent.update).toHaveBeenCalledWith({
       where: {
-        layoutSize: "lg",
-        userId: Number(userId),
-        weatherId: "1",
+        layoutSize_userId_weatherId: {
+          layoutSize: "lg",
+          userId: Number(userId),
+          weatherId: "1",
+        },
       },
       data: {
         dataGrid: layouts.lg[0],
       },
     });
 
-    expect(prisma.weatherComponent.updateMany).toHaveBeenCalledWith({
+    expect(prisma.weatherComponent.update).toHaveBeenCalledWith({
       where: {
-        layoutSize: "sm",
-        userId: Number(userId),
-        weatherId: "3",
+        layoutSize_userId_weatherId: {
+          layoutSize: "sm",
+          userId: Number(userId),
+          weatherId: "3",
+        },
       },
       data: {
         dataGrid: layouts.sm[0],

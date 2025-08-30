@@ -12,4 +12,6 @@ export const errorHandler = (
     success: false,
     msg: err.message || "Internal Server Error",
   });
+  console.debug(err.message)
+  return;
 };

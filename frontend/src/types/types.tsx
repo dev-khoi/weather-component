@@ -27,7 +27,7 @@ interface HeadInfo {
 }
 interface UserComponentContextType {
     weatherData: WeatherDataType[];
-    setWeatherData: Dispatch<SetStateAction<WeatherDataType[]>>;
+    setWeatherData?: Dispatch<SetStateAction<WeatherDataType[]>>;
     headInfo: HeadInfo;
     assignWeatherData: () => Promise<void>;
 }
@@ -37,8 +37,8 @@ interface WeatherComponentContextType {
     setWeatherComponent: Dispatch<SetStateAction<WeatherDataType[]>>;
 }
 interface LatLongType {
-    lat: Number;
-    long: Number;
+    lat: number;
+    long: number;
 }
 
 interface ComponentListType {

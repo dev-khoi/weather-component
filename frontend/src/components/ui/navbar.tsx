@@ -40,8 +40,8 @@ const user = [
                 try {
                     await axios.delete(`${authUrl}/logout`, {
                         withCredentials: true,
-                    }),
-                        (window.location.href = "/login");
+                    });
+                    window.location.href = "/login";
                 } catch (error) {
                     console.error("Logout failed", error);
                 }

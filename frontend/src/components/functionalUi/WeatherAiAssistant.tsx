@@ -21,7 +21,9 @@ function AiChatInterface({
     weatherData: string;
     setChatOn: Dispatch<SetStateAction<boolean>>;
 }) {
-    const [answer, setAnswer] = useState("Hello, I am Weather Component AI assistant, what can i do to help you today?");
+    const [answer, setAnswer] = useState(
+        "Hello, I am Weather Component AI assistant, what can i do to help you today?",
+    );
     const [inputText, setInputText] = useState("");
     const [userText, setUserText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
