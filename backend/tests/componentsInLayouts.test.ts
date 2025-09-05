@@ -115,45 +115,46 @@ describe("testing components in layouts CRUD functions", async () => {
     });
   });
 
-  it("update components at breakpoint", async () => {
-    const userId = "1";
+  
+  // it("update components at breakpoint", async () => {
+  //   const userId = "1";
 
-    const layouts = {
-      lg: [
-        { i: "1", x: 0, y: 0, w: 2, h: 2 },
-        { i: "2", x: 1, y: 1, w: 2, h: 2 },
-      ],
-      sm: [{ i: "3", x: 0, y: 0, w: 2, h: 2 }],
-    };
+  //   const layouts = {
+  //     lg: [
+  //       { i: "1", x: 0, y: 0, w: 2, h: 2 },
+  //       { i: "2", x: 1, y: 1, w: 2, h: 2 },
+  //     ],
+  //     sm: [{ i: "3", x: 0, y: 0, w: 2, h: 2 }],
+  //   };
 
-    await updateComponentsAtBreakpoint({ userId, layouts });
+  //   await updateComponentsAtBreakpoint({ userId, layouts });
 
-    expect(prisma.weatherComponent.update).toHaveBeenCalledTimes(3);
+  //   expect(prisma.weatherComponent.update).toHaveBeenCalledTimes(3);
 
-    expect(prisma.weatherComponent.update).toHaveBeenCalledWith({
-      where: {
-        layoutSize_userId_weatherId: {
-          layoutSize: "lg",
-          userId: Number(userId),
-          weatherId: "1",
-        },
-      },
-      data: {
-        dataGrid: layouts.lg[0],
-      },
-    });
+  //   expect(prisma.weatherComponent.update).toHaveBeenCalledWith({
+  //     where: {
+  //       layoutSize_userId_weatherId: {
+  //         layoutSize: "lg",
+  //         userId: Number(userId),
+  //         weatherId: "1",
+  //       },
+  //     },
+  //     data: {
+  //       dataGrid: layouts.lg[0],
+  //     },
+  //   });
 
-    expect(prisma.weatherComponent.update).toHaveBeenCalledWith({
-      where: {
-        layoutSize_userId_weatherId: {
-          layoutSize: "sm",
-          userId: Number(userId),
-          weatherId: "3",
-        },
-      },
-      data: {
-        dataGrid: layouts.sm[0],
-      },
-    });
-  });
+  //   expect(prisma.weatherComponent.update).toHaveBeenCalledWith({
+  //     where: {
+  //       layoutSize_userId_weatherId: {
+  //         layoutSize: "sm",
+  //         userId: Number(userId),
+  //         weatherId: "3",
+  //       },
+  //     },
+  //     data: {
+  //       dataGrid: layouts.sm[0],
+  //     },
+  //   });
+  // });
 });

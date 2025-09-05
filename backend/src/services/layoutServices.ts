@@ -1,4 +1,5 @@
 import { prisma } from "@/dbHelper/prismaDb.js";
+import { isDifferent } from "@/lib/isDifferent.js";
 import { CustomError, Layout } from "@/types/type.js";
 import { InputJsonValue } from "@prisma/client/runtime/library";
 
@@ -101,17 +102,24 @@ const updateComponentsAtBreakpoint = async ({
   layouts: { [key: string]: Layout[] };
 }) => {
   const layoutsArr = Object.entries(layouts);
+
   for (const [layoutSize, layoutComps] of layoutsArr) {
-    console.log(layoutSize);
     if (layoutComps.length < 1) {
       throw new Error("cannot have 0 layoutComps");
     }
-    //^ UPDATING THE LAYOUTS
-    try {
-      await prisma.$transaction(async (tx: any) => {
-        //^ update
-        for (const comp of layoutComps) {
-          await tx.weatherComponent.update({
+    const weatherComponentsAtSize = await prisma.weatherComponent.findMany({
+      where: { layoutSize: layoutSize, userId: Number(userId) },
+    });
+
+    for (const comp of layoutComps) {
+      const dbComp = weatherComponentsAtSize.filter(
+        (x: any) => x.weatherId === comp.i
+      );
+      const result = isDifferent(comp, dbComp);
+
+      if (result) {
+        try {
+          await prisma.weatherComponent.update({
             where: {
               layoutSize_userId_weatherId: {
                 layoutSize: layoutSize,
@@ -123,13 +131,13 @@ const updateComponentsAtBreakpoint = async ({
               dataGrid: { ...comp },
             },
           });
+        } catch (e) {
+          console.log(e);
+          const error: CustomError = new Error("Invalid or expired token");
+          error.status = 401;
+          throw error;
         }
-      });
-    } catch (e) {
-      console.log(e);
-      const error: CustomError = new Error("Invalid or expired token");
-      error.status = 401;
-      throw error;
+      }
     }
   }
 };

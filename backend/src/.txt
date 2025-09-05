@@ -194,3 +194,56 @@ Answer now with a concise, actionable recommendation.
 
 User question: what should i wear
 Weather data:
+
+
+
+layouts: 
+["xxs": [], "xs": []]
+xxs: [
+    {
+      h: 3,
+      i: '3',
+      w: 2,
+      x: 0,
+      y: 3,
+      maxH: 6,
+      maxW: 5,
+      minH: 3,
+      minW: 2,
+      moved: false,
+      static: false
+    },
+    {
+      h: 3,
+      i: '0',
+      w: 2,
+      x: 0,
+      y: 0,
+      maxH: 6,
+      maxW: 5,
+      minH: 3,
+      minW: 2,
+      moved: false,
+      static: false
+    }
+  ]
+
+
+query: 
+  {
+  layoutSize: 'xxs',
+  userId: 1, the same with i 
+  weatherId: '3', no need for this one
+  dataGrid: {
+    h: 3,
+    i: '3',
+    w: 2,
+    x: 0,
+    y: 3,
+    maxH: 6,
+    maxW: 5,
+    minH: 3,
+    minW: 2,
+    moved: false,
+    static: false
+  }
