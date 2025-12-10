@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "@/dbHelper/prismaDb.js";
 const colWidth = 2;
 const gridCols = 12;
 const tileHeight = 3;
@@ -75,9 +75,6 @@ const createNewUserLayout = async (userId: number) => {
     });
   });
 
-  await prisma.$transaction([
-  layoutCreates,
-  ...componentCreates
-]);
+  await prisma.$transaction([layoutCreates, ...componentCreates]);
 };
 export { createNewUserLayout };

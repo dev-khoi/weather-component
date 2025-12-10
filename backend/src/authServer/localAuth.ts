@@ -19,7 +19,7 @@ dotenv.config();
 import { PrismaClient } from "@prisma/client";
 import { CustomError } from "../types/type.js";
 import expressAsyncHandler from "express-async-handler";
-const prisma = new PrismaClient();
+import { prisma } from "@/dbHelper/prismaDb.js";
 // refreshToken search
 
 // *middleware config

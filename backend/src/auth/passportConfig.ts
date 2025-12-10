@@ -1,14 +1,13 @@
-  import passport, { Profile } from "passport";
+import passport, { Profile } from "passport";
 import { VerifyCallback } from "passport-google-oauth2";
 import { Strategy as OAuth2Strategy } from "passport-google-oauth2";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/dbHelper/prismaDb.js"; 
 // import { createNewUserLayout } from "../db/defaultLayout";
 dotenv.config();
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 const backendUrl = process.env.BACKEND_URL!;
-const prisma = new PrismaClient();
 const colWidth = 2;
 const gridCols = 12;
 const tileHeight = 3;

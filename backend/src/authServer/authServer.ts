@@ -4,9 +4,7 @@ import jwt, { VerifyErrors } from "jsonwebtoken";
 import { CustomError, MyJwtPayload } from "../types/type.js";
 
 // import { pool } from "./db/pool.js";
-import {
-  generateAccessToken,
-} from "../auth/authentication.js";
+import { generateAccessToken } from "../auth/authentication.js";
 import { passport } from "../auth/passportConfig.js";
 
 // SECRET KEY
@@ -23,7 +21,7 @@ import { googleAuthRoute } from "./googleAuth.js";
 import { localAuthRoute } from "./localAuth.js";
 import { errorHandler } from "./authErrorHandler.js";
 import expressAsyncHandler from "express-async-handler";
-const prisma = new PrismaClient();
+import { prisma } from "@/dbHelper/prismaDb.js";
 // refreshToken search
 
 // *middleware config

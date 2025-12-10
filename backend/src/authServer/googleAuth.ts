@@ -10,11 +10,11 @@ dotenv.config();
 const frontend = process.env.FRONTEND_URL!;
 
 // database
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
+import { prisma } from "@/dbHelper/prismaDb.js";
 import { errorHandler } from "./authErrorHandler.js";
 import { CustomError } from "../types/type.js";
 import expressAsyncHandler from "express-async-handler";
-const prisma = new PrismaClient();
 
 const googleAuthRoute = express.Router();
 
