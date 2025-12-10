@@ -22,6 +22,8 @@ jobs:
       # install
       - name: Install Backend Dependencies
         working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm install
       - name: Install Frontend Dependencies
         working-directory: ./frontend
