@@ -1,7 +1,7 @@
 import { prisma } from "@/dbHelper/prismaDb.js";
 import { isDifferent } from "@/lib/isDifferent.js";
 import { CustomError, Layout } from "@/types/type.js";
-import { InputJsonValue } from "@prisma/client/runtime/library";
+import { InputJsonValue } from "@prisma/client/runtime/client";
 
 //^get
 const fetchLayout = async (userId: string) => {
