@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: node:20
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,8 +24,6 @@ jobs:
       # install
       - name: Install Backend Dependencies
         working-directory: ./backend
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm install
       - name: Install Frontend Dependencies
         working-directory: ./frontend
