@@ -18,60 +18,35 @@ jobs:
         with:
           node-version: 20
 
-      # Build images first
-      - name: Build backend image
-        run: |
-          docker build \
-          --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
-          -t backend-ci:latest \
-          ./backend
-
-      - name: Build frontend image
-        run: docker build -t frontend-ci:latest ./frontend
-
       # Start containers in detached mode
       - name: Start backend
-        run: |
-          docker run -d \
-            --name backend-ci \
-            -p 3000:3000 \
-            -e ACCESS_SECRET_TOKEN=${{ secrets.ACCESS_SECRET_TOKEN }} \
-            -e REFRESH_SECRET_TOKEN=${{ secrets.REFRESH_SECRET_TOKEN }} \
-            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-            -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-            -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
-            -e BACKEND_URL=${{ secrets.BACKEND_URL }} \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            backend-ci:latest
+        run: docker compose up
+        working-directory: ./backend
+        env:
+          ACCESS_SECRET_TOKEN: ${{ secrets.ACCESS_SECRET_TOKEN }}
+          REFRESH_SECRET_TOKEN: ${{ secrets.REFRESH_SECRET_TOKEN }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Start frontend
-        run: |
-          docker run -d \
-            --name frontend-ci \
-            -p 4173:4173 \
-            -e NODE_ENV=production \
-            -e VITE_AUTH_HOST=${{ secrets.VITE_AUTH_HOST }} \
-            -e VITE_LAYOUT_HOST=${{ secrets.VITE_LAYOUT_HOST }} \
-            -e VITE_BACKEND_HOST=${{ secrets.VITE_BACKEND_HOST }} \
-            -e VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} \
-            -e VITE_WEATHER_HOST=${{ secrets.VITE_WEATHER_HOST }} \
-            -e VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }} \
-            frontend-ci:latest
-
+        run: docker compose up
+        working-directory: ./frontend
+        env:
+          VITE_AUTH_HOST: ${{ secrets.VITE_AUTH_HOST }}
+          VITE_LAYOUT_HOST: ${{ secrets.VITE_LAYOUT_HOST }}
+          VITE_BACKEND_HOST: ${{ secrets.VITE_BACKEND_HOST }}
+          VITE_WEATHER_API_KEY: ${{ secrets.VITE_WEATHER_API_KEY }}
+          VITE_WEATHER_HOST: ${{ secrets.VITE_WEATHER_HOST }}
+          VITE_APP_VERSION: ${{ secrets.VITE_APP_VERSION }}
+          
       # Playwright install
       - run: npm install
       - run: npx playwright install --with-deps
 
       # Run tests
       - name: E2E tests
-        run: npx playwright test
-
-      # Cleanup
-      - name: Stop containers
-        if: always()
-        run: |
-          docker logs backend-ci || true
-          docker logs frontend-ci || true
-          docker stop backend-ci frontend-ci || true
-          docker rm backend-ci frontend-ci || true
+        run: npx playwright test docker stop backend-ci frontend-ci || true docker rm backend-ci frontend-ci || true

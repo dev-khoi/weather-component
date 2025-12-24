@@ -17,8 +17,6 @@ services:
             - VITE_WEATHER_API_KEY=${VITE_WEATHER_API_KEY}
             - VITE_WEATHER_HOST=${VITE_WEATHER_HOST}
             - VITE_APP_VERSION=${VITE_APP_VERSION}
-        env_file:
-            - .env
         stdin_open: true
         tty: true
         command: npm run preview -- --host

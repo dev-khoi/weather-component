@@ -5,8 +5,6 @@ services:
       dockerfile: Dockerfile
       args:
         DATABASE_URL: ${DATABASE_URL}
-    env_file:
-      - .env
     environment:
       - ACCESS_SECRET_TOKEN=${ACCESS_SECRET_TOKEN}
       - REFRESH_SECRET_TOKEN=${REFRESH_SECRET_TOKEN}
