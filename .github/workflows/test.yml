@@ -18,21 +18,23 @@ jobs:
         with:
           node-version: 20
 
-      # Build backend image
+      # Build images first
       - name: Build backend image
         run: |
           docker build \
           --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
           -t backend-ci:latest \
           ./backend
-      # Build frontend image
-      - name: Build frontend image
-        run: docker build ./frontend -t frontend-ci:latest
 
-      # Run backend container
-      - name: Run backend
+      - name: Build frontend image
+        run: docker build -t frontend-ci:latest ./frontend
+
+      # Start containers in detached mode
+      - name: Start backend
         run: |
-          docker run -d -p 3000:3000 --name backend-ci \
+          docker run -d \
+            --name backend-ci \
+            -p 3000:3000 \
             -e ACCESS_SECRET_TOKEN=${{ secrets.ACCESS_SECRET_TOKEN }} \
             -e REFRESH_SECRET_TOKEN=${{ secrets.REFRESH_SECRET_TOKEN }} \
             -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
@@ -41,18 +43,13 @@ jobs:
             -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
             -e BACKEND_URL=${{ secrets.BACKEND_URL }} \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            -e VITE_AUTH_HOST=${{ secrets.VITE_AUTH_HOST }} \
-            -e VITE_LAYOUT_HOST=${{ secrets.VITE_LAYOUT_HOST }} \
-            -e VITE_BACKEND_HOST=${{ secrets.VITE_BACKEND_HOST }} \
-            -e VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} \
-            -e VITE_WEATHER_HOST=${{ secrets.VITE_WEATHER_HOST }} \
-            -e VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }} \
             backend-ci:latest
 
-      # Run frontend container
-      - name: Run frontend
+      - name: Start frontend
         run: |
-          docker run -d -p 4173:4173 --name frontend-ci \
+          docker run -d \
+            --name frontend-ci \
+            -p 4173:4173 \
             -e NODE_ENV=production \
             -e VITE_AUTH_HOST=${{ secrets.VITE_AUTH_HOST }} \
             -e VITE_LAYOUT_HOST=${{ secrets.VITE_LAYOUT_HOST }} \
@@ -60,55 +57,34 @@ jobs:
             -e VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} \
             -e VITE_WEATHER_HOST=${{ secrets.VITE_WEATHER_HOST }} \
             -e VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }} \
-            -e ACCESS_SECRET_TOKEN=${{ secrets.ACCESS_SECRET_TOKEN }} \
-            -e REFRESH_SECRET_TOKEN=${{ secrets.REFRESH_SECRET_TOKEN }} \
-            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-            -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-            -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
-            -e BACKEND_URL=${{ secrets.BACKEND_URL }} \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
             frontend-ci:latest
 
-      # Wait for backend/frontend to be ready
-      - name: Wait for services
-        shell: bash
+      # Check containers started
+      - name: Verify containers are running
         run: |
-          set -euo pipefail
+          docker ps
+          docker logs backend-ci
+          docker logs frontend-ci
 
-          wait_for() {
-            local label=$1
-            local url=$2
-            local container=$3
+      # Wait for services
+      - name: Wait for services
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000; do sleep 2; done'
+          timeout 60 bash -c 'until curl -f http://localhost:4173; do sleep 2; done'
 
-            for attempt in {1..60}; do
-              if curl -fsS "$url" >/dev/null; then
-                echo "$label is ready (attempt $attempt)"
-                return 0
-              fi
-              echo "$label not ready yet (attempt $attempt), retrying..."
-              sleep 2
-            done
-
-            echo "::error::$label failed to become ready at $url"
-            docker logs "$container" || true
-            return 1
-          }
-
-          wait_for backend http://localhost:3000/health backend-ci
-          wait_for frontend http://localhost:4173/ frontend-ci
-
-      # Playwright install
+      # Install Playwright
       - run: npm install
       - run: npx playwright install --with-deps
 
-      # Run e2e tests
+      # Run tests
       - name: E2E tests
         run: npx playwright test
 
+      # Cleanup
       - name: Stop containers
         if: always()
         run: |
           docker logs backend-ci || true
           docker logs frontend-ci || true
-          docker rm -f backend-ci frontend-ci || true
+          docker stop backend-ci frontend-ci || true
+          docker rm backend-ci frontend-ci || true
