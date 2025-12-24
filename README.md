@@ -5,28 +5,28 @@
 
 ---
 
-## 🚀 Demo
+## Demo
 
-🔗 **Live Site:** [https://weathercomp.onrender.com](https://weathercomp.onrender.com)  
-🧑‍💻 _Username & password required to access dashboard._
+ **Live Site:** [https://weathercomp.onrender.com](https://weathercomp.onrender.com)  
+ _Username & password required to access dashboard._
 
 ---
 
-## 📝 Description
+##  Description
 
 **Weather Component** isn't just another weather app. It gives users complete control over **how they view weather data**. Once logged in, users can **edit, move, and resize weather widgets** to build a personalized experience that allows them to instantly see what they want about the weather.
 
-### 🔍 Key Features
+###  Key Features
 
-- 🔐 User authentication & persistent layouts
-- 📦 Fully resizable and rearrangeable weather widgets
-- 🌍 Real-time weather data from external APIs
-- 💅 Responsive UI built with TailwindCSS
-- ⚙️ Built using modern web technologies like TypeScript, React, and Node.js
+-  User authentication & persistent layouts
+-  Fully resizable and rearrangeable weather widgets
+-  Real-time weather data from external APIs
+-  Responsive UI built with TailwindCSS
+-  Built using modern web technologies like TypeScript, React, and Node.js
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer        | Technology                                |
 | ------------ | ----------------------------------------- |
@@ -38,9 +38,9 @@
 
 ---
 
-🙌 Credits 🧑‍💻 Built with ❤️ by: dev-khoi
+Built with ❤️ by: dev-khoi
 
-🛠️ Special thanks to: OpenWeather API
+Special thanks to: OpenWeather API
 
 ---
 
