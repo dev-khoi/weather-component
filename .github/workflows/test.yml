@@ -20,7 +20,7 @@ jobs:
 
       # Start containers in detached mode
       - name: Start backend
-        run: docker compose up
+        run: docker compose up -d
         working-directory: ./backend
         env:
           ACCESS_SECRET_TOKEN: ${{ secrets.ACCESS_SECRET_TOKEN }}
@@ -33,7 +33,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Start frontend
-        run: docker compose up
+        run: docker compose up -d
         working-directory: ./frontend
         env:
           VITE_AUTH_HOST: ${{ secrets.VITE_AUTH_HOST }}
