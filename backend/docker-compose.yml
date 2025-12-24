@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env
+    environment:
+      - ACCESS_SECRET_TOKEN=${ACCESS_SECRET_TOKEN}
+      - REFRESH_SECRET_TOKEN=${REFRESH_SECRET_TOKEN}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "3000:3000"
+    networks:
+      - prisma-network
+
+networks:
+  prisma-network:

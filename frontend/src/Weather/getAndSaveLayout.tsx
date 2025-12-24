@@ -379,7 +379,10 @@ const GridComponent: FunctionComponent = () => {
     };
     return (
         <div className="overflow-visible">
-            <div className="sticky flex-col sm:flex-row items-center justify-center  px-2  md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-32 py-2 rounded-xl rounded-t-none">
+            <div
+                data-testid="toolbar"
+                className="sticky flex-col sm:flex-row items-center justify-center  px-2  md:px-8 lg:flex lg:flex-row-reverse lg:justify-between top-0 z-1 backdrop-blur-[2px] lg:px-32 py-2 rounded-xl rounded-t-none"
+            >
                 <div className="relative flex justify-center items-start mt-2">
                     <HeadInfo
                         location={headInfo.location}
@@ -407,12 +410,11 @@ const GridComponent: FunctionComponent = () => {
                                 Edit
                             </Label>
                         </div>
-                        { (updatingLayout|| editMode) && (
+                        {(updatingLayout || editMode) && (
                             <Button
                                 className="text-lg md:text-xl text-center bg-(--background-color) flex justify-center items-center align-middle border-2 border-card dark:border-border  rounded-lg py-1 px-3"
                                 disabled={updatingLayout}
                                 onClick={async () => {
-
                                     setUpdatingLayout(true);
                                     setEditMode(false);
                                     await updateLayoutDb(allLayouts).then(
@@ -446,7 +448,7 @@ const GridComponent: FunctionComponent = () => {
             {/* Ai for chat */}
             <AiChat weatherData={JSON.stringify(weatherData)} />
             {/* grid layout */}
-            <div>
+            <div data-testid="layout">
                 <ResponsiveReactGridLayout
                     className="grid-layout px-2 "
                     rowHeight={30}

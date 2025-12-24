@@ -2,51 +2,53 @@ name: weather
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
+
 jobs:
   test:
     environment: test
     runs-on: ubuntu-latest
-    container:
-      image: node:20
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Build backend image
+      - name: Build backend image
+        run: |
+          docker build \
+          --build-arg DATABASE_URL=${{ secrets.DATABASE_URL }} \
+          -t backend-ci:latest \
+          ./backend
+      # Build frontend image
+      - name: Build frontend image
+        run: docker build ./frontend -t frontend-ci:latest
+
+      # Run backend container
+      - name: Run backend
+        run: docker run -d -p 3000:3000 --name backend-ci backend-ci:latest
+
+      # Run frontend container
+      - name: Run frontend
+        run: docker run -d -p 4173:4173 --name frontend-ci frontend-ci:latest
+
+      # Wait for backend/frontend to be ready
+      - name: Wait for services
+        run: |
+          echo "Waiting for backend..."
+          until curl -s http://localhost:3000/health; do sleep 1; done
+          echo "Waiting for frontend..."
+          until curl -s http://localhost:4173; do sleep 1; done
+
+      # Playwright install
       - run: npm install
-      - run: npx playwright install
-      - run: npx playwright install-deps
+      - run: npx playwright install --with-deps
 
-      # install
-      - name: Install Backend Dependencies
-        working-directory: ./backend
-        run: npm install
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend
-        run: npm install
-
-      # build
-      - name: Build Backend
-        working-directory: ./backend
-        run: npm run build 
-      - name: Build Frontend
-        working-directory: ./frontend
-        run: npm run build
-
-      # test
-      - name: backend test
-        working-directory: ./backend
-        run: npm run test
-
-      # - run: npm run dev:test & npx wait-on http://localhost:5173
-
-      # - name: set up interface test
-      #   env:
-      #     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      #     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-      #   run: npm run test
+      # Run e2e tests
+      - name: E2E tests
+        run: npx playwright test
