@@ -41,12 +41,6 @@ jobs:
             -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
             -e BACKEND_URL=${{ secrets.BACKEND_URL }} \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            -e VITE_AUTH_HOST=${{ secrets.VITE_AUTH_HOST }} \
-            -e VITE_LAYOUT_HOST=${{ secrets.VITE_LAYOUT_HOST }} \
-            -e VITE_BACKEND_HOST=${{ secrets.VITE_BACKEND_HOST }} \
-            -e VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} \
-            -e VITE_WEATHER_HOST=${{ secrets.VITE_WEATHER_HOST }} \
-            -e VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }} \
             backend-ci:latest
 
       # Run frontend container
@@ -60,43 +54,7 @@ jobs:
             -e VITE_WEATHER_API_KEY=${{ secrets.VITE_WEATHER_API_KEY }} \
             -e VITE_WEATHER_HOST=${{ secrets.VITE_WEATHER_HOST }} \
             -e VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }} \
-            -e ACCESS_SECRET_TOKEN=${{ secrets.ACCESS_SECRET_TOKEN }} \
-            -e REFRESH_SECRET_TOKEN=${{ secrets.REFRESH_SECRET_TOKEN }} \
-            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-            -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-            -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
-            -e BACKEND_URL=${{ secrets.BACKEND_URL }} \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
             frontend-ci:latest
-
-      # Wait for backend/frontend to be ready
-      - name: Wait for services
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          wait_for() {
-            local label=$1
-            local url=$2
-            local container=$3
-
-            for attempt in {1..60}; do
-              if curl -fsS "$url" >/dev/null; then
-                echo "$label is ready (attempt $attempt)"
-                return 0
-              fi
-              echo "$label not ready yet (attempt $attempt), retrying..."
-              sleep 2
-            done
-
-            echo "::error::$label failed to become ready at $url"
-            docker logs "$container" || true
-            return 1
-          }
-
-          wait_for backend http://localhost:3000/health backend-ci
-          wait_for frontend http://localhost:4173/ frontend-ci
 
       # Playwright install
       - run: npm install
