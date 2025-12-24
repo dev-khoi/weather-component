@@ -123,7 +123,9 @@ export function LoginForm({
                                 <div className="grid gap-3">
                                     <Label htmlFor="email">Email</Label>
                                     <input
+                                        id="email"
                                         type="email"
+                                        data-testid="email"
                                         placeholder="Email"
                                         value={email}
                                         onChange={(e) =>
@@ -141,11 +143,13 @@ export function LoginForm({
                                             href="#"
                                             className="ml-auto text-sm underline-offset-4 hover:underline"
                                         >
-                                            Forgot your password? 
+                                            Forgot your password?
                                         </a>
                                     </div>
                                     <div className="relative flex items-center w-full justify-between">
                                         <input
+                                            id="password"
+                                            data-testid="password"
                                             className="w-full"
                                             minLength={6}
                                             maxLength={20}

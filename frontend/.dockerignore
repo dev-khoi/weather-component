@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+build
+.parcel-cache
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Git and editor files
+.git
+.gitignore
+.vscode
+.idea
+
+# Log files and OS-generated files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Docker-related files (optional, as they are not part of the app source)
+Dockerfile
+.dockerignore
+docker-compose*.yaml

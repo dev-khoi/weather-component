@@ -1,0 +1,30 @@
+services:
+    frontend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: weather-frontend
+        ports:
+            - "4173:4173"
+        volumes:
+            - .:/app
+            - /app/node_modules
+        environment:
+            - NODE_ENV=development
+            - VITE_AUTH_HOST=${VITE_AUTH_HOST}
+            - VITE_LAYOUT_HOST=${VITE_LAYOUT_HOST}
+            - VITE_BACKEND_HOST=${VITE_BACKEND_HOST}
+            - VITE_WEATHER_API_KEY=${VITE_WEATHER_API_KEY}
+            - VITE_WEATHER_HOST=${VITE_WEATHER_HOST}
+            - VITE_APP_VERSION=${VITE_APP_VERSION}
+        env_file:
+            - .env
+        stdin_open: true
+        tty: true
+        command: npm run preview -- --host
+        networks:
+            - weather-network
+
+networks:
+    weather-network:
+        driver: bridge

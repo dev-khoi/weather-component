@@ -7,7 +7,8 @@
     "start:backend": "npm start --prefix backend",
     "start:frontend": "npm run dev --prefix frontend",
     "test": "npx playwright test",
-    "dev:test": "concurrently \"cd backend && npm run express-dev\" \"cd frontend && npm run dev\""
+    "frontend": "npm run dev",
+    "backend": "npm run express-dev"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,8 @@
   "devDependencies": {
     "@playwright/test": "^1.54.1",
     "@types/node": "^24.0.15",
-    "concurrently": "^9.2.0"
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.3",
+    "playwright": "^1.57.0"
   }
 }

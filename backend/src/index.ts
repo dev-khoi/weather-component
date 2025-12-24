@@ -5,7 +5,7 @@ import { CustomError, Layout } from "./types/type.js";
 import dotenv from "dotenv";
 dotenv.config();
 const frontend = process.env.FRONTEND_URL!;
-
+console.log(frontend);
 import cors from "cors";
 const corsOption = {
   origin: [frontend],

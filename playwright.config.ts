@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
-  export default defineConfig({
+import path from "path";
+const authFile = path.join(__dirname, "playwright/.auth/user.json");
+export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: "tests",
 
@@ -20,22 +22,34 @@ import { defineConfig, devices } from "@playwright/test";
 
   use: {
     // Base URL to use in actions like `await page.goto('/')`.
-    baseURL: "http://localhost:5173/",
+    baseURL: "http://localhost:4173/",
 
     // Collect trace when retrying the failed test.
     trace: "on-first-retry",
+    permissions: ["geolocation"],
+
+    geolocation: { longitude: 12.492507, latitude: 41.889938 },
   },
   // Configure projects for major browsers.
   projects: [
     {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
+
+    {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], storageState: authFile },
+      dependencies: ["setup"],
     },
   ],
   // Run your local dev server before starting the tests.
-  webServer: {
-  command: "npm run dev:test",
-  url: "http://localhost:5173/",
-  reuseExistingServer: !process.env.CI,
-}
+  // webServer: {
+  //   command: "docker compose up",
+  //   url: "http://localhost:4173/",
+  //   reuseExistingServer: !process.env.CI,
+  //   stdout: "pipe",
+  //   stderr: "pipe",
+  //   cwd: "./frontend",
+  // },
 });
