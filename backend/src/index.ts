@@ -19,6 +19,7 @@ import { authRoute } from "./authServer/authServer.js";
 import { errorHandler } from "./authServer/authErrorHandler.js";
 import { geminiPrompt } from "./ai/gemini.js";
 import { layoutRoute } from "./routes/layouts/index.js";
+import healthRouter from "./routes/health/index.js";
 
 // *middleware config
 const app = express();
@@ -50,6 +51,7 @@ app.post("/weatherAi", verifyAccessToken, async (req, res) => {
   res.json({ answer: promptRes });
   return;
 });
+app.use("/health", healthRouter);
 
 app.use(errorHandler);
 
